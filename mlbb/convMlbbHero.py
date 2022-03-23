@@ -12,7 +12,7 @@ def convertHeroName(hero):
     elif hero=="Yve":
         return "[[&ref_r(@dbcol[450-104-2],60,60,イヴ)>entry/224322]]"
     elif hero=="Valentina":
-        return "[[&ref_r(@dbcol[450-112-2],60,60,バレンティナ)>entry/82297]]"
+        return "[[&ref_r(@dbcol[450-112-2],60,60,バレンティナ)>entry/305152]]"
     elif hero=="Clint":
         return "[[&ref_r(@dbcol[450-26-2],60,60,クリント)>entry/82284]]"
     elif hero=="Diggie":
@@ -26,6 +26,8 @@ def convertHeroName(hero):
     elif hero=="Gloo":
         return "[[&ref_r(@dbcol[450-106-2],60,60,グルー)>entry/225301]]"
     elif hero=="Popol and Kupa":
+        return "[[&ref_r(@dbcol[450-98-2],60,60,ボボル&クバ)>entry/211804]]"
+    elif hero=="Popol":
         return "[[&ref_r(@dbcol[450-98-2],60,60,ボボル&クバ)>entry/211804]]"
     elif hero=="Lylia":
         return "[[&ref_r(@dbcol[450-84-2],60,60,リリア)>entry/87543]]"
