@@ -229,5 +229,7 @@ def convertHeroName(hero):
         return "[[&ref_r(zAEAqSZt.png,60,60,ディスラー)>entry/82301]]"
     elif hero=="Vexana":
         return "[[&ref_r(4HrHjStS.png,60,60,サナ)>entry/82290]]"
+    elif hero=="Xavier":
+        return "[[&ref_r(@dbcol[450-116-2],60,60,ザビエル)>entry/342234]]"
     else :
         return "ヒーローなし"
