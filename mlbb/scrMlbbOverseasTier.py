@@ -28,7 +28,7 @@ def fetchTierList(role):
     for i, hero in enumerate(scrAplusTierHero):
         hero = convMlbbHero.convertHeroName(hero.string)
         aplusTierHero += hero
-    print("|bgcolor(#ff00cc):&color(#ffffff){&size(18){A+}}|bgcolor(#ffe7fa):[" + aplusTierHero + "|")
+    print("|bgcolor(#ff00cc):&color(#ffffff){&size(18){A+}}|bgcolor(#ffe7fa):" + aplusTierHero + "|")
 
     #ATier取得
     scrATierHero = soup.select("body > div.page > div > div:nth-child(13) > div.tierlist-bottom-row > div[data-role="+ role +"] > a > span")
