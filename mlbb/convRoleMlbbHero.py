@@ -130,7 +130,7 @@ def convertRoleHeroName(hero):
     elif hero=="Brody":
         return ["Gold"]
     elif hero=="Natalia":
-        return ["EXP"]
+        return ["Roam"]
     elif hero=="Hayabusa":
         return ["Jungle"]
     elif hero=="Atlas":

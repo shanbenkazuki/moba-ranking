@@ -1,24 +1,14 @@
 import time
 import convMlbbHero as convMlbbHero
 import convRoleMlbbHero as convRoleMlbbHero
-from selenium.webdriver.chrome.options import Options
 from selenium import webdriver
 from bs4 import BeautifulSoup
 from selenium.webdriver.common.by import By
 
-import locale
-import datetime
-
 loginUrl = "https://m.mobilelegends.com/en/rank"
 
 #ランキング画面遷移
-profilePath = '/Users/kazuki/Library/Application Support/Google/Chrome/Profile 5'
-profilefolder = '--user-data-dir=' + profilePath
- 
-profileOptions = Options()
-profileOptions.add_argument(profilefolder)
- 
-driver = webdriver.Chrome(options = profileOptions)
+driver = webdriver.Chrome()
 driver.get(loginUrl)
 
 #変換されるまで待機
