@@ -12,7 +12,7 @@ def convertRoleHeroName(hero):
     elif hero=="Yve":
         return ["Mid"]
     elif hero=="Valentina":
-        return ["Mid"]
+        return ["Mid", "EXP"]
     elif hero=="Clint":
         return ["Gold"]
     elif hero=="Diggie":
@@ -231,5 +231,7 @@ def convertRoleHeroName(hero):
         return ["Mid"]
     elif hero=="Xavier":
         return ["Mid"]
+    elif hero=="Julian":
+        return ["Jungle", "EXP"]
     else :
         return "ヒーローなし"
