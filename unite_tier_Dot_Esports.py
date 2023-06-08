@@ -39,11 +39,11 @@ c_support=""
 
 
 # UNITE-DBでの各ランクのポケモンを取得
-pokemon_splus_list = ["Absol", "Blissey", "Greninja", "Hoopa", "Lucario"]
-pokemon_s_list = ["Aegislash", "Ninetales", "Cinderace", "Charizard", "Delphox", "Dragonite", "Gengar", "Greedent", "Machamp", "Pikachu", "Slowbro", "Trevenant", "Tsareena", "Venusaur"]
-pokemon_a_list = ["Blastoise", "Cramorant", "Decidueye", "Duraludon", "Gardevoir", "Talonflame", "Wigglytuff"]
-pokemon_b_list = ["Azumarill", "Crustle", "Eldegoss", "Espeon", "Mamoswine", "Mr. Mime", "Snorlax", "Sylveon"]
-pokemon_c_list = ["Garchomp", "Zeraora"]
+pokemon_splus_list = ["Blissey", "Hoopa", "Lucario", "Slowbro"]
+pokemon_s_list = ["Aegislash", "Ninetales", "Cinderace", "Charizard", "Delphox", "Dragonite", "Gengar", "Glaceon", "Greedent", "Greninja", "Machamp", "Pikachu", "Trevenant", "Tsareena", "Venusaur"]
+pokemon_a_list = ["Absol", "Azumarill", "Blastoise", "Cramorant", "Decidueye", "Duraludon", "Gardevoir", "Talonflame", "Zeraora", "Wigglytuff"]
+pokemon_b_list = ["Crustle", "Eldegoss", "Espeon", "Mamoswine", "Mr. Mime", "Snorlax", "Sylveon"]
+pokemon_c_list = ["Garchomp"]
 
 # Splustier作成
 for pokemon in pokemon_splus_list:

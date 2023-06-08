@@ -12,9 +12,6 @@ from bs4 import BeautifulSoup
 DISPLAY_URL = "https://m.mobilelegends.com/en/rank"
 WAIT_TIME = 10
 
-#ここで、バージョンなどのチェックをします。
-#chrome = webdriver.Chrome(ChromeDriverManager().install())
-
 # 画面遷移
 driver = webdriver.Chrome(ChromeDriverManager().install())
 driver.get(DISPLAY_URL)
@@ -23,9 +20,9 @@ driver.implicitly_wait(WAIT_TIME)
 time.sleep(2)
 
 #ミシック400ポイント表示に切り替え
-#driver.find_element(by=By.XPATH, value="//*[@id='rank']/div[1]/div[2]/ul/li[3]").click()
+driver.find_element(by=By.XPATH, value="//*[@id='rank']/div[1]/div[2]/ul/li[3]").click()
 # レジェンド表示に切り替え（ミシックがまだ集計されてない場合）
-driver.find_element(by=By.XPATH, value="//*[@id='rank']/div[1]/div[2]/ul/li[2]").click()
+#driver.find_element(by=By.XPATH, value="//*[@id='rank']/div[1]/div[2]/ul/li[2]").click()
 
 time.sleep(3)
 

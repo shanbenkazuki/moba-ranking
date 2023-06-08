@@ -11,6 +11,8 @@ def conv_article_pokemon_unite(pokemon):
         return "https://shanbenzzz.com/pokemon-unite/pokemon/attacker/pikachu"
     elif pokemon=="Ninetales":
         return "https://shanbenzzz.com/pokemon-unite/pokemon/attacker/ninetales"
+    elif pokemon=="Alolan Ninteales":
+        return "https://shanbenzzz.com/pokemon-unite/pokemon/attacker/ninetales"
     elif pokemon=="Blissey":
         return "https://shanbenzzz.com/pokemon-unite/pokemon/supporter/blissey"
     elif pokemon=="Trevenant":
@@ -69,6 +71,8 @@ def conv_article_pokemon_unite(pokemon):
         return "https://shanbenzzz.com/pokemon-unite/pokemon/attacker/duraludon"
     elif pokemon=="Delphox":
         return "https://shanbenzzz.com/pokemon-unite/pokemon/attacker/delphox"
+    elif pokemon=="Glaceon":
+        return "https://shanbenzzz.com/pokemon-unite/pokemon/attacker/glaceon"
     else:
         return pokemon
 
@@ -123,6 +127,8 @@ def conv_image_pokemon(pokemon):
         return "https://shanbenzzz.com/wp-content/uploads/2022/06/Mr.-Mime.png"
     elif pokemon == "Ninetales":
         return "https://shanbenzzz.com/wp-content/uploads/2022/06/Ninetales.png"
+    elif pokemon == "Alolan Ninteales":
+        return "https://shanbenzzz.com/wp-content/uploads/2022/06/Ninetales.png"
     elif pokemon == "Pikachu":
         return "https://shanbenzzz.com/wp-content/uploads/2022/06/Pikachu.png"
     elif pokemon == "Slowbro":
@@ -145,7 +151,10 @@ def conv_image_pokemon(pokemon):
         return "https://shanbenzzz.com/wp-content/uploads/2022/06/Zeraora.png"
     elif pokemon == "Delphox":
         return "https://shanbenzzz.com/wp-content/uploads/2022/06/Delphox.png"
+    elif pokemon=="Glaceon":
+        return "https://shanbenzzz.com/wp-content/uploads/2022/07/Glaceon.png"
     else:
+        print(pokemon)
         return pokemon
 
 def conv_pokemon_name(pokemon):
@@ -221,6 +230,8 @@ def conv_pokemon_name(pokemon):
         return "Zeraora"
     elif "Delphox" in pokemon:
         return "Delphox"
+    elif "Glaceon" in pokemon:
+        return "Glaceon"
     else:
         return pokemon
 
@@ -367,5 +378,159 @@ def conv_article_pokemon_ja(pokemon):
         return "https://shanbenzzz.com/pokemon-unite/pokemon/supporter/eldegoss"
     elif pokemon=="ジュラルドン":
         return "https://shanbenzzz.com/pokemon-unite/pokemon/attacker/duraludon"
+    else:
+        return pokemon
+
+def conv_XXX(pokemon):
+    if pokemon=="Tsareena":
+        return ""
+    elif pokemon=="Lucario":
+        return ""
+    elif pokemon=="Aegislash":
+        return ""
+    elif pokemon=="Hoopa":
+        return ""
+    elif pokemon=="Pikachu":
+        return ""
+    elif pokemon=="Ninetales":
+        return ""
+    elif pokemon=="Blissey":
+        return ""
+    elif pokemon=="Trevenant":
+        return ""
+    elif pokemon=="Greedent":
+        return ""
+    elif pokemon=="Venusaur":
+        return ""
+    elif pokemon=="Blastoise":
+        return ""
+    elif pokemon=="Wigglytuff":
+        return ""
+    elif pokemon=="Machamp":
+        return ""
+    elif pokemon=="Slowbro":
+        return ""
+    elif pokemon=="Snorlax":
+        return ""
+    elif pokemon=="Azumarill":
+        return ""
+    elif pokemon=="Mamoswine":
+        return ""
+    elif pokemon=="Zeraora":
+        return ""
+    elif pokemon=="Cramorant":
+        return ""
+    elif pokemon=="Charizard":
+        return ""
+    elif pokemon=="Gengar":
+        return ""
+    elif pokemon=="Dragonite":
+        return ""
+    elif pokemon=="Cinderace":
+        return ""
+    elif pokemon=="Absol":
+        return ""
+    elif pokemon=="Greninja":
+        return ""
+    elif pokemon=="Talonflame":
+        return ""
+    elif pokemon=="Mr. Mime":
+        return ""
+    elif pokemon=="Espeon":
+        return ""
+    elif pokemon=="Gardevoir":
+        return ""
+    elif pokemon=="Crustle":
+        return ""
+    elif pokemon=="Sylveon":
+        return ""
+    elif pokemon=="Decidueye":
+        return ""
+    elif pokemon=="Eldegoss":
+        return ""
+    elif pokemon=="Duraludon":
+        return ""
+    elif pokemon=="Delphox":
+        return ""
+    else:
+        return pokemon
+
+def conv_style_name(pokemon):
+    if pokemon=="Tsareena":
+        return "balance"
+    elif pokemon=="Lucario":
+        return "balance"
+    elif pokemon=="Aegislash":
+        return "balance"
+    elif pokemon=="Hoopa":
+        return "support"
+    elif pokemon=="Pikachu":
+        return "attack"
+    elif pokemon=="Ninetales":
+        return "attack"
+    elif pokemon=="Alolan Ninteales":
+        return "attack"
+    elif pokemon=="Blissey":
+        return "support"
+    elif pokemon=="Trevenant":
+        return "defense"
+    elif pokemon=="Greedent":
+        return "defense"
+    elif pokemon=="Venusaur":
+        return "attack"
+    elif pokemon=="Blastoise":
+        return "defense"
+    elif pokemon=="Wigglytuff":
+        return "support"
+    elif pokemon=="Machamp":
+        return "balance"
+    elif pokemon=="Slowbro":
+        return "defense"
+    elif pokemon=="Snorlax":
+        return "defense"
+    elif pokemon=="Azumarill":
+        return "balance"
+    elif pokemon=="Mamoswine":
+        return "defense"
+    elif pokemon=="Zeraora":
+        return "speed"
+    elif pokemon=="Cramorant":
+        return "attack"
+    elif pokemon=="Charizard":
+        return "balance"
+    elif pokemon=="Gengar":
+        return "speed"
+    elif pokemon=="Dragonite":
+        return "balance"
+    elif pokemon=="Cinderace":
+        return "attack"
+    elif pokemon=="Absol":
+        return "speed"
+    elif pokemon=="Greninja":
+        return "attack"
+    elif pokemon=="Talonflame":
+        return "speed"
+    elif pokemon=="Mr. Mime":
+        return "support"
+    elif pokemon=="Espeon":
+        return "attack"
+    elif pokemon=="Gardevoir":
+        return "attack"
+    elif pokemon=="Crustle":
+        return "defense"
+    elif pokemon=="Sylveon":
+        return "attack"
+    elif pokemon=="Decidueye":
+        return "attack"
+    elif pokemon=="Eldegoss":
+        return "support"
+    elif pokemon=="Duraludon":
+        return "attack"
+    elif pokemon=="Delphox":
+        return "attack"
+    elif pokemon=="Garchomp":
+        return "balance"
+    elif pokemon=="Glaceon":
+        return "attack"
     else:
         return pokemon

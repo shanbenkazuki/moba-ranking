@@ -3,6 +3,7 @@ import conv.pokemon_unite.convPokemon as convPokemon
 
 from selenium import webdriver
 from webdriver_manager.chrome import ChromeDriverManager
+from selenium.webdriver.chrome.service import Service
 from bs4 import BeautifulSoup
 from common import tagComponent as tag
 
@@ -44,7 +45,7 @@ b_support=""
 c_support=""
 
 # 画面遷移
-driver = webdriver.Chrome(ChromeDriverManager().install())
+driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()))
 driver.get(DISPLAY_URL)
 
 time.sleep(2)
@@ -58,7 +59,6 @@ pokemon_c_list = BeautifulSoup(driver.page_source, 'html.parser').select("body >
 # Splustier作成
 for pokemon in pokemon_splus_list:
     pokemon_name = convPokemon.conv_pokemon_name(pokemon.get('alt'))
-    print(pokemon_name)
     pokemon_image_url = convPokemon.conv_image_pokemon(pokemon_name)
     pokemon_article_url = convPokemon.conv_article_pokemon_unite(pokemon_name)
     pokemon_a_tag = tag.createHeroATag(pokemon_image_url, pokemon_article_url)

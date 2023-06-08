@@ -233,5 +233,13 @@ def convArticleHero(hero):
         return "https://shanbenzzz.com/mobile-legends/hero/mage/xavier"
     elif hero=="Julian":
         return "https://shanbenzzz.com/mobile-legends/hero/fighter/julian"
+    elif hero=="Fredrinn":
+        return "https://shanbenzzz.com/mobile-legends/hero/fighter/fredrinn"
+    elif hero=="Joy":
+        return ""
+    elif hero=="Arlott":
+        return ""
+    elif hero=="Novaria":
+        return ""
     else :
         return "ヒーローなし"

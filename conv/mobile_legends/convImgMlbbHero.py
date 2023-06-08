@@ -96,7 +96,7 @@ def convImgHeroName(hero):
     elif hero=="Wanwan":
         return "https://shanbenzzz.com/wp-content/uploads/2022/05/0ed0cd46de895d0c76f143042cbcd746.png"
     elif hero=="Gusion":
-        return "https://shanbenzzz.com/wp-content/uploads/2022/05/8d1a06df532b3ee618caedd9ef1d91a6.png"
+        return "https://shanbenzzz.com/wp-content/uploads/2022/10/8d1a06df532b3ee618caedd9ef1d91a6.png"
     elif hero=="Barats":
         return "https://shanbenzzz.com/wp-content/uploads/2022/05/66fba0613e265576d38503d97e9e5c5b-1.png"
     elif hero=="Lunox":
@@ -190,7 +190,7 @@ def convImgHeroName(hero):
     elif hero=="Grock":
         return "https://shanbenzzz.com/wp-content/uploads/2022/05/29d68470d1d2277353a628b8d8165468.png"
     elif hero=="Lesley":
-        return "https://shanbenzzz.com/wp-content/uploads/2022/05/27ca9c4ce2d9377a92f3eecbb47c926d.png"
+        return "https://shanbenzzz.com/wp-content/uploads/2022/10/27ca9c4ce2d9377a92f3eecbb47c926d.png"
     elif hero=="Harley":
         return "https://shanbenzzz.com/wp-content/uploads/2022/05/f9bda04d39caf4b27479a6b2bf630609.png"
     elif hero=="Balmond":
@@ -208,7 +208,7 @@ def convImgHeroName(hero):
     elif hero=="Aamon":
         return "https://shanbenzzz.com/wp-content/uploads/2022/05/3c2664c885eaa7b42489361c61a16581.png"
     elif hero=="Minsitthar":
-        return "https://shanbenzzz.com/wp-content/uploads/2022/05/cd3de9b88d819c63ede2cfdf986f60e1.png"
+        return "https://shanbenzzz.com/wp-content/uploads/2023/04/cd3de9b88d819c63ede2cfdf986f60e1.png"
     elif hero=="Gord":
         return "https://shanbenzzz.com/wp-content/uploads/2022/05/287030e95de643895e7565e2fe1ddfc6.png"
     elif hero=="Nana":
@@ -233,5 +233,13 @@ def convImgHeroName(hero):
         return "https://shanbenzzz.com/wp-content/uploads/2022/05/79b1f3af8a06c72b239769c27a28a64d.png"
     elif hero=="Julian":
         return "https://shanbenzzz.com/wp-content/uploads/2022/06/707b0c79d516ba9bf095cbca54c5765d.png"
+    elif hero=="Fredrinn":
+        return "https://shanbenzzz.com/wp-content/uploads/2022/10/ff45c5812c571e1bf95b901900204e14.png"
+    elif hero=="Joy":
+        return "https://shanbenzzz.com/wp-content/uploads/2022/12/e35f4db78a8be49f13072a82ccee9dba.png"
+    elif hero=="Arlott":
+        return "https://shanbenzzz.com/wp-content/uploads/2023/03/4312171f0509002d4e1a9eda9e85db71-1.png"
+    elif hero=="Novaria":
+        return "https://shanbenzzz.com/wp-content/uploads/2023/05/fb5cfa0dd612fee70a0ed298b999e623.png"
     else :
         return "ヒーローなし"

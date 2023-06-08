@@ -91,6 +91,10 @@ def createTrCStartTag():
 def createTrEndTag():
     return '</td></tr>'
 
-# ヒーローのaタグ
+# ヒーローのaタグ（画像あり）
 def createHeroATag(heroImageURL, heroArticleURL):
     return '<a href="' + heroArticleURL + '" data-type="URL" data-id="' + heroArticleURL + '"><img class="alignnone wp-image-1088" style="width: 60px;" src="' + heroImageURL + '" alt=""></a>'
+
+# ヒーローのaタグ（画像なし）
+def createHeroImgTag(imageUrl):
+    return '<img class="alignnone wp-image-1088" style="width: 60px;" src="' + imageUrl + '" alt="">'

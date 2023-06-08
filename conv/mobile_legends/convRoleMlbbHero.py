@@ -42,7 +42,7 @@ def convertRoleHeroName(hero):
     elif hero=="Johnson":
         return ["Roam"]
     elif hero=="Kaja":
-        return ["EXP"]
+        return ["EXP", "Roam"]
     elif hero=="Lancelot":
         return ["Jungle"]
     elif hero=="Sun":
@@ -208,7 +208,7 @@ def convertRoleHeroName(hero):
     elif hero=="Aamon":
         return ["Jungle"]
     elif hero=="Minsitthar":
-        return ["Roam"]
+        return ["Roam", "EXP"]
     elif hero=="Gord":
         return ["Mid"]
     elif hero=="Nana":
@@ -233,5 +233,13 @@ def convertRoleHeroName(hero):
         return ["Mid"]
     elif hero=="Julian":
         return ["Jungle", "EXP"]
+    elif hero=="Fredrinn":
+        return ["Jungle", "EXP"]
+    elif hero=="Joy":
+        return ["Jungle", "Mid"]
+    elif hero=="Arlott":
+        return ["Jungle", "EXP"]
+    elif hero=="Novaria":
+        return ["Mid"]
     else :
         return "ヒーローなし"
