@@ -3,8 +3,10 @@ import time
 import urllib.parse
 import conv.pokemon_unite.convPokemon as convPokemon
 
+from moba_database import save_data_to_database
 from bs4 import BeautifulSoup
 from common import tagComponent as tag
+from datetime import datetime
 
 def get_pokemon_info(pokemon_rate):
   td_tags = pokemon_rate.find_all('td')
@@ -34,6 +36,15 @@ time.sleep(10)
 
 html = driver.page_source.encode('utf-8')
 soup = BeautifulSoup(html, 'html.parser')
+
+# 参照日を出力
+element = soup.select_one('h3.sc-1198f0c0-2.EhlYE')
+text = element.get_text(strip=True)
+prefix = "Last Updated:"
+if text.startswith(prefix):
+  text = text[len(prefix):].strip()
+date_obj = datetime.strptime(text, "%d %B %Y")
+formatted_date = date_obj.strftime("%Y-%m-%d")
 
 pokemon_info_dict = {}
 
@@ -82,6 +93,9 @@ for pokemon_name, pokemon_info in pokemon_info_dict.items():
             break
     else:
         pokemon_info_dict[pokemon_name]['rank'] = 'C'
+
+# データベースに保存する
+save_data_to_database('unite_data', pokemon_info_dict, '2023-06-04')
 
 # ポケモン名のリストを格納する辞書
 ranked_pokemon = {
