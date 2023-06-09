@@ -73,6 +73,38 @@ def conv_article_pokemon_unite(pokemon):
         return "https://shanbenzzz.com/pokemon-unite/pokemon/attacker/delphox"
     elif pokemon=="Glaceon":
         return "https://shanbenzzz.com/pokemon-unite/pokemon/attacker/glaceon"
+    elif pokemon=="Umbreon":
+        return ""
+    elif pokemon=="Zacian":
+        return ""
+    elif pokemon=="Lapras":
+        return ""
+    elif pokemon=="Dodrio":
+        return ""
+    elif pokemon=="Chandelure":
+        return ""
+    elif pokemon=="Clefable":
+        return ""
+    elif pokemon=="Comfey":
+        return ""
+    elif pokemon=="Mew":
+        return ""
+    elif pokemon=="Sableye":
+        return ""
+    elif pokemon=="Zoroark":
+        return ""
+    elif pokemon=="Dragapult":
+        return ""
+    elif pokemon=="Scizor":
+        return ""
+    elif pokemon=="Tyranitar":
+        return ""
+    elif pokemon=="Goodra":
+        return ""
+    elif pokemon=="Buzzwole":
+        return ""
+    elif pokemon=="Urshifu":
+        return ""
     else:
         return pokemon
 
@@ -125,6 +157,8 @@ def conv_image_pokemon(pokemon):
         return "https://shanbenzzz.com/wp-content/uploads/2022/06/Mamoswine.png"
     elif pokemon == "Mr. Mime":
         return "https://shanbenzzz.com/wp-content/uploads/2022/06/Mr.-Mime.png"
+    elif pokemon == "MrMime":
+        return "https://shanbenzzz.com/wp-content/uploads/2022/06/Mr.-Mime.png"
     elif pokemon == "Ninetales":
         return "https://shanbenzzz.com/wp-content/uploads/2022/06/Ninetales.png"
     elif pokemon == "Alolan Ninteales":
@@ -153,6 +187,38 @@ def conv_image_pokemon(pokemon):
         return "https://shanbenzzz.com/wp-content/uploads/2022/06/Delphox.png"
     elif pokemon=="Glaceon":
         return "https://shanbenzzz.com/wp-content/uploads/2022/07/Glaceon.png"
+    elif pokemon=="Umbreon":
+        return "https://shanbenzzz.com/wp-content/uploads/2023/06/Umberon.png"
+    elif pokemon=="Zacian":
+        return "https://shanbenzzz.com/wp-content/uploads/2023/06/Zacian.png"
+    elif pokemon=="Lapras":
+        return "https://shanbenzzz.com/wp-content/uploads/2023/06/Lapras.png"
+    elif pokemon=="Dodrio":
+        return "https://shanbenzzz.com/wp-content/uploads/2023/06/Dodrio.png"
+    elif pokemon=="Chandelure":
+        return "https://shanbenzzz.com/wp-content/uploads/2023/06/Chandelure.png"
+    elif pokemon=="Clefable":
+        return "https://shanbenzzz.com/wp-content/uploads/2023/06/Clefable.png"
+    elif pokemon=="Comfey":
+        return "https://shanbenzzz.com/wp-content/uploads/2023/06/Comfey.png"
+    elif pokemon=="Mew":
+        return "https://shanbenzzz.com/wp-content/uploads/2023/06/Mew.png"
+    elif pokemon=="Sableye":
+        return "https://shanbenzzz.com/wp-content/uploads/2023/06/Sableye.png"
+    elif pokemon=="Zoroark":
+        return "https://shanbenzzz.com/wp-content/uploads/2023/06/Zoroark.png"
+    elif pokemon=="Dragapult":
+        return "https://shanbenzzz.com/wp-content/uploads/2023/06/Dragapult.png"
+    elif pokemon=="Scizor":
+        return "https://shanbenzzz.com/wp-content/uploads/2023/06/Scizor.png"
+    elif pokemon=="Tyranitar":
+        return "https://shanbenzzz.com/wp-content/uploads/2023/06/Tyranitar.png"
+    elif pokemon=="Goodra":
+        return "https://shanbenzzz.com/wp-content/uploads/2023/06/Goodra.png"
+    elif pokemon=="Buzzwole":
+        return "https://shanbenzzz.com/wp-content/uploads/2023/06/Buzzwole.png"
+    elif pokemon=="Urshifu":
+        return "https://shanbenzzz.com/wp-content/uploads/2023/06/Urshifu.png"
     else:
         print(pokemon)
         return pokemon
@@ -532,5 +598,37 @@ def conv_style_name(pokemon):
         return "balance"
     elif pokemon=="Glaceon":
         return "attack"
+    elif pokemon=="Umbreon":
+        return "defense"
+    elif pokemon=="Zacian":
+        return "balance"
+    elif pokemon=="Lapras":
+        return "defense"
+    elif pokemon=="Dodrio":
+        return "speed"
+    elif pokemon=="Chandelure":
+        return "attack"
+    elif pokemon=="Clefable":
+        return "support"
+    elif pokemon=="Comfey":
+        return "support"
+    elif pokemon=="Mew":
+        return "attack"
+    elif pokemon=="Sableye":
+        return "support"
+    elif pokemon=="Zoroark":
+        return "speed"
+    elif pokemon=="Dragapult":
+        return "attack"
+    elif pokemon=="Scizor":
+        return "balance"
+    elif pokemon=="Tyranitar":
+        return "balance"
+    elif pokemon=="Goodra":
+        return "defense"
+    elif pokemon=="Buzzwole":
+        return "balance"
+    elif pokemon=="Urshifu":
+        return "balance"
     else:
         return pokemon
