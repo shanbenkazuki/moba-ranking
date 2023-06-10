@@ -44,7 +44,7 @@ prefix = "Last Updated:"
 if text.startswith(prefix):
   text = text[len(prefix):].strip()
 date_obj = datetime.strptime(text, "%d %B %Y")
-formatted_date = date_obj.strftime("%Y-%m-%d")
+reference_date = date_obj.strftime("%Y-%m-%d")
 
 pokemon_info_dict = {}
 
@@ -95,7 +95,7 @@ for pokemon_name, pokemon_info in pokemon_info_dict.items():
         pokemon_info_dict[pokemon_name]['rank'] = 'C'
 
 # データベースに保存する
-save_data_to_database('unite_data', pokemon_info_dict, '2023-06-04')
+save_data_to_database('unite_meta_data', pokemon_info_dict, reference_date)
 
 # ポケモン名のリストを格納する辞書
 ranked_pokemon = {
