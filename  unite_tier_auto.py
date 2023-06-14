@@ -1,9 +1,9 @@
 import undetected_chromedriver as uc 
 import time 
 import urllib.parse
-import conv.pokemon_unite.convPokemon as convPokemon
 
-from moba_database import save_data_to_database
+from fetch_moba_database import save_data_to_database
+from fetch_moba_database import get_pokemon_data
 from bs4 import BeautifulSoup
 from common import tagComponent as tag
 from datetime import datetime
@@ -97,163 +97,72 @@ for pokemon_name, pokemon_info in pokemon_info_dict.items():
 # データベースに保存する
 save_data_to_database('unite_meta_data', pokemon_info_dict, reference_date)
 
-# ポケモン名のリストを格納する辞書
-ranked_pokemon = {
-    'S+': [],
-    'S': [],
-    'A+': [],
-    'A': [],
-    'B': [],
-    'C': []
+# ポケモンの情報を取得
+pokemon_data = get_pokemon_data()
+
+# ポケモンをスタイルとランクに基づいてグループ化する辞書を作成
+style_rank_dict = {
+    'all-rounder': {'S+': [], 'S': [], 'A+': [], 'A': [], 'B': [], 'C': []},
+    'attacker': {'S+': [], 'S': [], 'A+': [], 'A': [], 'B': [], 'C': []},
+    'defender': {'S+': [], 'S': [], 'A+': [], 'A': [], 'B': [], 'C': []},
+    'speedster': {'S+': [], 'S': [], 'A+': [], 'A': [], 'B': [], 'C': []},
+    'supporter': {'S+': [], 'S': [], 'A+': [], 'A': [], 'B': [], 'C': []}
 }
 
-# バランス
-splus_balance=""
-s_balance=""
-a_plus_balance=""
-a_balance=""
-b_balance=""
-c_balance=""
-
-# アタック
-splus_attack=""
-s_attack=""
-a_plus_attack=""
-a_attack=""
-b_attack=""
-c_attack=""
-
-# スピード
-splus_speed=""
-s_speed=""
-a_plus_speed=""
-a_speed=""
-b_speed=""
-c_speed=""
-
-# ディフェンス
-splus_defense=""
-s_defense=""
-a_plus_defense=""
-a_defense=""
-b_defense=""
-c_defense=""
-
-# サポート
-splus_support=""
-s_support=""
-a_plus_support=""
-a_support=""
-b_support=""
-c_support=""
-
-# データをループして各ランクのポケモン名を取得
+# ポケモンをスタイルとランクごとにグループ化
 for pokemon, info in pokemon_info_dict.items():
     rank = info['rank']
-    ranked_pokemon[rank].append(pokemon)
+    style = pokemon_data[pokemon]['style']
+    style_rank_dict[style][rank].append(pokemon)
 
-for pokemon in ranked_pokemon['S+']:
-    pokemon_image_url = convPokemon.conv_image_pokemon(pokemon)
-    pokemon_article_url = convPokemon.conv_article_pokemon_unite(pokemon)
-    pokemon_a_tag = tag.createHeroATag(pokemon_image_url, pokemon_article_url)
-    style = convPokemon.conv_style_name(pokemon)
-    if style == "balance":
-        splus_balance += pokemon_a_tag
-    elif style == "attack":
-        splus_attack += pokemon_a_tag
-    elif style == "defense":
-        splus_defense += pokemon_a_tag
-    elif style == "speed":
-        splus_speed += pokemon_a_tag
-    elif style == "support":
-        splus_support += pokemon_a_tag
+# 各スタイルとランクのポケモンをタグとして追加
+tier_tags = {}
+for style, rank_dict in style_rank_dict.items():
+    tier_tags[style] = {}
+    for rank, pokemon_list in rank_dict.items():
+        tier_tags[style][rank] = ''
+        for pokemon in pokemon_list:
+            pokemon_image_url = pokemon_data[pokemon]['image_url']
+            pokemon_article_url = pokemon_data[pokemon]['article_url']
+            pokemon_a_tag = tag.createHeroATag(pokemon_image_url, pokemon_article_url)
+            tier_tags[style][rank] += pokemon_a_tag
 
+# 各変数を設定
+splus_balance = tier_tags['all-rounder']['S+']
+splus_attack = tier_tags['attacker']['S+']
+splus_defense = tier_tags['defender']['S+']
+splus_speed = tier_tags['speedster']['S+']
+splus_support = tier_tags['supporter']['S+']
 
-# stier作成
-for pokemon in ranked_pokemon['S']:
-    pokemon_image_url = convPokemon.conv_image_pokemon(pokemon)
-    pokemon_article_url = convPokemon.conv_article_pokemon_unite(pokemon)
-    pokemon_a_tag = tag.createHeroATag(pokemon_image_url, pokemon_article_url)
-    style = convPokemon.conv_style_name(pokemon)
-    if style == "balance":
-        s_balance += pokemon_a_tag
-    elif style == "attack":
-        s_attack += pokemon_a_tag
-    elif style == "defense":
-        s_defense += pokemon_a_tag
-    elif style == "speed":
-        s_speed += pokemon_a_tag
-    elif style == "support":
-        s_support += pokemon_a_tag
+s_balance = tier_tags['all-rounder']['S']
+s_attack = tier_tags['attacker']['S']
+s_defense = tier_tags['defender']['S']
+s_speed = tier_tags['speedster']['S']
+s_support = tier_tags['supporter']['S']
 
-# A+ier作成
-for pokemon in ranked_pokemon['A+']:
-    pokemon_image_url = convPokemon.conv_image_pokemon(pokemon)
-    pokemon_article_url = convPokemon.conv_article_pokemon_unite(pokemon)
-    pokemon_a_tag = tag.createHeroATag(pokemon_image_url, pokemon_article_url)
-    style = convPokemon.conv_style_name(pokemon)
-    if style == "balance":
-        a_plus_balance += pokemon_a_tag
-    elif style == "attack":
-        a_plus_attack += pokemon_a_tag
-    elif style == "defense":
-        a_plus_defense += pokemon_a_tag
-    elif style == "speed":
-        a_plus_speed += pokemon_a_tag
-    elif style == "support":
-        a_plus_support += pokemon_a_tag
+a_plus_balance = tier_tags['all-rounder']['A+']
+a_plus_attack = tier_tags['attacker']['A+']
+a_plus_defense = tier_tags['defender']['A+']
+a_plus_speed = tier_tags['speedster']['A+']
+a_plus_support = tier_tags['supporter']['A+']
 
-# Atier作成
-for pokemon in ranked_pokemon['A']:
-    pokemon_image_url = convPokemon.conv_image_pokemon(pokemon)
-    pokemon_article_url = convPokemon.conv_article_pokemon_unite(pokemon)
-    pokemon_a_tag = tag.createHeroATag(pokemon_image_url, pokemon_article_url)
-    style = convPokemon.conv_style_name(pokemon)
-    if style == "balance":
-        a_balance += pokemon_a_tag
-    elif style == "attack":
-        a_attack += pokemon_a_tag
-    elif style == "defense":
-        a_defense += pokemon_a_tag
-    elif style == "speed":
-        a_speed += pokemon_a_tag
-    elif style == "support":
-        a_support += pokemon_a_tag
+a_balance = tier_tags['all-rounder']['A']
+a_attack = tier_tags['attacker']['A']
+a_defense = tier_tags['defender']['A']
+a_speed = tier_tags['speedster']['A']
+a_support = tier_tags['supporter']['A']
 
-# Btier作成
-for pokemon in ranked_pokemon['B']:
-    pokemon_image_url = convPokemon.conv_image_pokemon(pokemon)
-    pokemon_article_url = convPokemon.conv_article_pokemon_unite(pokemon)
-    pokemon_a_tag = tag.createHeroATag(pokemon_image_url, pokemon_article_url)
-    style = convPokemon.conv_style_name(pokemon)
-    if style == "balance":
-        b_balance += pokemon_a_tag
-    elif style == "attack":
-        b_attack += pokemon_a_tag
-    elif style == "defense":
-        b_defense += pokemon_a_tag
-    elif style == "speed":
-        b_speed += pokemon_a_tag
-    elif style == "support":
-        b_support += pokemon_a_tag
+b_balance = tier_tags['all-rounder']['B']
+b_attack = tier_tags['attacker']['B']
+b_defense = tier_tags['defender']['B']
+b_speed = tier_tags['speedster']['B']
+b_support = tier_tags['supporter']['B']
 
-# Ctier作成
-for pokemon in ranked_pokemon['C']:
-    pokemon_image_url = convPokemon.conv_image_pokemon(pokemon)
-    pokemon_article_url = convPokemon.conv_article_pokemon_unite(pokemon)
-    pokemon_a_tag = tag.createHeroATag(pokemon_image_url, pokemon_article_url)
-    style = convPokemon.conv_style_name(pokemon)
-    if style == "balance":
-        c_balance += pokemon_a_tag
-    elif style == "attack":
-        c_attack += pokemon_a_tag
-    elif style == "defense":
-        c_defense += pokemon_a_tag
-    elif style == "speed":
-        c_speed += pokemon_a_tag
-    elif style == "support":
-        c_support += pokemon_a_tag
-
+c_balance = tier_tags['all-rounder']['C']
+c_attack = tier_tags['attacker']['C']
+c_defense = tier_tags['defender']['C']
+c_speed = tier_tags['speedster']['C']
+c_support = tier_tags['supporter']['C']
 
 # タブ始まり
 print('<!-- wp:loos/tab {"tabId":"479b3ce7","tabWidthPC":"flex-50","tabWidthSP":"flex-50","tabHeaders":["バランス","アタック","スピード","ディフェンス","サポート"],"className":"is-style-balloon"} -->')
@@ -346,5 +255,3 @@ print('</tbody></table></figure><!-- /wp:table --></div><!-- /wp:loos/tab-body -
 
 #タブ終わり
 print('</div></div><!-- /wp:loos/tab -->')
-
-driver.close()

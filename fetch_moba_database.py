@@ -44,3 +44,34 @@ def save_data_to_table(cursor, table, reference_date, name, stats):
         INSERT INTO {table} (name, winrate, pickrate, score, rank, reference_date)
         VALUES (?, ?, ?, ?, ?, ?)
     ''', (name, stats['winrate'], stats['pickrate'], stats['score'], stats['rank'], reference_date))
+
+def get_pokemon_data():
+    # データベースに接続
+    conn = sqlite3.connect('moba_database.sqlite3')
+    cursor = conn.cursor()
+
+    # テーブルから指定したカラムのデータを取得
+    cursor.execute("SELECT name, name_en, style, article_url, image_url FROM unite_pokemon_info")
+    rows = cursor.fetchall()
+
+    # データを加工して辞書形式に整形
+    processed_data = {}
+    for row in rows:
+        name = row[0]
+        name_en = row[1]
+        style = row[2]
+        article_url = row[3]
+        image_url = row[4]
+
+        processed_data[name_en] = {
+            "name_jp": name,
+            "style": style,
+            "article_url": article_url,
+            "image_url": image_url
+        }
+
+    # 接続を閉じる
+    cursor.close()
+    conn.close()
+
+    return processed_data
