@@ -1,11 +1,11 @@
 from cmath import pi
 import time
-import conv.pokemon_unite.convPokemon as convPokemon
+import old.convPokemon as convPokemon
 
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from bs4 import BeautifulSoup
-from common import tagComponent as tag
+from . import tagComponent as tag
 
 DISPLAY_URL_UNITE_DB = "https://unite-db.com/tier-list/pokemon"
 DISPLAY_URL_GAME_8 = "https://game8.co/games/Pokemon-UNITE/archives/335997"

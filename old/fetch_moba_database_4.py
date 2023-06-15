@@ -76,62 +76,21 @@ def get_hero_data():
 
   results = {}
   for row in rows:
-    name, name_en, role, sub_role, suggested_lane, article_url, image_url, created_at, updated_at = row
+    name_jp, name_en, role, sub_role, suggested_lane, article_url, image_url = row
     result = {
-      "name_jp": name,
-      "name_en": name_en,
+      "name_jp": name_jp,
       "role": role,
       "sub_role": sub_role,
       "suggested_lane": suggested_lane,
       "article_url": article_url,
-      "image_url": image_url,
-      "created_at": created_at,
-      "updated_at": updated_at
+      "image_url": image_url
     }
     results[name_en] = result
 
   conn.close()
   return results
 
-def save_to_hero_meta_data(hero_meta_data, fetch_reference_date):
-  # SQLiteデータベースに接続
+def save_to_hero_meta_data():
   conn = sqlite3.connect('moba_database.sqlite3')
   c = conn.cursor()
-
-  # テーブルが存在しない場合にのみ作成する
-  create_table_query = '''
-  CREATE TABLE IF NOT EXISTS hero_meta_data (
-    name TEXT,
-    win_rate REAL,
-    pick_rate REAL,
-    ban_rate REAL,
-    score REAL,
-    rank TEXT,
-    reference_date DATE,
-    PRIMARY KEY (name, reference_date)
-  );
-  '''
-
-  c.execute(create_table_query)
-
-  # データを辞書からテーブルに挿入するためのSQL文を定義
-  insert_query = '''
-  INSERT INTO hero_meta_data (name, win_rate, pick_rate, ban_rate, score, rank, reference_date)
-  VALUES (?, ?, ?, ?, ?, ?, ?)
-  '''
-
-  reference_date = fetch_reference_date
-
-  for hero, data_dict in hero_meta_data.items():
-    try:
-      c.execute(insert_query, (hero, data_dict['win_rate'], data_dict['pick_rate'], data_dict['ban_rate'],
-                              data_dict['Score'], data_dict['Rank'], reference_date))
-    except sqlite3.IntegrityError:
-      error_message = f"Duplicate entry found for {hero} on {reference_date}"
-      print(error_message)
-
-  # 変更を保存
-  conn.commit()
-
-  # 接続を閉じる
-  conn.close()
+  

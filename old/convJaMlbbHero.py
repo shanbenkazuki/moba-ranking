@@ -233,5 +233,13 @@ def convJaHeroName(hero):
         return "ザビエル"
     elif hero=="Julian":
         return "ジュリアン"
+    elif hero=="Fredrinn":
+        return "フレッドリン"
+    elif hero=="Joy":
+        return "ジョイ"
+    elif hero=="Arlott":
+        return "アーロット"
+    elif hero=="Novaria":
+        return "ノヴァリア"
     else :
         return "ヒーローなし"

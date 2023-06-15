@@ -1,145 +1,173 @@
 import time
-import common.tagComponent as tag
-import conv.mobile_legends.convImgMlbbHero as convImgMlbbHero
-import conv.mobile_legends.convArticleMlbbHero as convArticleMlbbHero
-import conv.mobile_legends.convRoleMlbbHero as convRoleMlbbHero
+import pandas as pd
+import tagComponent as tag
 
 from selenium import webdriver
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.common.by import By
 from bs4 import BeautifulSoup
+from fetch_moba_database import get_hero_data
+from sklearn.preprocessing import MinMaxScaler
+from fetch_moba_database import save_to_hero_meta_data
+from selenium.webdriver.chrome.service import Service
 
 DISPLAY_URL = "https://m.mobilelegends.com/en/rank"
 WAIT_TIME = 10
 
-# 画面遷移
-driver = webdriver.Chrome(ChromeDriverManager().install())
-driver.get(DISPLAY_URL)
-driver.implicitly_wait(WAIT_TIME)
+def initialize_driver():
+  service = Service(ChromeDriverManager().install())
+  driver = webdriver.Chrome(service=service)
+  driver.implicitly_wait(WAIT_TIME)
+  return driver
 
-time.sleep(2)
+def switch_to_mystic_400(driver):
+  time.sleep(2)
+  driver.find_element(by=By.XPATH, value="//*[@id='rank']/div[1]/div[2]/ul/li[3]").click()
+  # レジェンド表示に切り替え（ミシックがまだ集計されてない場合）
+  #driver.find_element(by=By.XPATH, value="//*[@id='rank']/div[1]/div[2]/ul/li[2]").click()
+  time.sleep(3)
 
-#ミシック400ポイント表示に切り替え
-driver.find_element(by=By.XPATH, value="//*[@id='rank']/div[1]/div[2]/ul/li[3]").click()
-# レジェンド表示に切り替え（ミシックがまだ集計されてない場合）
-#driver.find_element(by=By.XPATH, value="//*[@id='rank']/div[1]/div[2]/ul/li[2]").click()
+def assign_rank(score):
+  if score >= 0.7:
+    return 'S+'
+  elif score >= 0.6:
+    return 'S'
+  elif score >= 0.5:
+    return 'A+'
+  elif score >= 0.4:
+    return 'A'
+  elif score >= 0.3:
+    return 'B'
+  else:
+    return 'C'
+  
+def extract_ranking_data(driver):
+  rateList = BeautifulSoup(driver.page_source, 'html.parser').select(".slotwrapper > ul > li > a")
+  return rateList
 
-time.sleep(3)
-
-#ランキング抽出
-rateList = BeautifulSoup(driver.page_source, 'html.parser').select(".slotwrapper > ul > li > a")
-
-#Jungle
-splusJungleHero=""
-sJungleHero=""
-aplusJungleHero=""
-aJungleHero=""
-bJungleHero=""
-cJungleHero=""
-#Roam
-splusRoamHero=""
-sRoamHero=""
-aplusRoamHero=""
-aRoamHero=""
-bRoamHero=""
-cRoamHero=""
-#Mid
-splusMidHero=""
-sMidHero=""
-aplusMidHero=""
-aMidHero=""
-bMidHero=""
-cMidHero=""
-#Gold
-splusGoldHero=""
-sGoldHero=""
-aplusGoldHero=""
-aGoldHero=""
-bGoldHero=""
-cGoldHero=""
-#EXP
-splusExpHero=""
-sExpHero=""
-aplusExpHero=""
-aExpHero=""
-bExpHero=""
-cExpHero=""
-
-for heroRate in rateList:
+def get_hero_meta_data(rateList):
+  hero_meta_data = {}
+  for heroRate in rateList:
     heroEn = heroRate.span.string
-    heroImageURL = convImgMlbbHero.convImgHeroName(heroEn)
-    heroArticleURL = convArticleMlbbHero.convArticleHero(heroEn)
-    heroAtag = tag.createHeroATag(heroImageURL, heroArticleURL)
     winRatePoint = heroRate.contents[2].string.split("%")[0]
     popRatePoint = heroRate.contents[4].string.split("%")[0]
     banRatePoint = heroRate.contents[6].string.split("%")[0]
-    tierPoint = float(winRatePoint)*2 + float(popRatePoint)*10 + float(banRatePoint)
-    for role in convRoleMlbbHero.convertRoleHeroName(heroEn):
-        if role=="Jungle":
-            if tierPoint > 180:
-                splusJungleHero += heroAtag
-            elif tierPoint > 150:
-                sJungleHero += heroAtag
-            elif tierPoint > 120:
-                aplusJungleHero += heroAtag
-            elif tierPoint > 110:
-                aJungleHero += heroAtag
-            elif tierPoint > 100:
-                bJungleHero += heroAtag
-            else :
-                cJungleHero += heroAtag
-        elif role=="Roam":
-            if tierPoint > 180:
-                splusRoamHero += heroAtag
-            elif tierPoint > 150:
-                sRoamHero += heroAtag
-            elif tierPoint > 120:
-                aplusRoamHero += heroAtag
-            elif tierPoint > 110:
-                aRoamHero += heroAtag
-            elif tierPoint > 100:
-                bRoamHero += heroAtag
-            else :
-                cRoamHero += heroAtag
-        elif role=="Mid":
-            if tierPoint > 180:
-                splusMidHero += heroAtag
-            elif tierPoint > 150:
-                sMidHero += heroAtag
-            elif tierPoint > 120:
-                aplusMidHero += heroAtag
-            elif tierPoint > 110:
-                aMidHero += heroAtag
-            elif tierPoint > 100:
-                bMidHero += heroAtag
-            else :
-                cMidHero += heroAtag
-        elif role=="Gold":
-            if tierPoint > 180:
-                splusGoldHero += heroAtag
-            elif tierPoint > 150:
-                sGoldHero += heroAtag
-            elif tierPoint > 120:
-                aplusGoldHero += heroAtag
-            elif tierPoint > 110:
-                aGoldHero += heroAtag
-            elif tierPoint > 100:
-                bGoldHero += heroAtag
-            else :
-                cGoldHero += heroAtag
-        elif role=="EXP":
-            if tierPoint > 180:
-                splusExpHero += heroAtag
-            elif tierPoint > 150:
-                sExpHero += heroAtag
-            elif tierPoint > 120:
-                aplusExpHero += heroAtag
-            elif tierPoint > 110:
-                aExpHero += heroAtag
-            elif tierPoint > 100:
-                bExpHero += heroAtag
-            else :
-                cExpHero += heroAtag
+    hero_meta_data[heroEn] = {
+      'win_rate': winRatePoint,
+      'pick_rate': popRatePoint,
+      'ban_rate': banRatePoint
+    }
+  return hero_meta_data
+
+def normalize_data(hero_meta_data):
+  df = pd.DataFrame(hero_meta_data).T.astype(float)
+  scaler = MinMaxScaler()
+  df_scaled = pd.DataFrame(scaler.fit_transform(df), columns=df.columns, index=df.index)
+  df_scaled['Ranking'] = df_scaled.mean(axis=1)
+  return df_scaled
+
+def add_ranking_to_hero_data(hero_meta_data, df_scaled):
+  for character in hero_meta_data:
+    score = df_scaled.loc[character, 'Ranking']
+    rank = assign_rank(score)
+    hero_meta_data[character]['Score'] = score
+    hero_meta_data[character]['Rank'] = rank
+  return hero_meta_data
+
+def group_heroes_by_lane_and_rank(hero_meta_data, hero_data):
+  lane_rank_dict = {
+    'Jungle': {'S+': [], 'S': [], 'A+': [], 'A': [], 'B': [], 'C': []},
+    'Gold': {'S+': [], 'S': [], 'A+': [], 'A': [], 'B': [], 'C': []},
+    'EXP': {'S+': [], 'S': [], 'A+': [], 'A': [], 'B': [], 'C': []},
+    'Roam': {'S+': [], 'S': [], 'A+': [], 'A': [], 'B': [], 'C': []},
+    'Mid': {'S+': [], 'S': [], 'A+': [], 'A': [], 'B': [], 'C': []}
+  }
+
+  for hero, info in hero_meta_data.items():
+    rank = info['Rank']
+    suggested_lane = hero_data[hero]['suggested_lane']
+    suggested_lane_list = suggested_lane.split(",")
+    for lane in suggested_lane_list:
+      lane_rank_dict[lane][rank].append(hero)
+  return lane_rank_dict
+
+def generate_tier_tags(lane_rank_dict, hero_data):
+  tier_tags = {}
+  for role, rank_dict in lane_rank_dict.items():
+    tier_tags[role] = {}
+    for rank, hero_list in rank_dict.items():
+      tier_tags[role][rank] = ''
+      for hero in hero_list:
+        hero_image_url = hero_data[hero]['image_url']
+        hero_article_url = hero_data[hero]['article_url']
+        hero_a_tag = tag.createHeroATag(hero_image_url, hero_article_url)
+        tier_tags[role][rank] += hero_a_tag
+  return tier_tags
+
+# 画面遷移とデータ取得の処理を関数化
+driver = initialize_driver()
+driver.get(DISPLAY_URL)
+switch_to_mystic_400(driver)
+rateList = extract_ranking_data(driver)
+
+
+# # heroデータ取得
+hero_data = get_hero_data()
+
+# ヒーローメタデータの生成と正規化
+hero_meta_data = get_hero_meta_data(rateList)
+df_scaled = normalize_data(hero_meta_data)
+
+# ランキング値の追加
+hero_meta_data = add_ranking_to_hero_data(hero_meta_data, df_scaled)
+
+# 参照日を取得
+reference_date = BeautifulSoup(driver.page_source, 'html.parser').select_one("#rank > div.header > div:nth-child(1) > ul > li").text
+# reference_date = '2023-06-13'
+
+# データベースに保存
+save_to_hero_meta_data(hero_meta_data, reference_date)
+
+# レーンとランクでヒーローをグループ化
+lane_rank_dict = group_heroes_by_lane_and_rank(hero_meta_data, hero_data)
+
+# タグ生成
+tier_tags = generate_tier_tags(lane_rank_dict, hero_data)
+
+splusJungleHero = tier_tags['Jungle']['S+']
+sJungleHero = tier_tags['Jungle']['S']
+aplusJungleHero = tier_tags['Jungle']['A+']
+aJungleHero = tier_tags['Jungle']['A']
+bJungleHero = tier_tags['Jungle']['B']
+cJungleHero = tier_tags['Jungle']['C']
+
+splusRoamHero = tier_tags['Roam']['S+']
+sRoamHero = tier_tags['Roam']['S']
+aplusRoamHero = tier_tags['Roam']['A+']
+aRoamHero = tier_tags['Roam']['A']
+bRoamHero = tier_tags['Roam']['B']
+cRoamHero = tier_tags['Roam']['C']
+
+splusMidHero = tier_tags['Mid']['S+']
+sMidHero = tier_tags['Mid']['S']
+aplusMidHero = tier_tags['Mid']['A+']
+aMidHero = tier_tags['Mid']['A']
+bMidHero = tier_tags['Mid']['B']
+cMidHero = tier_tags['Mid']['C']
+
+splusGoldHero = tier_tags['Gold']['S+']
+sGoldHero = tier_tags['Gold']['S']
+aplusGoldHero = tier_tags['Gold']['A+']
+aGoldHero = tier_tags['Gold']['A']
+bGoldHero = tier_tags['Gold']['B']
+cGoldHero = tier_tags['Gold']['C']
+
+splusExpHero = tier_tags['EXP']['S+']
+sExpHero = tier_tags['EXP']['S']
+aplusExpHero = tier_tags['EXP']['A+']
+aExpHero = tier_tags['EXP']['A']
+bExpHero = tier_tags['EXP']['B']
+cExpHero = tier_tags['EXP']['C']
 
 # タブ始まり
 print('<!-- wp:loos/tab {"tabId":"9e24a182","tabWidthPC":"flex-50","tabWidthSP":"flex-50","tabHeaders":["Jg","Gold","Exp","Roam","Mid"],"className":"is-style-balloon"} -->')
@@ -232,6 +260,3 @@ print('</tbody></table></figure><!-- /wp:table --></div><!-- /wp:loos/tab-body -
 
 #タブ終わり
 print('</div></div><!-- /wp:loos/tab -->')
-
-driver.close()
-driver.quit()

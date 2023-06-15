@@ -1,12 +1,6 @@
-import time
-import conv.pokemon_unite.convPokemon as convPokemon
+import old.convPokemon as convPokemon
 
-from selenium import webdriver
-from webdriver_manager.chrome import ChromeDriverManager
-from bs4 import BeautifulSoup
-from common import tagComponent as tag
-
-DISPLAY_URL = "https://unite-db.com/tier-list/pokemon"
+from . import tagComponent as tag
 
 # バランス
 splus_balance=""
@@ -43,26 +37,20 @@ a_support=""
 b_support=""
 c_support=""
 
-# 画面遷移
-driver = webdriver.Chrome(ChromeDriverManager().install())
-driver.get(DISPLAY_URL)
-
-time.sleep(2)
 
 # UNITE-DBでの各ランクのポケモンを取得
-pokemon_splus_list = BeautifulSoup(driver.page_source, 'html.parser').select("#app > div.container > section > div.content > div.tier-wrapper.tier-s > div > div > a > p")
-pokemon_s_list = BeautifulSoup(driver.page_source, 'html.parser').select("#app > div.container > section > div.content > div.tier-wrapper.tier-a > div > div > a > p")
-pokemon_a_list = BeautifulSoup(driver.page_source, 'html.parser').select("#app > div.container > section > div.content > div.tier-wrapper.tier-b > div > div > a > p")
-pokemon_b_list = BeautifulSoup(driver.page_source, 'html.parser').select("#app > div.container > section > div.content > div.tier-wrapper.tier-c > div > div > a > p")
-pokemon_c_list = BeautifulSoup(driver.page_source, 'html.parser').select("#app > div.container > section > div.content > div.tier-wrapper.tier-d > div > div > a > p")
-#pokemon_t_list = BeautifulSoup(driver.page_source, 'html.parser').select("#app > div.container > section > div.content > div.tier-wrapper.tier-t > div > div > a > p")
+pokemon_splus_list = ["Blissey", "Hoopa", "Lucario", "Slowbro"]
+pokemon_s_list = ["Aegislash", "Ninetales", "Cinderace", "Charizard", "Delphox", "Dragonite", "Gengar", "Glaceon", "Greedent", "Greninja", "Machamp", "Pikachu", "Trevenant", "Tsareena", "Venusaur"]
+pokemon_a_list = ["Absol", "Azumarill", "Blastoise", "Cramorant", "Decidueye", "Duraludon", "Gardevoir", "Talonflame", "Zeraora", "Wigglytuff"]
+pokemon_b_list = ["Crustle", "Eldegoss", "Espeon", "Mamoswine", "Mr. Mime", "Snorlax", "Sylveon"]
+pokemon_c_list = ["Garchomp"]
 
 # Splustier作成
 for pokemon in pokemon_splus_list:
-    pokemon_image_url = convPokemon.conv_image_pokemon(pokemon.string)
-    pokemon_article_url = convPokemon.conv_article_pokemon_unite(pokemon.string)
+    pokemon_image_url = convPokemon.conv_image_pokemon(pokemon)
+    pokemon_article_url = convPokemon.conv_article_pokemon_unite(pokemon)
     pokemon_a_tag = tag.createHeroATag(pokemon_image_url, pokemon_article_url)
-    style = convPokemon.conv_style_name(pokemon.string)
+    style = convPokemon.conv_style_name(pokemon)
     if style == "balance":
         splus_balance += pokemon_a_tag
     elif style == "attack":
@@ -76,10 +64,10 @@ for pokemon in pokemon_splus_list:
 
 # stier作成
 for pokemon in pokemon_s_list:
-    pokemon_image_url = convPokemon.conv_image_pokemon(pokemon.string)
-    pokemon_article_url = convPokemon.conv_article_pokemon_unite(pokemon.string)
+    pokemon_image_url = convPokemon.conv_image_pokemon(pokemon)
+    pokemon_article_url = convPokemon.conv_article_pokemon_unite(pokemon)
     pokemon_a_tag = tag.createHeroATag(pokemon_image_url, pokemon_article_url)
-    style = convPokemon.conv_style_name(pokemon.string)
+    style = convPokemon.conv_style_name(pokemon)
     if style == "balance":
         s_balance += pokemon_a_tag
     elif style == "attack":
@@ -93,10 +81,10 @@ for pokemon in pokemon_s_list:
 
 # Atier作成
 for pokemon in pokemon_a_list:
-    pokemon_image_url = convPokemon.conv_image_pokemon(pokemon.string)
-    pokemon_article_url = convPokemon.conv_article_pokemon_unite(pokemon.string)
+    pokemon_image_url = convPokemon.conv_image_pokemon(pokemon)
+    pokemon_article_url = convPokemon.conv_article_pokemon_unite(pokemon)
     pokemon_a_tag = tag.createHeroATag(pokemon_image_url, pokemon_article_url)
-    style = convPokemon.conv_style_name(pokemon.string)
+    style = convPokemon.conv_style_name(pokemon)
     if style == "balance":
         a_balance += pokemon_a_tag
     elif style == "attack":
@@ -110,10 +98,10 @@ for pokemon in pokemon_a_list:
 
 # Btier作成
 for pokemon in pokemon_b_list:
-    pokemon_image_url = convPokemon.conv_image_pokemon(pokemon.string)
-    pokemon_article_url = convPokemon.conv_article_pokemon_unite(pokemon.string)
+    pokemon_image_url = convPokemon.conv_image_pokemon(pokemon)
+    pokemon_article_url = convPokemon.conv_article_pokemon_unite(pokemon)
     pokemon_a_tag = tag.createHeroATag(pokemon_image_url, pokemon_article_url)
-    style = convPokemon.conv_style_name(pokemon.string)
+    style = convPokemon.conv_style_name(pokemon)
     if style == "balance":
         b_balance += pokemon_a_tag
     elif style == "attack":
@@ -127,10 +115,10 @@ for pokemon in pokemon_b_list:
 
 # Ctier作成
 for pokemon in pokemon_c_list:
-    pokemon_image_url = convPokemon.conv_image_pokemon(pokemon.string)
-    pokemon_article_url = convPokemon.conv_article_pokemon_unite(pokemon.string)
+    pokemon_image_url = convPokemon.conv_image_pokemon(pokemon)
+    pokemon_article_url = convPokemon.conv_article_pokemon_unite(pokemon)
     pokemon_a_tag = tag.createHeroATag(pokemon_image_url, pokemon_article_url)
-    style = convPokemon.conv_style_name(pokemon.string)
+    style = convPokemon.conv_style_name(pokemon)
     if style == "balance":
         c_balance += pokemon_a_tag
     elif style == "attack":
@@ -223,6 +211,3 @@ print('</tbody></table></figure><!-- /wp:table --></div><!-- /wp:loos/tab-body -
 
 #タブ終わり
 print('</div></div><!-- /wp:loos/tab -->')
-
-driver.close()
-driver.quit()

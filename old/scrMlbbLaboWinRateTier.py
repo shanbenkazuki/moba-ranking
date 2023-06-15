@@ -1,10 +1,10 @@
 import time
-import common.tagComponent as tag
+import tagComponent as tag
 import locale
 import datetime
-import conv.mobile_legends.convImgMlbbHero as convImgMlbbHero
-import conv.mobile_legends.convArticleMlbbHero as convArticleMlbbHero
-import conv.mobile_legends.convRoleMlbbHero as convRoleMlbbHero
+import old.convImgMlbbHero as convImgMlbbHero
+import old.convArticleMlbbHero as convArticleMlbbHero
+import old.convRoleMlbbHero as convRoleMlbbHero
 
 from selenium import webdriver
 from selenium.webdriver.common.by import By

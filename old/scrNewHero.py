@@ -1,7 +1,7 @@
 import time
 import sys
-import conv.mobile_legends.convJaMlbbHero as convJaMlbbHero
-import conv.mobile_legends.convImgMlbbHero as convImgMlbbHero
+import old.convJaMlbbHero as convJaMlbbHero
+import old.convImgMlbbHero as convImgMlbbHero
 import conv.mobile_legends.convJaEnTerm as convJaEnTerm
 
 from selenium import webdriver

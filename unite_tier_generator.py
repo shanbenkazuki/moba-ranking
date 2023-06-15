@@ -5,7 +5,7 @@ import urllib.parse
 from fetch_moba_database import save_data_to_database
 from fetch_moba_database import get_pokemon_data
 from bs4 import BeautifulSoup
-from common import tagComponent as tag
+from . import tagComponent as tag
 from datetime import datetime
 
 def get_pokemon_info(pokemon_rate):
@@ -66,14 +66,14 @@ max_pickrate = max([pokemon_info['pickrate'] for pokemon_info in pokemon_info_di
 
 # データの正規化とスコアの計算
 for pokemon_name, pokemon_info in pokemon_info_dict.items():
-    normalized_winrate = (pokemon_info['winrate'] - min_winrate) / (max_winrate - min_winrate)
-    normalized_pickrate = (pokemon_info['pickrate'] - min_pickrate) / (max_pickrate - min_pickrate)
+  normalized_winrate = (pokemon_info['winrate'] - min_winrate) / (max_winrate - min_winrate)
+  normalized_pickrate = (pokemon_info['pickrate'] - min_pickrate) / (max_pickrate - min_pickrate)
 
-    # スコアを計算
-    score = (normalized_winrate + normalized_pickrate) / 2
+  # スコアを計算
+  score = (normalized_winrate + normalized_pickrate) / 2
 
-    # スコアをデータに追加
-    pokemon_info_dict[pokemon_name]['score'] = score
+  # スコアをデータに追加
+  pokemon_info_dict[pokemon_name]['score'] = score
 
 # Define the rank thresholds
 ranks = {
@@ -86,13 +86,13 @@ ranks = {
 
 # Add ranks to the data
 for pokemon_name, pokemon_info in pokemon_info_dict.items():
-    score = pokemon_info['score']
-    for rank, threshold in ranks.items():
-        if score >= threshold:
-            pokemon_info_dict[pokemon_name]['rank'] = rank
-            break
+  score = pokemon_info['score']
+  for rank, threshold in ranks.items():
+    if score >= threshold:
+      pokemon_info_dict[pokemon_name]['rank'] = rank
+      break
     else:
-        pokemon_info_dict[pokemon_name]['rank'] = 'C'
+      pokemon_info_dict[pokemon_name]['rank'] = 'C'
 
 # データベースに保存する
 save_data_to_database('unite_meta_data', pokemon_info_dict, reference_date)
@@ -102,30 +102,30 @@ pokemon_data = get_pokemon_data()
 
 # ポケモンをスタイルとランクに基づいてグループ化する辞書を作成
 style_rank_dict = {
-    'all-rounder': {'S+': [], 'S': [], 'A+': [], 'A': [], 'B': [], 'C': []},
-    'attacker': {'S+': [], 'S': [], 'A+': [], 'A': [], 'B': [], 'C': []},
-    'defender': {'S+': [], 'S': [], 'A+': [], 'A': [], 'B': [], 'C': []},
-    'speedster': {'S+': [], 'S': [], 'A+': [], 'A': [], 'B': [], 'C': []},
-    'supporter': {'S+': [], 'S': [], 'A+': [], 'A': [], 'B': [], 'C': []}
+  'all-rounder': {'S+': [], 'S': [], 'A+': [], 'A': [], 'B': [], 'C': []},
+  'attacker': {'S+': [], 'S': [], 'A+': [], 'A': [], 'B': [], 'C': []},
+  'defender': {'S+': [], 'S': [], 'A+': [], 'A': [], 'B': [], 'C': []},
+  'speedster': {'S+': [], 'S': [], 'A+': [], 'A': [], 'B': [], 'C': []},
+  'supporter': {'S+': [], 'S': [], 'A+': [], 'A': [], 'B': [], 'C': []}
 }
 
 # ポケモンをスタイルとランクごとにグループ化
 for pokemon, info in pokemon_info_dict.items():
-    rank = info['rank']
-    style = pokemon_data[pokemon]['style']
-    style_rank_dict[style][rank].append(pokemon)
+  rank = info['rank']
+  style = pokemon_data[pokemon]['style']
+  style_rank_dict[style][rank].append(pokemon)
 
 # 各スタイルとランクのポケモンをタグとして追加
 tier_tags = {}
 for style, rank_dict in style_rank_dict.items():
-    tier_tags[style] = {}
-    for rank, pokemon_list in rank_dict.items():
-        tier_tags[style][rank] = ''
-        for pokemon in pokemon_list:
-            pokemon_image_url = pokemon_data[pokemon]['image_url']
-            pokemon_article_url = pokemon_data[pokemon]['article_url']
-            pokemon_a_tag = tag.createHeroATag(pokemon_image_url, pokemon_article_url)
-            tier_tags[style][rank] += pokemon_a_tag
+  tier_tags[style] = {}
+  for rank, pokemon_list in rank_dict.items():
+    tier_tags[style][rank] = ''
+    for pokemon in pokemon_list:
+      pokemon_image_url = pokemon_data[pokemon]['image_url']
+      pokemon_article_url = pokemon_data[pokemon]['article_url']
+      pokemon_a_tag = tag.createHeroATag(pokemon_image_url, pokemon_article_url)
+      tier_tags[style][rank] += pokemon_a_tag
 
 # 各変数を設定
 splus_balance = tier_tags['all-rounder']['S+']

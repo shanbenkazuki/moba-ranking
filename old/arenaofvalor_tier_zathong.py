@@ -1,5 +1,5 @@
 import time
-import common.tagComponent as tag
+import tagComponent as tag
 import conv.arena_of_valor.conv_arenaofvalor as conv_arena_of_valor
 
 from selenium import webdriver
@@ -7,7 +7,7 @@ from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.chrome.service import Service
 from bs4 import BeautifulSoup
 
-DISPLAY_URL = "https://faindx.com/games/arena-of-valor-tier-list/"
+DISPLAY_URL = "https://zathong.com/arena-of-valor-tier-list/"
 
 # ジャングル
 splus_jungle=""
@@ -50,23 +50,15 @@ driver.get(DISPLAY_URL)
 
 time.sleep(2)
 
-splus_list = BeautifulSoup(driver.page_source, 'html.parser').select("#post-150766 > div > div.entry-content > figure:nth-child(10) > table > tbody > tr > td:nth-child(1)")
-s_list = BeautifulSoup(driver.page_source, 'html.parser').select("#post-150766 > div > div.entry-content > figure:nth-child(15) > table > tbody > tr > td:nth-child(1)")
-a_list = BeautifulSoup(driver.page_source, 'html.parser').select("#post-150766 > div > div.entry-content > figure:nth-child(21) > table > tbody > tr > td:nth-child(1)")
-b_list = BeautifulSoup(driver.page_source, 'html.parser').select("#post-150766 > div > div.entry-content > figure:nth-child(26) > table > tbody > tr > td:nth-child(1)")
-c_list = BeautifulSoup(driver.page_source, 'html.parser').select("#post-150766 > div > div.entry-content > figure:nth-child(32) > table > tbody > tr > td:nth-child(1)")
-d_list = BeautifulSoup(driver.page_source, 'html.parser').select("#post-150766 > div > div.entry-content > figure:nth-child(37) > table > tbody > tr > td:nth-child(1)")
-
-splus_list = BeautifulSoup(driver.page_source, 'html.parser').select("#post-12093 > div.single-body.entry > div.single-content > div > figure:nth-child(20) > table > tbody > tr > td:nth-child(1)")
-s_list = BeautifulSoup(driver.page_source, 'html.parser').select("#post-12093 > div.single-body.entry > div.single-content > div > figure:nth-child(25) > table > tbody > tr > td:nth-child(1)")
-a_list = BeautifulSoup(driver.page_source, 'html.parser').select("#post-12093 > div.single-body.entry > div.single-content > div > figure:nth-child(28) > table > tbody > tr > td:nth-child(1)")
-b_list = BeautifulSoup(driver.page_source, 'html.parser').select("#post-12093 > div.single-body.entry > div.single-content > div > figure:nth-child(31) > table > tbody > tr > td:nth-child(1)")
-c_list = BeautifulSoup(driver.page_source, 'html.parser').select("#post-12093 > div.single-body.entry > div.single-content > div > figure:nth-child(36) > table > tbody > tr > td:nth-child(1)")
-d_list = BeautifulSoup(driver.page_source, 'html.parser').select("#post-12093 > div.single-body.entry > div.single-content > div > figure:nth-child(39) > table > tbody > tr > td:nth-child(1)")
+splus_list = BeautifulSoup(driver.page_source, 'html.parser').select("#post-29740 > div.entry-content > figure > table > tbody > tr:nth-child(1) > td:nth-child(2)")[0].string.split(", ")
+s_list = BeautifulSoup(driver.page_source, 'html.parser').select("#post-29740 > div.entry-content > figure > table > tbody > tr:nth-child(2) > td:nth-child(2)")[0].string.split(", ")
+aplus_list = BeautifulSoup(driver.page_source, 'html.parser').select("#post-29740 > div.entry-content > figure > table > tbody > tr:nth-child(3) > td:nth-child(2)")[0].string.split(", ")
+a_list = BeautifulSoup(driver.page_source, 'html.parser').select("#post-29740 > div.entry-content > figure > table > tbody > tr:nth-child(4) > td:nth-child(2)")[0].string.split(", ")
+b_list = BeautifulSoup(driver.page_source, 'html.parser').select("#post-29740 > div.entry-content > figure > table > tbody > tr:nth-child(5) > td:nth-child(2)")[0].string.split(", ")
+c_list = BeautifulSoup(driver.page_source, 'html.parser').select("#post-29740 > div.entry-content > figure > table > tbody > tr:nth-child(6) > td:nth-child(2)")[0].string.split(", ")
 
 # S+Tier
 for hero in splus_list:
-    hero = hero.string
     heroImageUrl = conv_arena_of_valor.conv_image_hero(hero)
     hero_a_tag = tag.createHeroImgTag(heroImageUrl)
     heroStyle = conv_arena_of_valor.conv_style_name(hero)
@@ -83,7 +75,6 @@ for hero in splus_list:
 
 # STier
 for hero in s_list:
-    hero = hero.string
     heroImageUrl = conv_arena_of_valor.conv_image_hero(hero)
     hero_a_tag = tag.createHeroImgTag(heroImageUrl)
     heroStyle = conv_arena_of_valor.conv_style_name(hero)
@@ -98,10 +89,24 @@ for hero in s_list:
     elif heroStyle == "Roamer":
         s_support += hero_a_tag
 
+# ATier1
+for hero in aplus_list:
+    heroImageUrl = conv_arena_of_valor.conv_image_hero(hero)
+    hero_a_tag = tag.createHeroImgTag(heroImageUrl)
+    heroStyle = conv_arena_of_valor.conv_style_name(hero)
+    if heroStyle == "Jungler":
+        a_jungle += hero_a_tag
+    elif heroStyle == "Dark Slayer":
+        a_slayer += hero_a_tag
+    elif heroStyle == "Abyssal Dragon":
+        a_dragon += hero_a_tag
+    elif heroStyle == "Mid":
+        a_mid += hero_a_tag
+    elif heroStyle == "Roamer":
+        a_support += hero_a_tag
 
-# ATier
+# ATier2
 for hero in a_list:
-    hero = hero.string
     heroImageUrl = conv_arena_of_valor.conv_image_hero(hero)
     hero_a_tag = tag.createHeroImgTag(heroImageUrl)
     heroStyle = conv_arena_of_valor.conv_style_name(hero)
@@ -118,7 +123,6 @@ for hero in a_list:
 
 # BTier
 for hero in b_list:
-    hero = hero.string
     heroImageUrl = conv_arena_of_valor.conv_image_hero(hero)
     hero_a_tag = tag.createHeroImgTag(heroImageUrl)
     heroStyle = conv_arena_of_valor.conv_style_name(hero)
@@ -133,26 +137,8 @@ for hero in b_list:
     elif heroStyle == "Roamer":
         b_support += hero_a_tag
 
-# CTier1
+# CTier
 for hero in c_list:
-    hero = hero.string
-    heroImageUrl = conv_arena_of_valor.conv_image_hero(hero)
-    hero_a_tag = tag.createHeroImgTag(heroImageUrl)
-    heroStyle = conv_arena_of_valor.conv_style_name(hero)
-    if heroStyle == "Jungler":
-        c_jungle += hero_a_tag
-    elif heroStyle == "Dark Slayer":
-        c_slayer += hero_a_tag
-    elif heroStyle == "Abyssal Dragon":
-        c_dragon += hero_a_tag
-    elif heroStyle == "Mid":
-        c_mid += hero_a_tag
-    elif heroStyle == "Roamer":
-        c_support += hero_a_tag
-
-# CTier2
-for hero in d_list:
-    hero = hero.string
     heroImageUrl = conv_arena_of_valor.conv_image_hero(hero)
     hero_a_tag = tag.createHeroImgTag(heroImageUrl)
     heroStyle = conv_arena_of_valor.conv_style_name(hero)
@@ -246,7 +232,7 @@ print(tag.createTrBStartTag() + b_support + tag.createTrEndTag())
 print(tag.createTrCStartTag() + c_support + tag.createTrEndTag())
 print('</tbody></table></figure><!-- /wp:table --></div><!-- /wp:loos/tab-body -->')
 
-#タブ終わり
+# #タブ終わり
 print('</div></div><!-- /wp:loos/tab -->')
 
 driver.close()

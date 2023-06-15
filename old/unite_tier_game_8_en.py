@@ -3,10 +3,11 @@ import conv.pokemon_unite.convPokemon as convPokemon
 
 from selenium import webdriver
 from webdriver_manager.chrome import ChromeDriverManager
+from selenium.webdriver.chrome.service import Service
 from bs4 import BeautifulSoup
-from common import tagComponent as tag
+from . import tagComponent as tag
 
-DISPLAY_URL = "https://www.pockettactics.com/pokemon-unite/tier-list"
+DISPLAY_URL = "https://game8.co/games/Pokemon-UNITE/archives/335997"
 
 # バランス
 splus_balance=""
@@ -44,22 +45,42 @@ b_support=""
 c_support=""
 
 # 画面遷移
-driver = webdriver.Chrome(ChromeDriverManager().install())
+driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()))
 driver.get(DISPLAY_URL)
 
 time.sleep(2)
 
-pokemon_s_list = BeautifulSoup(driver.page_source, 'html.parser').select("#table_0 > div > table > tbody > tr:nth-child(2) > td:nth-child(2) > a")
-pokemon_a_list = BeautifulSoup(driver.page_source, 'html.parser').select("#table_0 > div > table > tbody > tr:nth-child(3) > td:nth-child(2) > a")
-pokemon_b_list = BeautifulSoup(driver.page_source, 'html.parser').select("#table_0 > div > table > tbody > tr:nth-child(4) > td:nth-child(2) > a")
-pokemon_c_list = BeautifulSoup(driver.page_source, 'html.parser').select("#table_0 > div > table > tbody > tr:nth-child(5) > td:nth-child(2) > a")
+pokemon_splus_list = BeautifulSoup(driver.page_source, 'html.parser').select("body > div.l-content > div.l-3col > div.l-3colMain > div.l-3colMain__center.l-3colMain__center--shadow > div.archive-style-wrapper > table:nth-child(8) > tbody > tr:nth-child(1) > td > div > a > img")
+pokemon_s_list = BeautifulSoup(driver.page_source, 'html.parser').select("body > div.l-content > div.l-3col > div.l-3colMain > div.l-3colMain__center.l-3colMain__center--shadow > div.archive-style-wrapper > table:nth-child(8) > tbody > tr:nth-child(2) > td > div > a > img")
+pokemon_a_list = BeautifulSoup(driver.page_source, 'html.parser').select("body > div.l-content > div.l-3col > div.l-3colMain > div.l-3colMain__center.l-3colMain__center--shadow > div.archive-style-wrapper > table:nth-child(8) > tbody > tr:nth-child(3) > td > div > a > img")
+pokemon_b_list = BeautifulSoup(driver.page_source, 'html.parser').select("body > div.l-content > div.l-3col > div.l-3colMain > div.l-3colMain__center.l-3colMain__center--shadow > div.archive-style-wrapper > table:nth-child(8) > tbody > tr:nth-child(4) > td > div > a > img")
+pokemon_c_list = BeautifulSoup(driver.page_source, 'html.parser').select("body > div.l-content > div.l-3col > div.l-3colMain > div.l-3colMain__center.l-3colMain__center--shadow > div.archive-style-wrapper > table:nth-child(8) > tbody > tr:nth-child(5) > td > div > a > img")
+
+# Splustier作成
+for pokemon in pokemon_splus_list:
+    pokemon_name = convPokemon.conv_pokemon_name(pokemon.get('alt'))
+    pokemon_image_url = convPokemon.conv_image_pokemon(pokemon_name)
+    pokemon_article_url = convPokemon.conv_article_pokemon_unite(pokemon_name)
+    pokemon_a_tag = tag.createHeroATag(pokemon_image_url, pokemon_article_url)
+    style = convPokemon.conv_style_name(pokemon_name)
+    if style == "balance":
+        splus_balance += pokemon_a_tag
+    elif style == "attack":
+        splus_attack += pokemon_a_tag
+    elif style == "defense":
+        splus_defense += pokemon_a_tag
+    elif style == "speed":
+        splus_speed += pokemon_a_tag
+    elif style == "support":
+        splus_support += pokemon_a_tag
 
 # stier作成
 for pokemon in pokemon_s_list:
-    pokemon_image_url = convPokemon.conv_image_pokemon(pokemon.string)
-    pokemon_article_url = convPokemon.conv_article_pokemon_unite(pokemon.string)
+    pokemon_name = convPokemon.conv_pokemon_name(pokemon.get('alt'))
+    pokemon_image_url = convPokemon.conv_image_pokemon(pokemon_name)
+    pokemon_article_url = convPokemon.conv_article_pokemon_unite(pokemon_name)
     pokemon_a_tag = tag.createHeroATag(pokemon_image_url, pokemon_article_url)
-    style = convPokemon.conv_style_name(pokemon.string)
+    style = convPokemon.conv_style_name(pokemon_name)
     if style == "balance":
         s_balance += pokemon_a_tag
     elif style == "attack":
@@ -73,10 +94,11 @@ for pokemon in pokemon_s_list:
 
 # Atier作成
 for pokemon in pokemon_a_list:
-    pokemon_image_url = convPokemon.conv_image_pokemon(pokemon.string)
-    pokemon_article_url = convPokemon.conv_article_pokemon_unite(pokemon.string)
+    pokemon_name = convPokemon.conv_pokemon_name(pokemon.get('alt'))
+    pokemon_image_url = convPokemon.conv_image_pokemon(pokemon_name)
+    pokemon_article_url = convPokemon.conv_article_pokemon_unite(pokemon_name)
     pokemon_a_tag = tag.createHeroATag(pokemon_image_url, pokemon_article_url)
-    style = convPokemon.conv_style_name(pokemon.string)
+    style = convPokemon.conv_style_name(pokemon_name)
     if style == "balance":
         a_balance += pokemon_a_tag
     elif style == "attack":
@@ -90,10 +112,11 @@ for pokemon in pokemon_a_list:
 
 # Btier作成
 for pokemon in pokemon_b_list:
-    pokemon_image_url = convPokemon.conv_image_pokemon(pokemon.string)
-    pokemon_article_url = convPokemon.conv_article_pokemon_unite(pokemon.string)
+    pokemon_name = convPokemon.conv_pokemon_name(pokemon.get('alt'))
+    pokemon_image_url = convPokemon.conv_image_pokemon(pokemon_name)
+    pokemon_article_url = convPokemon.conv_article_pokemon_unite(pokemon_name)
     pokemon_a_tag = tag.createHeroATag(pokemon_image_url, pokemon_article_url)
-    style = convPokemon.conv_style_name(pokemon.string)
+    style = convPokemon.conv_style_name(pokemon_name)
     if style == "balance":
         b_balance += pokemon_a_tag
     elif style == "attack":
@@ -107,10 +130,11 @@ for pokemon in pokemon_b_list:
 
 # Ctier作成
 for pokemon in pokemon_c_list:
-    pokemon_image_url = convPokemon.conv_image_pokemon(pokemon.string)
-    pokemon_article_url = convPokemon.conv_article_pokemon_unite(pokemon.string)
+    pokemon_name = convPokemon.conv_pokemon_name(pokemon.get('alt'))
+    pokemon_image_url = convPokemon.conv_image_pokemon(pokemon_name)
+    pokemon_article_url = convPokemon.conv_article_pokemon_unite(pokemon_name)
     pokemon_a_tag = tag.createHeroATag(pokemon_image_url, pokemon_article_url)
-    style = convPokemon.conv_style_name(pokemon.string)
+    style = convPokemon.conv_style_name(pokemon_name)
     if style == "balance":
         c_balance += pokemon_a_tag
     elif style == "attack":
@@ -130,7 +154,7 @@ print('<div class="swell-block-tab is-style-balloon" data-width-pc="flex-50" dat
 print('<!-- wp:loos/tab-body {"tabId":"479b3ce7"} --><div id="tab-479b3ce7-0" class="c-tabBody__item" aria-hidden="false"><!-- wp:table {"className":"is-all-centered\u002d\u002dva td_to_th_ is-style-simple"} --><figure class="wp-block-table is-all-centered--va td_to_th_ is-style-simple"><table><tbody>')
 # tr追加場所
 # S+
-#print(tag.createTrSPlusStartTag() + splus_balance + tag.createTrEndTag())
+print(tag.createTrSPlusStartTag() + splus_balance + tag.createTrEndTag())
 # S
 print(tag.createTrSStartTag() + s_balance + tag.createTrEndTag())
 # A
@@ -145,7 +169,7 @@ print('</tbody></table></figure><!-- /wp:table --></div><!-- /wp:loos/tab-body -
 print('<!-- wp:loos/tab-body {"id":1,"tabId":"479b3ce7"} --><div id="tab-479b3ce7-1" class="c-tabBody__item" aria-hidden="true"><!-- wp:table {"className":"is-all-centered\u002d\u002dva td_to_th_ is-style-simple"} --><figure class="wp-block-table is-all-centered--va td_to_th_ is-style-simple"><table><tbody>')
 # tr追加場所
 # S+
-#print(tag.createTrSPlusStartTag() + splus_attack + tag.createTrEndTag())
+print(tag.createTrSPlusStartTag() + splus_attack + tag.createTrEndTag())
 # S
 print(tag.createTrSStartTag() + s_attack + tag.createTrEndTag())
 # A
@@ -160,7 +184,7 @@ print('</tbody></table></figure><!-- /wp:table --></div><!-- /wp:loos/tab-body -
 print('<!-- wp:loos/tab-body {"id":2,"tabId":"479b3ce7"} --><div id="tab-479b3ce7-2" class="c-tabBody__item" aria-hidden="true"><!-- wp:table {"className":"is-all-centered\u002d\u002dva td_to_th_ is-style-simple"} --><figure class="wp-block-table is-all-centered--va td_to_th_ is-style-simple"><table><tbody>')
 # tr追加場所
 # S+
-#print(tag.createTrSPlusStartTag() + splus_speed + tag.createTrEndTag())
+print(tag.createTrSPlusStartTag() + splus_speed + tag.createTrEndTag())
 # S
 print(tag.createTrSStartTag() + s_speed + tag.createTrEndTag())
 # A
@@ -175,7 +199,7 @@ print('</tbody></table></figure><!-- /wp:table --></div><!-- /wp:loos/tab-body -
 print('<!-- wp:loos/tab-body {"id":3,"tabId":"479b3ce7"} --><div id="tab-479b3ce7-3" class="c-tabBody__item" aria-hidden="true"><!-- wp:table {"className":"is-all-centered\u002d\u002dva td_to_th_ is-style-simple"} --><figure class="wp-block-table is-all-centered--va td_to_th_ is-style-simple"><table><tbody>')
 # tr追加場所
 # S+
-#print(tag.createTrSPlusStartTag() + splus_defense + tag.createTrEndTag())
+print(tag.createTrSPlusStartTag() + splus_defense + tag.createTrEndTag())
 # S
 print(tag.createTrSStartTag() + s_defense + tag.createTrEndTag())
 # A
@@ -190,7 +214,7 @@ print('</tbody></table></figure><!-- /wp:table --></div><!-- /wp:loos/tab-body -
 print('<!-- wp:loos/tab-body {"id":4,"tabId":"479b3ce7"} --><div id="tab-479b3ce7-4" class="c-tabBody__item" aria-hidden="true"><!-- wp:table {"className":"is-all-centered\u002d\u002dva td_to_th_ is-style-simple"} --><figure class="wp-block-table is-all-centered--va td_to_th_ is-style-simple"><table><tbody>')
 # tr追加場所
 # S+
-#print(tag.createTrSPlusStartTag() + splus_support + tag.createTrEndTag())
+print(tag.createTrSPlusStartTag() + splus_support + tag.createTrEndTag())
 # S
 print(tag.createTrSStartTag() + s_support + tag.createTrEndTag())
 # A

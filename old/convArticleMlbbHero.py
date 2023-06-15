@@ -236,10 +236,10 @@ def convArticleHero(hero):
     elif hero=="Fredrinn":
         return "https://shanbenzzz.com/mobile-legends/hero/fighter/fredrinn"
     elif hero=="Joy":
-        return ""
+        return "https://shanbenzzz.com/mobile-legends/hero/assassin/joy"
     elif hero=="Arlott":
-        return ""
+        return "https://shanbenzzz.com/mobile-legends/hero/fighter/arlott"
     elif hero=="Novaria":
-        return ""
+        return "https://shanbenzzz.com/mobile-legends/hero/mage/novaria"
     else :
         return "ヒーローなし"
