@@ -1,12 +1,14 @@
 import undetected_chromedriver as uc 
 import time 
 import urllib.parse
+import tagComponent as tag
+import pandas as pd
 
 from fetch_moba_database import save_data_to_database
 from fetch_moba_database import get_pokemon_data
 from bs4 import BeautifulSoup
-from . import tagComponent as tag
 from datetime import datetime
+from sklearn.preprocessing import MinMaxScaler
 
 def get_pokemon_info(pokemon_rate):
   td_tags = pokemon_rate.find_all('td')
@@ -59,28 +61,20 @@ for pokemon_rate in pick_rate_list:
   if pokemon_name in pokemon_info_dict:
     pokemon_info_dict[pokemon_name].update({'pickrate': pick_rate})
 
-min_winrate = min([pokemon_info['winrate'] for pokemon_info in pokemon_info_dict.values()])
-max_winrate = max([pokemon_info['winrate'] for pokemon_info in pokemon_info_dict.values()])
-min_pickrate = min([pokemon_info['pickrate'] for pokemon_info in pokemon_info_dict.values()])
-max_pickrate = max([pokemon_info['pickrate'] for pokemon_info in pokemon_info_dict.values()])
+df = pd.DataFrame(pokemon_info_dict).T.astype(float)
+scaler = MinMaxScaler()
+df_scaled = pd.DataFrame(scaler.fit_transform(df), columns=df.columns, index=df.index)
+df_scaled['score'] = df_scaled.mean(axis=1)
 
-# データの正規化とスコアの計算
-for pokemon_name, pokemon_info in pokemon_info_dict.items():
-  normalized_winrate = (pokemon_info['winrate'] - min_winrate) / (max_winrate - min_winrate)
-  normalized_pickrate = (pokemon_info['pickrate'] - min_pickrate) / (max_pickrate - min_pickrate)
-
-  # スコアを計算
-  score = (normalized_winrate + normalized_pickrate) / 2
-
-  # スコアをデータに追加
-  pokemon_info_dict[pokemon_name]['score'] = score
+for hero, score in df_scaled['score'].items():
+    pokemon_info_dict[hero]['score'] = score
 
 # Define the rank thresholds
 ranks = {
-    'S+': 0.7,
-    'S': 0.55,
-    'A+': 0.4,
-    'A': 0.25,
+    'S+': 0.5,
+    'S': 0.4,
+    'A+': 0.3,
+    'A': 0.2,
     'B': 0.1
 }
 
