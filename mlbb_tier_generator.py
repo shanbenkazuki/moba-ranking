@@ -9,6 +9,7 @@ from bs4 import BeautifulSoup
 from fetch_moba_database import get_hero_data
 from sklearn.preprocessing import MinMaxScaler
 from fetch_moba_database import save_to_hero_meta_data
+from moba_version_generator import get_mlbb_version
 from selenium.webdriver.chrome.service import Service
 
 DISPLAY_URL = "https://m.mobilelegends.com/en/rank"
@@ -110,8 +111,7 @@ driver.get(DISPLAY_URL)
 switch_to_mystic_400(driver)
 rateList = extract_ranking_data(driver)
 
-
-# # heroデータ取得
+# heroデータ取得
 hero_data = get_hero_data()
 
 # ヒーローメタデータの生成と正規化
@@ -123,10 +123,12 @@ hero_meta_data = add_ranking_to_hero_data(hero_meta_data, df_scaled)
 
 # 参照日を取得
 reference_date = BeautifulSoup(driver.page_source, 'html.parser').select_one("#rank > div.header > div:nth-child(1) > ul > li").text
-# reference_date = '2023-06-13'
+
+# バージョン情報を取得
+version = get_mlbb_version()
 
 # データベースに保存
-save_to_hero_meta_data(hero_meta_data, reference_date)
+save_to_hero_meta_data(hero_meta_data, reference_date, version)
 
 # レーンとランクでヒーローをグループ化
 lane_rank_dict = group_heroes_by_lane_and_rank(hero_meta_data, hero_data)

@@ -4,8 +4,9 @@ import urllib.parse
 import tagComponent as tag
 import pandas as pd
 
-from fetch_moba_database import save_data_to_database
+from fetch_moba_database import save_to_pokemon_meta_data
 from fetch_moba_database import get_pokemon_data
+from moba_version_generator import get_unite_version
 from bs4 import BeautifulSoup
 from datetime import datetime
 from sklearn.preprocessing import MinMaxScaler
@@ -88,8 +89,11 @@ for pokemon_name, pokemon_info in pokemon_info_dict.items():
     else:
       pokemon_info_dict[pokemon_name]['rank'] = 'C'
 
+# バージョン情報を取得
+version = get_unite_version()
+
 # データベースに保存する
-save_data_to_database('unite_meta_data', pokemon_info_dict, reference_date)
+save_to_pokemon_meta_data(pokemon_info_dict, reference_date, version)
 
 # ポケモンの情報を取得
 pokemon_data = get_pokemon_data()

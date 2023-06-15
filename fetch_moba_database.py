@@ -5,46 +5,40 @@ DATABASE_PATH = 'moba_database.sqlite3'
 def get_db_connection():
   return sqlite3.connect(DATABASE_PATH)
 
-def create_table_if_not_exists(cursor, table_name):
-  create_table_query = f'''
-    CREATE TABLE IF NOT EXISTS {table_name} (
-      name TEXT,
-      winrate REAL,
-      pickrate REAL,
-      score REAL,
-      rank TEXT,
-      reference_date TEXT,
-      created_at TEXT DEFAULT CURRENT_TIMESTAMP
-    )
-  '''
-  cursor.execute(create_table_query)
-
-def save_data_to_database(table, data, fetch_reference_date):
+def save_to_pokemon_meta_data(data, reference_date, version):
   with get_db_connection() as conn:
     cursor = conn.cursor()
-    create_table_if_not_exists(cursor, table)
+    create_table_query = f'''
+      CREATE TABLE IF NOT EXISTS unite_meta_data (
+        name TEXT,
+        winrate REAL,
+        pickrate REAL,
+        score REAL,
+        rank TEXT,
+        reference_date TEXT,
+        version REAL,
+        created_at TEXT DEFAULT CURRENT_TIMESTAMP
+      )
+    '''
+    cursor.execute(create_table_query)
 
     for name, stats in data.items():
-      if is_duplicate_entry(cursor, table, fetch_reference_date, name):
+      if is_duplicate_entry(cursor, reference_date, name):
         continue
-      save_data_to_table(cursor, table, fetch_reference_date, name, stats)
-
+      insert_query = f'''
+        INSERT INTO unite_meta_data (name, winrate, pickrate, score, rank, reference_date, version)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
+      '''
+      cursor.execute(insert_query, (name, stats['winrate'], stats['pickrate'], stats['score'], stats['rank'], reference_date, version))
     conn.commit()
 
-def is_duplicate_entry(cursor, table, reference_date, name):
+def is_duplicate_entry(cursor, reference_date, name):
   query = f'''
-    SELECT COUNT(*) FROM {table} WHERE reference_date = ? AND name = ?
+    SELECT COUNT(*) FROM unite_meta_data WHERE reference_date = ? AND name = ?
   '''
   cursor.execute(query, (reference_date, name))
   count = cursor.fetchone()[0]
   return count > 0
-
-def save_data_to_table(cursor, table, reference_date, name, stats):
-  insert_query = f'''
-    INSERT INTO {table} (name, winrate, pickrate, score, rank, reference_date)
-    VALUES (?, ?, ?, ?, ?, ?)
-  '''
-  cursor.execute(insert_query, (name, stats['winrate'], stats['pickrate'], stats['score'], stats['rank'], reference_date))
 
 def get_pokemon_data():
   conn = get_db_connection()
@@ -93,7 +87,7 @@ def get_hero_data():
   conn.close()
   return results
 
-def save_to_hero_meta_data(hero_meta_data, fetch_reference_date):
+def save_to_hero_meta_data(hero_meta_data, fetch_reference_date, version):
   # SQLiteデータベースに接続
   conn = sqlite3.connect('moba_database.sqlite3')
   c = conn.cursor()
@@ -106,8 +100,10 @@ def save_to_hero_meta_data(hero_meta_data, fetch_reference_date):
     pick_rate REAL,
     ban_rate REAL,
     score REAL,
-    rank TEXT,
+    rank REAL,
     reference_date DATE,
+    version REAL,
+    created_at TEXT DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (name, reference_date)
   );
   '''
@@ -116,18 +112,16 @@ def save_to_hero_meta_data(hero_meta_data, fetch_reference_date):
 
   # データを辞書からテーブルに挿入するためのSQL文を定義
   insert_query = '''
-  INSERT INTO hero_meta_data (name, win_rate, pick_rate, ban_rate, score, rank, reference_date)
-  VALUES (?, ?, ?, ?, ?, ?, ?)
+  INSERT INTO hero_meta_data (name, win_rate, pick_rate, ban_rate, score, rank, reference_date, version)
+  VALUES (?, ?, ?, ?, ?, ?, ?, ?)
   '''
-
-  reference_date = fetch_reference_date
 
   for hero, data_dict in hero_meta_data.items():
     try:
       c.execute(insert_query, (hero, data_dict['win_rate'], data_dict['pick_rate'], data_dict['ban_rate'],
-                              data_dict['Score'], data_dict['Rank'], reference_date))
+                              data_dict['Score'], data_dict['Rank'], fetch_reference_date, version))
     except sqlite3.IntegrityError:
-      error_message = f"Duplicate entry found for {hero} on {reference_date}"
+      error_message = f"Duplicate entry found for {hero} on {fetch_reference_date}"
       print(error_message)
 
   # 変更を保存
