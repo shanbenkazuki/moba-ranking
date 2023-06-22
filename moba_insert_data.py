@@ -1060,7 +1060,7 @@ def get_unite_pokemon_data():
     "name": "バリヤード",
     "style": "supporter",
     "article_url": "https://shanbenzzz.com/pokemon-unite/pokemon/supporter/mr-mime",
-    "image_url": "https://shanbenzzz.com/wp-content/uploads/2022/06/MrMime.png"
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/06/MrMime.png"
   },
   "Snorlax": {
     "name": "カビゴン",
