@@ -1,31 +1,8 @@
 from fetch_moba_database import get_hero_data
 from DeepL_API.en_to_ja_translation_generator import conv_mlbb_en_to_ja_translation
+from copy_text import get_hero_adjust_txt
 
-text = """
-[Harley] (~)
-
-As a dexterous assassin, Harley needs more mobility and smoother skill combos. Therefore, we made it easier for him to trick enemies with Skill 2 and optimized the skill combo where he could only use Basic Attacks after Skill 1. Also, we added an HP loss preview for his Ultimate so that both sides can gauge how to best act. Finally, we tuned down his early and mid-game damage to balance out the Basic Attack changes.
-
-[Passive] (↑)
-
-New Effect: Dealing damage with Basic Attacks or skills increases Harley's Attack Speed by 5-10% (scales with his level). Stacks up to 10.
-
-[Skill 1] (↓)
-
-Effect Removed: Attack Speed increases with each hit that damages an enemy.
-
-[Skill 2] (↑)
-
-Movement Speed: +30% for 4s >> +60% maximum, decaying over 4s.
-Cooldown Reduction: 8.5-6.5s >> 11-8s (the skill now enters cooldown immediately after its first attack, instead of that being determined by whether the second attack was launched or not).
-Mana Cost: 60-110 >> 75-0
-
-[Ultimate] (~)
-
-You can now preview the HP loss of the enemy he's about to hit.
-Total Damage Ratio: 50% >> 30%-50% (scales with level)
-Second Attack's Damage: 100-200 + 30% Magic Power >> 200 + 50% Magic Power
-"""
+text = get_hero_adjust_txt()
 
 hero_data_line = text.strip().split("\n\n")
 
