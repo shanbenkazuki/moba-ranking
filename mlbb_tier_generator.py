@@ -23,9 +23,9 @@ def initialize_driver():
 
 def switch_to_mystic_400(driver):
   time.sleep(2)
-  driver.find_element(by=By.XPATH, value="//*[@id='rank']/div[1]/div[2]/ul/li[3]").click()
+  #driver.find_element(by=By.XPATH, value="//*[@id='rank']/div[1]/div[2]/ul/li[3]").click()
   # レジェンド表示に切り替え（ミシックがまだ集計されてない場合）
-  #driver.find_element(by=By.XPATH, value="//*[@id='rank']/div[1]/div[2]/ul/li[2]").click()
+  driver.find_element(by=By.XPATH, value="//*[@id='rank']/div[1]/div[2]/ul/li[2]").click()
   time.sleep(3)
 
 def assign_rank(score):
