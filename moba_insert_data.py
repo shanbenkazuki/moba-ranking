@@ -1291,3 +1291,52 @@ def get_unite_pokemon_data():
     "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/06/Leafeon.png"
   }
 }
+
+def get_mlbb_equipments():
+  return {
+  "Malefic Roar": {
+    "name": "スピリットシャウト",
+    "type": "Attack",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/07/malefic-roar.png"
+  },
+  "Divine Glaive": {
+    "name": "魔法の聖剣",
+    "type": "Magic",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2022/05/divine-glaive.png"
+  },
+  "Shadow Twinblades": {
+    "name": "黒影の双剣",
+    "type": "Magic",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/07/shadow-twinblades.png"
+  },
+  "Calamity Reaper": {
+    "name": "カラミティサイス",
+    "type": "Magic",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2022/05/calamity-reaper.png"
+  },
+  "Starlium Scythe": {
+    "name": "星の大鎌",
+    "type": "Magic",
+    "image_url": ""
+  },
+  "Concentrated Energy": {
+    "name": "濃縮エネルギー",
+    "type": "Magic",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2022/05/concentrated-energy.png"
+  },
+  "Feather of Heaven": {
+    "name": "ヘブンウィング",
+    "type": "Magic",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2022/05/feather-of-heaven.png"
+  },
+  "Endless Battle": {
+    "name": "エンドレスバトル",
+    "type": "Attack",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2022/05/endless-battle.png"
+  },
+  "Mystic Container": {
+    "name": "ミスティックコンテナー",
+    "type": "Magic",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/07/Mystic_Container.webp"
+  }
+}
