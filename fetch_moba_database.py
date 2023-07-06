@@ -87,6 +87,29 @@ def get_hero_data():
   conn.close()
   return results
 
+def get_mlbb_equipments():
+  conn = get_db_connection()
+  cursor = conn.cursor()
+  query = "SELECT * FROM mlbb_equipments"
+  cursor.execute(query)
+  rows = cursor.fetchall()
+
+  results = {}
+  for row in rows:
+    name, name_en, equipment_type, image_url, created_at, updated_at = row
+    result = {
+      "name_jp": name,
+      "name_en": name_en,
+      "equipment_type": equipment_type,
+      "image_url": image_url,
+      "created_at": created_at,
+      "updated_at": updated_at
+    }
+    results[name_en] = result
+
+  conn.close()
+  return results
+
 def save_to_hero_meta_data(hero_meta_data, fetch_reference_date, version):
   # SQLiteデータベースに接続
   conn = sqlite3.connect('moba_database.sqlite3')

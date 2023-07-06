@@ -12,7 +12,7 @@ cursor.execute('''
   CREATE TABLE IF NOT EXISTS mlbb_equipments (
     name_ja TEXT UNIQUE,
     name_en TEXT UNIQUE,
-    type TEXT,
+    equipment_type TEXT,
     image_url TEXT,
     created_at TEXT,
     updated_at TEXT
@@ -34,7 +34,7 @@ for equipment, info in equipments.items():
     try:
         # データを挿入
         cursor.execute('''
-            INSERT INTO mlbb_equipments (name_ja, name_en, type, image_url, created_at, updated_at)
+            INSERT INTO mlbb_equipments (name_ja, name_en, equipment_type, image_url, created_at, updated_at)
             VALUES (?, ?, ?, ?, ?, ?)
         ''', (name_ja, name_en, type, image_url, created_at, updated_at))
     except sqlite3.IntegrityError:
