@@ -1289,6 +1289,12 @@ def get_unite_pokemon_data():
     "style": "speedster",
     "article_url": "https://shanbenzzz.com/pokemon-unite/pokemon/style/speedster/leafeon",
     "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/06/Leafeon.png"
+  },
+  "Inteleon": {
+    "name": "インテレオン",
+    "style": "attacker",
+    "article_url": "https://shanbenzzz.com/pokemon-unite/pokemon/style/speedster/leafeon",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/07/Inteleon.png"
   }
 }
 
