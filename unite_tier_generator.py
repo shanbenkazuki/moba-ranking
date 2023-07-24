@@ -32,15 +32,18 @@ def get_pokemon_info(pokemon_rate):
   return pokemon_name, float(rate)
 
 options = uc.ChromeOptions() 
+options.add_argument("--auto-open-devtools-for-tabs")
 options.add_argument('--headless') 
 driver = uc.Chrome(use_subprocess=True, options=options) 
 driver.get("https://uniteapi.dev/meta") 
-time.sleep(10) 
+time.sleep(15) 
 
 html = driver.page_source.encode('utf-8')
 soup = BeautifulSoup(html, 'html.parser')
 
-# 参照日を出力
+print(soup)
+
+# 参照日を出力　
 element = soup.select_one('h3.sc-1198f0c0-2.EhlYE')
 text = element.get_text(strip=True)
 prefix = "Last Updated:"
