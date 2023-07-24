@@ -3,7 +3,7 @@ def get_mlbb_hero_data():
   return {
     "Lolita": {
       "name_jp": "ロイン",
-      "role": "tank",
+      "role": "Support",
       "sub_role": "",
       "suggested_lane": "Roam",
       "article_url": "https://shanbenzzz.com/mobile-legends/hero/tank/lolita",
@@ -11,7 +11,7 @@ def get_mlbb_hero_data():
     },
     "Phoveus": {
       "name_jp": "フォヴィウス",
-      "role": "fighter",
+      "role": "Fighter",
       "sub_role": "",
       "suggested_lane": "EXP",
       "article_url": "https://shanbenzzz.com/mobile-legends/hero/fighter/phoveus",
@@ -19,7 +19,7 @@ def get_mlbb_hero_data():
     },
     "Uranus": {
       "name_jp": "ウラノス",
-      "role": "tank",
+      "role": "Tank",
       "sub_role": "",
       "suggested_lane": "EXP",
       "article_url": "https://shanbenzzz.com/mobile-legends/hero/tank/uranus",
@@ -27,15 +27,15 @@ def get_mlbb_hero_data():
     },
     "Aulus": {
       "name_jp": "アウルス",
-      "role": "tank",
+      "role": "Fighter",
       "sub_role": "",
-      "suggested_lane": "EXP",
+      "suggested_lane": "Jungle",
       "article_url": "https://shanbenzzz.com/mobile-legends/hero/fighter/aulus",
       "image_url": "https://shanbenzzz.com/wp-content/uploads/2022/05/0edb9f6f87539ca5a2da25dc21e08583.png"
     },
     "Cecilion": {
       "name_jp": "セシリオン",
-      "role": "mage",
+      "role": "Mage",
       "sub_role": "",
       "suggested_lane": "Mid",
       "article_url": "https://shanbenzzz.com/mobile-legends/hero/mage/cecilion",
@@ -43,7 +43,7 @@ def get_mlbb_hero_data():
     },
     "Yve": {
       "name_jp": "イヴ",
-      "role": "mage",
+      "role": "Mage",
       "sub_role": "",
       "suggested_lane": "Mid",
       "article_url": "https://shanbenzzz.com/mobile-legends/hero/mage/yve",
@@ -51,15 +51,15 @@ def get_mlbb_hero_data():
     },
     "Valentina": {
       "name_jp": "バレンティナ",
-      "role": "mage",
+      "role": "Mage",
       "sub_role": "",
-      "suggested_lane": "Mid,EXP",
+      "suggested_lane": "Mid",
       "article_url": "https://shanbenzzz.com/mobile-legends/hero/mage/valentina",
       "image_url": "https://shanbenzzz.com/wp-content/uploads/2022/05/0d67a5848994af687d6292ed21eccb45.png"
     },
     "Clint": {
       "name_jp": "クリント",
-      "role": "marksman",
+      "role": "Marksman",
       "sub_role": "",
       "suggested_lane": "Gold",
       "article_url": "https://shanbenzzz.com/mobile-legends/hero/hunter/clint",
@@ -67,7 +67,7 @@ def get_mlbb_hero_data():
     },
     "Diggie": {
       "name_jp": "ディガー",
-      "role": "support",
+      "role": "Support",
       "sub_role": "",
       "suggested_lane": "Roam",
       "article_url": "https://shanbenzzz.com/mobile-legends/hero/support/diggie",
@@ -75,7 +75,7 @@ def get_mlbb_hero_data():
     },
     "Aldous": {
       "name_jp": "アウラド",
-      "role": "fighter",
+      "role": "Fighter",
       "sub_role": "",
       "suggested_lane": "EXP",
       "article_url": "https://shanbenzzz.com/mobile-legends/hero/fighter/aldous",
@@ -83,7 +83,7 @@ def get_mlbb_hero_data():
     },
     "Esmeralda": {
       "name_jp": "エスメラルダ",
-      "role": "mage",
+      "role": "Mage",
       "sub_role": "",
       "suggested_lane": "EXP",
       "article_url": "https://shanbenzzz.com/mobile-legends/hero/mage/esmeralda",
@@ -91,15 +91,15 @@ def get_mlbb_hero_data():
     },
     "Kimmy": {
       "name_jp": "ジミー",
-      "role": "marksman",
+      "role": "Marksman",
       "sub_role": "",
-      "suggested_lane": "Gold",
+      "suggested_lane": "Jungle",
       "article_url": "https://shanbenzzz.com/mobile-legends/hero/hunter/kimmy",
       "image_url": "https://shanbenzzz.com/wp-content/uploads/2022/05/73e764a256967032460d38bbe1898634.png"
     },
     "Gloo": {
       "name_jp": "グルー",
-      "role": "tank",
+      "role": "Tank",
       "sub_role": "",
       "suggested_lane": "EXP",
       "article_url": "https://shanbenzzz.com/mobile-legends/hero/tank/gloo",
@@ -107,7 +107,7 @@ def get_mlbb_hero_data():
     },
     "Popol and Kupa": {
       "name_jp": "ボボル&クバ",
-      "role": "marksman",
+      "role": "Marksman",
       "sub_role": "",
       "suggested_lane": "Gold",
       "article_url": "https://shanbenzzz.com/mobile-legends/hero/hunter/popol",
@@ -115,7 +115,7 @@ def get_mlbb_hero_data():
     },
     "Lylia": {
       "name_jp": "リリア",
-      "role": "mage",
+      "role": "Mage",
       "sub_role": "",
       "suggested_lane": "Mid",
       "article_url": "https://shanbenzzz.com/mobile-legends/hero/mage/lylia",
@@ -123,7 +123,7 @@ def get_mlbb_hero_data():
     },
     "Mathilda": {
       "name_jp": "マチルダ",
-      "role": "support",
+      "role": "Support",
       "sub_role": "",
       "suggested_lane": "Roam",
       "article_url": "https://shanbenzzz.com/mobile-legends/hero/support/mathilda",
@@ -131,7 +131,7 @@ def get_mlbb_hero_data():
     },
     "Freya": {
       "name_jp": "フレイヤ",
-      "role": "fighter",
+      "role": "Fighter",
       "sub_role": "",
       "suggested_lane": "EXP",
       "article_url": "https://shanbenzzz.com/mobile-legends/hero/fighter/freya",
@@ -139,15 +139,15 @@ def get_mlbb_hero_data():
     },
     "Masha": {
       "name_jp": "マーシャ",
-      "role": "fighter",
+      "role": "Fighter",
       "sub_role": "",
-      "suggested_lane": "Jungle",
+      "suggested_lane": "EXP",
       "article_url": "https://shanbenzzz.com/mobile-legends/hero/fighter/masha",
       "image_url": "https://shanbenzzz.com/wp-content/uploads/2022/05/b940bfa5488aed57379d0ed3d144699c.png"
     },
     "Irithel": {
       "name_jp": "エレシル",
-      "role": "marksman",
+      "role": "Marksman",
       "sub_role": "",
       "suggested_lane": "Gold",
       "article_url": "https://shanbenzzz.com/mobile-legends/hero/hunter/irithel",
@@ -155,7 +155,7 @@ def get_mlbb_hero_data():
     },
     "Johnson": {
       "name_jp": "ジェイソン",
-      "role": "tank",
+      "role": "Tank",
       "sub_role": "",
       "suggested_lane": "Roam",
       "article_url": "https://shanbenzzz.com/mobile-legends/hero/tank/jhonson",
@@ -163,15 +163,15 @@ def get_mlbb_hero_data():
     },
     "Kaja": {
       "name_jp": "カチャ",
-      "role": "fighter",
+      "role": "Fighter",
       "sub_role": "",
-      "suggested_lane": "EXP,Roam",
+      "suggested_lane": "EXP",
       "article_url": "https://shanbenzzz.com/mobile-legends/hero/fighter/kaja",
       "image_url": "https://shanbenzzz.com/wp-content/uploads/2022/05/4230571605be681167997550190ac09f.png"
     },
     "Lancelot": {
       "name_jp": "ランスロット",
-      "role": "assassin",
+      "role": "Assassin",
       "sub_role": "",
       "suggested_lane": "Jungle",
       "article_url": "https://shanbenzzz.com/mobile-legends/hero/assassin/lancelot",
@@ -179,7 +179,7 @@ def get_mlbb_hero_data():
     },
     "Sun": {
       "name_jp": "悟空",
-      "role": "fighter",
+      "role": "Fighter",
       "sub_role": "",
       "suggested_lane": "EXP",
       "article_url": "https://shanbenzzz.com/mobile-legends/hero/fighter/sun",
@@ -187,7 +187,7 @@ def get_mlbb_hero_data():
     },
     "Khufra": {
       "name_jp": "クッフラー",
-      "role": "tank",
+      "role": "Tank",
       "sub_role": "",
       "suggested_lane": "Roam",
       "article_url": "https://shanbenzzz.com/mobile-legends/hero/tank/khufra",
@@ -195,7 +195,7 @@ def get_mlbb_hero_data():
     },
     "Carmilla": {
       "name_jp": "カーミラ",
-      "role": "support",
+      "role": "Support",
       "sub_role": "",
       "suggested_lane": "Roam",
       "article_url": "https://shanbenzzz.com/mobile-legends/hero/support/carmilla",
@@ -203,7 +203,7 @@ def get_mlbb_hero_data():
     },
     "Yi Sun-shin": {
       "name_jp": "イスンシン",
-      "role": "marksman",
+      "role": "Assassin",
       "sub_role": "",
       "suggested_lane": "Jungle",
       "article_url": "https://shanbenzzz.com/mobile-legends/hero/assassin/yi-sun-shin",
@@ -211,7 +211,7 @@ def get_mlbb_hero_data():
     },
     "Bane": {
       "name_jp": "ベイン",
-      "role": "fighter",
+      "role": "Fighter",
       "sub_role": "",
       "suggested_lane": "EXP",
       "article_url": "https://shanbenzzz.com/mobile-legends/hero/fighter/bane",
@@ -219,7 +219,7 @@ def get_mlbb_hero_data():
     },
     "Argus": {
       "name_jp": "アルゴス",
-      "role": "fighter",
+      "role": "Fighter",
       "sub_role": "",
       "suggested_lane": "EXP",
       "article_url": "https://shanbenzzz.com/mobile-legends/hero/fighter/argus",
@@ -227,7 +227,7 @@ def get_mlbb_hero_data():
     },
     "Miya": {
       "name_jp": "マイヤ",
-      "role": "marksman",
+      "role": "Marksman",
       "sub_role": "",
       "suggested_lane": "Gold",
       "article_url": "https://shanbenzzz.com/mobile-legends/hero/hunter/miya",
@@ -235,7 +235,7 @@ def get_mlbb_hero_data():
     },
     "Claude": {
       "name_jp": "クラウド",
-      "role": "marksman",
+      "role": "Marksman",
       "sub_role": "",
       "suggested_lane": "Gold",
       "article_url": "https://shanbenzzz.com/mobile-legends/hero/hunter/claude",
@@ -243,7 +243,7 @@ def get_mlbb_hero_data():
     },
     "Fanny": {
       "name_jp": "ファニー",
-      "role": "assassin",
+      "role": "Assassin",
       "sub_role": "",
       "suggested_lane": "Jungle",
       "article_url": "https://shanbenzzz.com/mobile-legends/hero/assassin/fanny",
@@ -251,7 +251,7 @@ def get_mlbb_hero_data():
     },
     "Moskov": {
       "name_jp": "モスコブ",
-      "role": "marksman",
+      "role": "Marksman",
       "sub_role": "",
       "suggested_lane": "Gold",
       "article_url": "https://shanbenzzz.com/mobile-legends/hero/hunter/moskov",
@@ -259,7 +259,7 @@ def get_mlbb_hero_data():
     },
     "Rafaela": {
       "name_jp": "ラファエル",
-      "role": "support",
+      "role": "Support",
       "sub_role": "",
       "suggested_lane": "Roam",
       "article_url": "https://shanbenzzz.com/mobile-legends/hero/support/rafaela",
@@ -267,7 +267,7 @@ def get_mlbb_hero_data():
     },
     "Kadita": {
       "name_jp": "カティタ",
-      "role": "mage",
+      "role": "Mage",
       "sub_role": "",
       "suggested_lane": "Mid",
       "article_url": "https://shanbenzzz.com/mobile-legends/hero/mage/kadita",
@@ -275,7 +275,7 @@ def get_mlbb_hero_data():
     },
     "Khaleed": {
       "name_jp": "カレード",
-      "role": "fighter",
+      "role": "Fighter",
       "sub_role": "",
       "suggested_lane": "EXP",
       "article_url": "https://shanbenzzz.com/mobile-legends/hero/fighter/khaleed",
@@ -283,7 +283,7 @@ def get_mlbb_hero_data():
     },
     "Helcurt": {
       "name_jp": "ハカート",
-      "role": "assassin",
+      "role": "Assassin",
       "sub_role": "",
       "suggested_lane": "Jungle",
       "article_url": "https://shanbenzzz.com/mobile-legends/hero/assassin/helcurt",
@@ -291,7 +291,7 @@ def get_mlbb_hero_data():
     },
     "Hylos": {
       "name_jp": "ヘラクレス",
-      "role": "tank",
+      "role": "Tank",
       "sub_role": "",
       "suggested_lane": "Roam",
       "article_url": "https://shanbenzzz.com/mobile-legends/hero/tank/hylos",
@@ -299,7 +299,7 @@ def get_mlbb_hero_data():
     },
     "Yu Zhong": {
       "name_jp": "ゾン",
-      "role": "fighter",
+      "role": "Fighter",
       "sub_role": "",
       "suggested_lane": "EXP",
       "article_url": "https://shanbenzzz.com/mobile-legends/hero/fighter/yu-zhong",
@@ -307,7 +307,7 @@ def get_mlbb_hero_data():
     },
     "Alice": {
       "name_jp": "アリス",
-      "role": "mage",
+      "role": "Mage",
       "sub_role": "",
       "suggested_lane": "EXP",
       "article_url": "https://shanbenzzz.com/mobile-legends/hero/mage/alice",
@@ -315,7 +315,7 @@ def get_mlbb_hero_data():
     },
     "Odette": {
       "name_jp": "オデット",
-      "role": "mage",
+      "role": "Mage",
       "sub_role": "",
       "suggested_lane": "Mid",
       "article_url": "https://shanbenzzz.com/mobile-legends/hero/mage/odette",
@@ -323,7 +323,7 @@ def get_mlbb_hero_data():
     },
     "Beatrix": {
       "name_jp": "ビアトリクス",
-      "role": "marksman",
+      "role": "Marksman",
       "sub_role": "",
       "suggested_lane": "Gold",
       "article_url": "https://shanbenzzz.com/mobile-legends/hero/hunter/beatrix",
@@ -331,15 +331,15 @@ def get_mlbb_hero_data():
     },
     "Ruby": {
       "name_jp": "ルビー",
-      "role": "fighter",
+      "role": "Fighter",
       "sub_role": "",
-      "suggested_lane": "EXP,Roam",
+      "suggested_lane": "EXP",
       "article_url": "https://shanbenzzz.com/mobile-legends/hero/fighter/ruby",
       "image_url": "https://shanbenzzz.com/wp-content/uploads/2022/05/d067ac8cf26e7aae2ccfcb7d4d3f1a19.png"
     },
     "Cyclops": {
       "name_jp": "サイクロプス",
-      "role": "mage",
+      "role": "Mage",
       "sub_role": "",
       "suggested_lane": "Mid",
       "article_url": "https://shanbenzzz.com/mobile-legends/hero/mage/cyclops",
@@ -347,7 +347,7 @@ def get_mlbb_hero_data():
     },
     "Kagura": {
       "name_jp": "カグラ",
-      "role": "mage",
+      "role": "Mage",
       "sub_role": "",
       "suggested_lane": "Mid",
       "article_url": "https://shanbenzzz.com/mobile-legends/hero/mage/kagura",
@@ -355,7 +355,7 @@ def get_mlbb_hero_data():
     },
     "Vale": {
       "name_jp": "ヴェル",
-      "role": "mage",
+      "role": "Mage",
       "sub_role": "",
       "suggested_lane": "Mid",
       "article_url": "https://shanbenzzz.com/mobile-legends/hero/mage/vale",
@@ -363,7 +363,7 @@ def get_mlbb_hero_data():
     },
     "Bruno": {
       "name_jp": "ブルーノ",
-      "role": "marksman",
+      "role": "Marksman",
       "sub_role": "",
       "suggested_lane": "Gold",
       "article_url": "https://shanbenzzz.com/mobile-legends/hero/hunter/bruno",
@@ -371,7 +371,7 @@ def get_mlbb_hero_data():
     },
     "Wanwan": {
       "name_jp": "琥珀",
-      "role": "marksman",
+      "role": "Marksman",
       "sub_role": "",
       "suggested_lane": "Gold",
       "article_url": "https://shanbenzzz.com/mobile-legends/hero/hunter/wanwan",
@@ -379,7 +379,7 @@ def get_mlbb_hero_data():
     },
     "Gusion": {
       "name_jp": "ゴセン",
-      "role": "assassin",
+      "role": "Assassin",
       "sub_role": "",
       "suggested_lane": "Jungle",
       "article_url": "https://shanbenzzz.com/mobile-legends/hero/assassin/gusion",
@@ -387,15 +387,15 @@ def get_mlbb_hero_data():
     },
     "Barats": {
       "name_jp": "バラッツ",
-      "role": "tank",
+      "role": "Tank",
       "sub_role": "",
-      "suggested_lane": "EXP",
+      "suggested_lane": "Jungle",
       "article_url": "https://shanbenzzz.com/mobile-legends/hero/tank/barats",
       "image_url": "https://shanbenzzz.com/wp-content/uploads/2022/05/66fba0613e265576d38503d97e9e5c5b-1.png"
     },
     "Lunox": {
       "name_jp": "星夢",
-      "role": "mage",
+      "role": "Mage",
       "sub_role": "",
       "suggested_lane": "Mid",
       "article_url": "https://shanbenzzz.com/mobile-legends/hero/mage/lunox",
@@ -403,7 +403,7 @@ def get_mlbb_hero_data():
     },
     "Roger": {
       "name_jp": "ロジャー",
-      "role": "fighter",
+      "role": "Fighter",
       "sub_role": "",
       "suggested_lane": "Jungle",
       "article_url": "https://shanbenzzz.com/mobile-legends/hero/fighter/roger",
@@ -411,7 +411,7 @@ def get_mlbb_hero_data():
     },
     "Eudora": {
       "name_jp": "エウドラ",
-      "role": "mage",
+      "role": "Mage",
       "sub_role": "",
       "suggested_lane": "Mid",
       "article_url": "https://shanbenzzz.com/mobile-legends/hero/mage/eudora",
@@ -419,7 +419,7 @@ def get_mlbb_hero_data():
     },
     "Luo Yi": {
       "name_jp": "ローイ",
-      "role": "mage",
+      "role": "Mage",
       "sub_role": "",
       "suggested_lane": "Mid",
       "article_url": "https://shanbenzzz.com/mobile-legends/hero/mage/luo-yi",
@@ -427,7 +427,7 @@ def get_mlbb_hero_data():
     },
     "Floryn": {
       "name_jp": "フローラ",
-      "role": "support",
+      "role": "Support",
       "sub_role": "",
       "suggested_lane": "Roam",
       "article_url": "https://shanbenzzz.com/mobile-legends/hero/support/floryn",
@@ -435,7 +435,7 @@ def get_mlbb_hero_data():
     },
     "Granger": {
       "name_jp": "グレンジャー",
-      "role": "marksman",
+      "role": "Marksman",
       "sub_role": "",
       "suggested_lane": "Jungle",
       "article_url": "https://shanbenzzz.com/mobile-legends/hero/hunter/granger",
@@ -443,7 +443,7 @@ def get_mlbb_hero_data():
     },
     "Baxia": {
       "name_jp": "玄覇",
-      "role": "tank",
+      "role": "Tank",
       "sub_role": "",
       "suggested_lane": "Roam",
       "article_url": "https://shanbenzzz.com/mobile-legends/hero/tank/baxia",
@@ -451,7 +451,7 @@ def get_mlbb_hero_data():
     },
     "Hanzo": {
       "name_jp": "半蔵",
-      "role": "assassin",
+      "role": "Assassin",
       "sub_role": "",
       "suggested_lane": "Jungle",
       "article_url": "https://shanbenzzz.com/mobile-legends/hero/assassin/hanzo",
@@ -459,7 +459,7 @@ def get_mlbb_hero_data():
     },
     "Yin": {
       "name_jp": "寅",
-      "role": "fighter",
+      "role": "Fighter",
       "sub_role": "",
       "suggested_lane": "Jungle",
       "article_url": "https://shanbenzzz.com/mobile-legends/hero/fighter/yin",
@@ -467,15 +467,15 @@ def get_mlbb_hero_data():
     },
     "Selena": {
       "name_jp": "セリナ",
-      "role": "assassin",
+      "role": "Assassin",
       "sub_role": "",
-      "suggested_lane": "Roam",
+      "suggested_lane": "Jungle",
       "article_url": "https://shanbenzzz.com/mobile-legends/hero/assassin/selena",
       "image_url": "https://shanbenzzz.com/wp-content/uploads/2022/05/ddf68775441cd995ae638cb753527d51.png"
     },
     "Zilong": {
       "name_jp": "子龍",
-      "role": "fighter",
+      "role": "Fighter",
       "sub_role": "",
       "suggested_lane": "EXP",
       "article_url": "https://shanbenzzz.com/mobile-legends/hero/fighter/zilong",
@@ -483,7 +483,7 @@ def get_mlbb_hero_data():
     },
     "Aurora": {
       "name_jp": "オーロラ",
-      "role": "mage",
+      "role": "Mage",
       "sub_role": "",
       "suggested_lane": "Mid",
       "article_url": "https://shanbenzzz.com/mobile-legends/hero/mage/aurora",
@@ -491,7 +491,7 @@ def get_mlbb_hero_data():
     },
     "Chang'e": {
       "name_jp": "嫦娥",
-      "role": "mage",
+      "role": "Mage",
       "sub_role": "",
       "suggested_lane": "Mid",
       "article_url": "https://shanbenzzz.com/mobile-legends/hero/mage/change",
@@ -499,7 +499,7 @@ def get_mlbb_hero_data():
     },
     "Franco": {
       "name_jp": "フランコ",
-      "role": "tank",
+      "role": "Tank",
       "sub_role": "",
       "suggested_lane": "Roam",
       "article_url": "https://shanbenzzz.com/mobile-legends/hero/tank/franco",
@@ -507,7 +507,7 @@ def get_mlbb_hero_data():
     },
     "Brody": {
       "name_jp": "ブロディ",
-      "role": "marksman",
+      "role": "Marksman",
       "sub_role": "",
       "suggested_lane": "Gold",
       "article_url": "https://shanbenzzz.com/mobile-legends/hero/hunter/brody",
@@ -515,15 +515,15 @@ def get_mlbb_hero_data():
     },
     "Natalia": {
       "name_jp": "ナタリア",
-      "role": "assassin",
+      "role": "Assassin",
       "sub_role": "",
-      "suggested_lane": "Roam",
+      "suggested_lane": "Jungle",
       "article_url": "https://shanbenzzz.com/mobile-legends/hero/assassin/natalia",
       "image_url": "https://shanbenzzz.com/wp-content/uploads/2022/05/96ecbc37a99365081b902a85f4a999cb.png"
     },
     "Hayabusa": {
       "name_jp": "隼",
-      "role": "assassin",
+      "role": "Assassin",
       "sub_role": "",
       "suggested_lane": "Jungle",
       "article_url": "https://shanbenzzz.com/mobile-legends/hero/assassin/hayabusa",
@@ -531,7 +531,7 @@ def get_mlbb_hero_data():
     },
     "Atlas": {
       "name_jp": "アテラス",
-      "role": "tank",
+      "role": "Tank",
       "sub_role": "",
       "suggested_lane": "Roam",
       "article_url": "https://shanbenzzz.com/mobile-legends/hero/tank/atlas",
@@ -539,7 +539,7 @@ def get_mlbb_hero_data():
     },
     "Ling": {
       "name_jp": "リン",
-      "role": "assassin",
+      "role": "Assassin",
       "sub_role": "",
       "suggested_lane": "Jungle",
       "article_url": "https://shanbenzzz.com/mobile-legends/hero/assassin/ling",
@@ -547,7 +547,7 @@ def get_mlbb_hero_data():
     },
     "Pharsa": {
       "name_jp": "ファーサ",
-      "role": "mage",
+      "role": "Mage",
       "sub_role": "",
       "suggested_lane": "Mid",
       "article_url": "https://shanbenzzz.com/mobile-legends/hero/mage/pharsa",
@@ -555,23 +555,23 @@ def get_mlbb_hero_data():
     },
     "Dyrroth": {
       "name_jp": "ディアス",
-      "role": "fighter",
+      "role": "Fighter",
       "sub_role": "",
-      "suggested_lane": "EXP",
+      "suggested_lane": "Jungle",
       "article_url": "https://shanbenzzz.com/mobile-legends/hero/fighter/dyrus",
       "image_url": "https://shanbenzzz.com/wp-content/uploads/2022/05/2abb9937dc084632ef3dd253048f84cf.png"
     },
     "Belerick": {
-      "name_jp": "カーディアン",
-      "role": "tank",
+      "name_jp": "ベレリック",
+      "role": "Tank",
       "sub_role": "",
-      "suggested_lane": "Roam",
+      "suggested_lane": "EXP",
       "article_url": "https://shanbenzzz.com/mobile-legends/hero/tank/belerick",
       "image_url": "https://shanbenzzz.com/wp-content/uploads/2022/05/4d9871ab96d4bc4379199f7691e08d51.png"
     },
     "Minotaur": {
-      "name_jp": "ミノタウロス",
-      "role": "tank",
+      "name_jp": "ミノタウル",
+      "role": "Tank",
       "sub_role": "",
       "suggested_lane": "Roam",
       "article_url": "https://shanbenzzz.com/mobile-legends/hero/tank/minotaur",
@@ -579,15 +579,15 @@ def get_mlbb_hero_data():
     },
     "Silvanna": {
       "name_jp": "シルバンナ",
-      "role": "fighter",
+      "role": "Fighter",
       "sub_role": "",
-      "suggested_lane": "Roam",
+      "suggested_lane": "EXP",
       "article_url": "https://shanbenzzz.com/mobile-legends/hero/fighter/silvanna",
       "image_url": "https://shanbenzzz.com/wp-content/uploads/2022/05/7c72074e0a8d65fecdbdbb006963daaf-1.png"
     },
     "Melissa": {
       "name_jp": "メリッサ",
-      "role": "marksman",
+      "role": "Marksman",
       "sub_role": "",
       "suggested_lane": "Gold",
       "article_url": "https://shanbenzzz.com/mobile-legends/hero/hunter/melissa",
@@ -595,7 +595,7 @@ def get_mlbb_hero_data():
     },
     "Jawhead": {
       "name_jp": "メタルヘッド",
-      "role": "fighter",
+      "role": "Fighter",
       "sub_role": "",
       "suggested_lane": "Roam",
       "article_url": "https://shanbenzzz.com/mobile-legends/hero/fighter/jawhead",
@@ -603,7 +603,7 @@ def get_mlbb_hero_data():
     },
     "Akai": {
       "name_jp": "ガイ",
-      "role": "tank",
+      "role": "Tank",
       "sub_role": "",
       "suggested_lane": "Roam",
       "article_url": "https://shanbenzzz.com/mobile-legends/hero/tank/akai",
@@ -611,15 +611,15 @@ def get_mlbb_hero_data():
     },
     "Edith": {
       "name_jp": "イーディス",
-      "role": "marksman",
+      "role": "Marksman",
       "sub_role": "",
-      "suggested_lane": "Gold,Roam",
+      "suggested_lane": "EXP",
       "article_url": "https://shanbenzzz.com/mobile-legends/hero/tank/edith",
       "image_url": "https://shanbenzzz.com/wp-content/uploads/2022/05/e594f689cdbfa4197482d51700aea0e4.png"
     },
     "Angela": {
       "name_jp": "アンジェラ",
-      "role": "support",
+      "role": "Support",
       "sub_role": "",
       "suggested_lane": "Roam",
       "article_url": "https://shanbenzzz.com/mobile-legends/hero/support/angela",
@@ -627,7 +627,7 @@ def get_mlbb_hero_data():
     },
     "Karina": {
       "name_jp": "カリナ",
-      "role": "assassin",
+      "role": "Assassin",
       "sub_role": "",
       "suggested_lane": "Jungle",
       "article_url": "https://shanbenzzz.com/mobile-legends/hero/assassin/karina",
@@ -635,31 +635,31 @@ def get_mlbb_hero_data():
     },
     "Benedetta": {
       "name_jp": "ベラ",
-      "role": "assassin",
+      "role": "Assassin",
       "sub_role": "",
       "suggested_lane": "EXP",
       "article_url": "https://shanbenzzz.com/mobile-legends/hero/assassin/benedetta",
       "image_url": "https://shanbenzzz.com/wp-content/uploads/2022/05/360f7a357974a2f76a1d974b4c32ba54.png"
     },
     "Faramis": {
-      "name_jp": "マファセス",
-      "role": "support",
+      "name_jp": "ファラミス",
+      "role": "Support",
       "sub_role": "",
-      "suggested_lane": "Mid",
+      "suggested_lane": "Roam",
       "article_url": "https://shanbenzzz.com/mobile-legends/hero/support/faramis",
       "image_url": "https://shanbenzzz.com/wp-content/uploads/2022/07/8cb95e8ccad36f28b4b1c3adb617697b.png"
     },
     "Paquito": {
       "name_jp": "パキート",
-      "role": "fighter",
+      "role": "Fighter",
       "sub_role": "",
-      "suggested_lane": "EXP",
+      "suggested_lane": "Jungle",
       "article_url": "https://shanbenzzz.com/mobile-legends/hero/fighter/paquito",
       "image_url": "https://shanbenzzz.com/wp-content/uploads/2022/05/0d51fbad90e30c4a2cf792ac433c8bf0.png"
     },
     "Lapu-Lapu": {
       "name_jp": "ラプラプ",
-      "role": "fighter",
+      "role": "Fighter",
       "sub_role": "",
       "suggested_lane": "EXP",
       "article_url": "https://shanbenzzz.com/mobile-legends/hero/fighter/lapu-lapu",
@@ -667,7 +667,7 @@ def get_mlbb_hero_data():
     },
     "Alucard": {
       "name_jp": "アルカード",
-      "role": "fighter",
+      "role": "Fighter",
       "sub_role": "",
       "suggested_lane": "Jungle",
       "article_url": "https://shanbenzzz.com/mobile-legends/hero/fighter/alucard",
@@ -675,7 +675,7 @@ def get_mlbb_hero_data():
     },
     "Estes": {
       "name_jp": "エスタス",
-      "role": "support",
+      "role": "Support",
       "sub_role": "",
       "suggested_lane": "Roam",
       "article_url": "https://shanbenzzz.com/mobile-legends/hero/support/estes",
@@ -683,7 +683,7 @@ def get_mlbb_hero_data():
     },
     "Hanabi": {
       "name_jp": "ハナビ",
-      "role": "marksman",
+      "role": "Marksman",
       "sub_role": "",
       "suggested_lane": "Gold",
       "article_url": "https://shanbenzzz.com/mobile-legends/hero/hunter/hanabi",
@@ -691,7 +691,7 @@ def get_mlbb_hero_data():
     },
     "Saber": {
       "name_jp": "セイバー",
-      "role": "assassin",
+      "role": "Assassin",
       "sub_role": "",
       "suggested_lane": "Jungle",
       "article_url": "https://shanbenzzz.com/mobile-legends/hero/assassin/saber",
@@ -699,7 +699,7 @@ def get_mlbb_hero_data():
     },
     "Badang": {
       "name_jp": "バターン",
-      "role": "fighter",
+      "role": "Fighter",
       "sub_role": "",
       "suggested_lane": "EXP",
       "article_url": "https://shanbenzzz.com/mobile-legends/hero/fighter/badang",
@@ -707,7 +707,7 @@ def get_mlbb_hero_data():
     },
     "Gatotkaca": {
       "name_jp": "ガトートカチャ",
-      "role": "tank",
+      "role": "Tank",
       "sub_role": "",
       "suggested_lane": "EXP",
       "article_url": "https://shanbenzzz.com/mobile-legends/hero/tank/gatotkaca",
@@ -715,7 +715,7 @@ def get_mlbb_hero_data():
     },
     "X.Borg": {
       "name_jp": "エックス",
-      "role": "fighter",
+      "role": "Fighter",
       "sub_role": "",
       "suggested_lane": "EXP",
       "article_url": "https://shanbenzzz.com/mobile-legends/hero/fighter/x-borg",
@@ -723,39 +723,39 @@ def get_mlbb_hero_data():
     },
     "Natan": {
       "name_jp": "ニュート",
-      "role": "marksman",
+      "role": "Marksman",
       "sub_role": "",
-      "suggested_lane": "Jungle",
+      "suggested_lane": "Gold",
       "article_url": "https://shanbenzzz.com/mobile-legends/hero/hunter/natan",
       "image_url": "https://shanbenzzz.com/wp-content/uploads/2022/05/83d87022861e09c2135bf89913b35287.png"
     },
     "Chou": {
       "name_jp": "シュウ",
-      "role": "fighter",
+      "role": "Fighter",
       "sub_role": "",
       "suggested_lane": "EXP",
       "article_url": "https://shanbenzzz.com/mobile-legends/hero/fighter/chou",
       "image_url": "https://shanbenzzz.com/wp-content/uploads/2022/05/52ad572ce4671342d78fc78109520ff2.png"
     },
     "Leomord": {
-      "name_jp": "ラインロック",
-      "role": "fighter",
+      "name_jp": "レオモルド",
+      "role": "Fighter",
       "sub_role": "",
-      "suggested_lane": "EXP",
+      "suggested_lane": "Jungle",
       "article_url": "https://shanbenzzz.com/mobile-legends/hero/fighter/leomord",
       "image_url": "https://shanbenzzz.com/wp-content/uploads/2022/07/49d5a6440a6e5bb1812f30d6d10a9717.png"
     },
     "Grock": {
       "name_jp": "ガレック",
-      "role": "tank",
+      "role": "Tank",
       "sub_role": "",
-      "suggested_lane": "Roam,EXP",
+      "suggested_lane": "Roam",
       "article_url": "https://shanbenzzz.com/mobile-legends/hero/tank/grock",
       "image_url": "https://shanbenzzz.com/wp-content/uploads/2022/05/29d68470d1d2277353a628b8d8165468.png"
     },
     "Lesley": {
       "name_jp": "ラズリー",
-      "role": "marksman",
+      "role": "Marksman",
       "sub_role": "",
       "suggested_lane": "Gold",
       "article_url": "https://shanbenzzz.com/mobile-legends/hero/hunter/lesly",
@@ -763,7 +763,7 @@ def get_mlbb_hero_data():
     },
     "Harley": {
       "name_jp": "ハーリー",
-      "role": "mage",
+      "role": "Assassin",
       "sub_role": "",
       "suggested_lane": "Jungle",
       "article_url": "https://shanbenzzz.com/mobile-legends/hero/mage/harley",
@@ -771,15 +771,15 @@ def get_mlbb_hero_data():
     },
     "Balmond": {
       "name_jp": "バルモンド",
-      "role": "fighter",
+      "role": "Fighter",
       "sub_role": "",
-      "suggested_lane": "EXP",
+      "suggested_lane": "Jungle",
       "article_url": "https://shanbenzzz.com/mobile-legends/hero/fighter/balmond",
       "image_url": "https://shanbenzzz.com/wp-content/uploads/2022/05/b1fda677d68a27826313731a2d01c4af.png"
     },
     "Valir": {
-      "name_jp": "ヴェルス",
-      "role": "mage",
+      "name_jp": "ヴァリル",
+      "role": "Mage",
       "sub_role": "",
       "suggested_lane": "Mid",
       "article_url": "https://shanbenzzz.com/mobile-legends/hero/mage/valir",
@@ -787,15 +787,15 @@ def get_mlbb_hero_data():
     },
     "Hilda": {
       "name_jp": "ヒルダ",
-      "role": "fighter",
+      "role": "Fighter",
       "sub_role": "",
-      "suggested_lane": "EXP,Roam",
+      "suggested_lane": "EXP",
       "article_url": "https://shanbenzzz.com/mobile-legends/hero/fighter/hilda",
       "image_url": "https://shanbenzzz.com/wp-content/uploads/2022/05/4aed42f35a76ad7a2b30ef2d099563d5.png"
     },
     "Alpha": {
       "name_jp": "アルファ",
-      "role": "fighter",
+      "role": "Fighter",
       "sub_role": "",
       "suggested_lane": "EXP",
       "article_url": "https://shanbenzzz.com/mobile-legends/hero/fighter/alpha",
@@ -803,7 +803,7 @@ def get_mlbb_hero_data():
     },
     "Guinevere": {
       "name_jp": "グネヴィア",
-      "role": "fighter",
+      "role": "Fighter",
       "sub_role": "",
       "suggested_lane": "EXP",
       "article_url": "https://shanbenzzz.com/mobile-legends/hero/fighter/guinevere",
@@ -811,15 +811,15 @@ def get_mlbb_hero_data():
     },
     "Zhask": {
       "name_jp": "ザスク",
-      "role": "mage",
+      "role": "Mage",
       "sub_role": "",
-      "suggested_lane": "EXP",
+      "suggested_lane": "Mid",
       "article_url": "https://shanbenzzz.com/mobile-legends/hero/mage/zhask",
       "image_url": "https://shanbenzzz.com/wp-content/uploads/2022/05/e7636de2fba637caffa121077c811da3.png"
     },
     "Aamon": {
       "name_jp": "アモン",
-      "role": "assassin",
+      "role": "Assassin",
       "sub_role": "",
       "suggested_lane": "Jungle",
       "article_url": "https://shanbenzzz.com/mobile-legends/hero/assassin/aamon",
@@ -827,15 +827,15 @@ def get_mlbb_hero_data():
     },
     "Minsitthar": {
       "name_jp": "マイシータール",
-      "role": "fighter",
+      "role": "Fighter",
       "sub_role": "",
-      "suggested_lane": "Roam,EXP",
+      "suggested_lane": "Roam",
       "article_url": "https://shanbenzzz.com/mobile-legends/hero/fighter/minsitthar",
       "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/04/cd3de9b88d819c63ede2cfdf986f60e1.png"
     },
     "Gord": {
       "name_jp": "グールド",
-      "role": "mage",
+      "role": "Mage",
       "sub_role": "",
       "suggested_lane": "Mid",
       "article_url": "https://shanbenzzz.com/mobile-legends/hero/mage/gord",
@@ -843,7 +843,7 @@ def get_mlbb_hero_data():
     },
     "Nana": {
       "name_jp": "ナナ",
-      "role": "support",
+      "role": "Support",
       "sub_role": "",
       "suggested_lane": "Mid",
       "article_url": "https://shanbenzzz.com/mobile-legends/hero/mage/nana",
@@ -851,7 +851,7 @@ def get_mlbb_hero_data():
     },
     "Karrie": {
       "name_jp": "キャリー",
-      "role": "marksman",
+      "role": "Marksman",
       "sub_role": "",
       "suggested_lane": "Gold",
       "article_url": "https://shanbenzzz.com/mobile-legends/hero/hunter/karrie",
@@ -859,7 +859,7 @@ def get_mlbb_hero_data():
     },
     "Thamuz": {
       "name_jp": "デームス",
-      "role": "fighter",
+      "role": "Fighter",
       "sub_role": "",
       "suggested_lane": "EXP",
       "article_url": "https://shanbenzzz.com/mobile-legends/hero/fighter/thamuz",
@@ -867,7 +867,7 @@ def get_mlbb_hero_data():
     },
     "Tigreal": {
       "name_jp": "ティグラル",
-      "role": "tank",
+      "role": "Tank",
       "sub_role": "",
       "suggested_lane": "Roam",
       "article_url": "https://shanbenzzz.com/mobile-legends/hero/tank/tigreal",
@@ -875,7 +875,7 @@ def get_mlbb_hero_data():
     },
     "Martis": {
       "name_jp": "マーティス",
-      "role": "fighter",
+      "role": "Fighter",
       "sub_role": "",
       "suggested_lane": "EXP",
       "article_url": "https://shanbenzzz.com/mobile-legends/hero/fighter/martis",
@@ -883,15 +883,15 @@ def get_mlbb_hero_data():
     },
     "Harith": {
       "name_jp": "ハリス",
-      "role": "mage",
+      "role": "Mage",
       "sub_role": "",
-      "suggested_lane": "Gold",
+      "suggested_lane": "Mid",
       "article_url": "https://shanbenzzz.com/mobile-legends/hero/mage/harith",
       "image_url": "https://shanbenzzz.com/wp-content/uploads/2022/05/00403a0a46cd20f2ba3699c38a8200f9.png"
     },
     "Layla": {
       "name_jp": "ライラ",
-      "role": "marksman",
+      "role": "Marksman",
       "sub_role": "",
       "suggested_lane": "Gold",
       "article_url": "https://shanbenzzz.com/mobile-legends/hero/hunter/layla",
@@ -899,7 +899,7 @@ def get_mlbb_hero_data():
     },
     "Terizla": {
       "name_jp": "ディスラー",
-      "role": "fighter",
+      "role": "Fighter",
       "sub_role": "",
       "suggested_lane": "EXP",
       "article_url": "https://shanbenzzz.com/mobile-legends/hero/fighter/terizla",
@@ -907,7 +907,7 @@ def get_mlbb_hero_data():
     },
     "Vexana": {
       "name_jp": "サナ",
-      "role": "mage",
+      "role": "Mage",
       "sub_role": "",
       "suggested_lane": "Mid",
       "article_url": "https://shanbenzzz.com/mobile-legends/hero/mage/vexana",
@@ -915,7 +915,7 @@ def get_mlbb_hero_data():
     },
     "Xavier": {
       "name_jp": "ザビエル",
-      "role": "mage",
+      "role": "Mage",
       "sub_role": "",
       "suggested_lane": "Mid",
       "article_url": "https://shanbenzzz.com/mobile-legends/hero/mage/xavier",
@@ -923,43 +923,51 @@ def get_mlbb_hero_data():
     },
     "Julian": {
       "name_jp": "ジュリアン",
-      "role": "fighter",
+      "role": "Fighter",
       "sub_role": "",
-      "suggested_lane": "Jungle,EXP",
+      "suggested_lane": "Jungle",
       "article_url": "https://shanbenzzz.com/mobile-legends/hero/fighter/julian",
       "image_url": "https://shanbenzzz.com/wp-content/uploads/2022/06/707b0c79d516ba9bf095cbca54c5765d.png"
     },
     "Fredrinn": {
       "name_jp": "フレッドリン",
-      "role": "fighter",
+      "role": "Fighter",
       "sub_role": "",
-      "suggested_lane": "Jungle,EXP",
+      "suggested_lane": "EXP",
       "article_url": "https://shanbenzzz.com/mobile-legends/hero/fighter/fredrinn",
       "image_url": "https://shanbenzzz.com/wp-content/uploads/2022/10/ff45c5812c571e1bf95b901900204e14.png"
     },
     "Joy": {
       "name_jp": "ジョイ",
-      "role": "assassin",
+      "role": "Assassin",
       "sub_role": "",
-      "suggested_lane": "Jungle,Mid",
+      "suggested_lane": "EXP",
       "article_url": "https://shanbenzzz.com/mobile-legends/hero/assassin/joy",
       "image_url": "https://shanbenzzz.com/wp-content/uploads/2022/12/e35f4db78a8be49f13072a82ccee9dba.png"
     },
     "Arlott": {
       "name_jp": "アーロット",
-      "role": "fighter",
+      "role": "Fighter",
       "sub_role": "",
-      "suggested_lane": "Jungle,EXP",
+      "suggested_lane": "EXP",
       "article_url": "https://shanbenzzz.com/mobile-legends/hero/fighter/arlott",
       "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/03/4312171f0509002d4e1a9eda9e85db71-1.png"
     },
     "Novaria": {
       "name_jp": "ノヴァリア",
-      "role": "mage",
+      "role": "Mage",
       "sub_role": "",
       "suggested_lane": "Mid",
       "article_url": "https://shanbenzzz.com/mobile-legends/hero/mage/novaria",
       "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/05/fb5cfa0dd612fee70a0ed298b999e623.png"
+    },
+    "Ixia": {
+      "name_jp": "イクシア",
+      "role": "Marksman",
+      "sub_role": "",
+      "suggested_lane": "Gold",
+      "article_url": "https://shanbenzzz.com/mobile-legends/hero/hunter/ixia",
+      "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/07/37a2f484344ad960e29e81bc186686cf.png"
     }
   }
 
