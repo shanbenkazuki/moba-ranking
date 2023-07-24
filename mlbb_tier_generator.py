@@ -29,15 +29,15 @@ def switch_to_mystic_400(driver):
   time.sleep(3)
 
 def assign_rank(score):
-  if score >= 0.7:
+  if score >= 0.65:
     return 'S+'
-  elif score >= 0.6:
+  elif score >= 0.45:
     return 'S'
-  elif score >= 0.5:
+  elif score >= 0.35:
     return 'A+'
-  elif score >= 0.4:
+  elif score >= 0.20:
     return 'A'
-  elif score >= 0.3:
+  elif score >= 0.10:
     return 'B'
   else:
     return 'C'
@@ -76,21 +76,19 @@ def add_ranking_to_hero_data(hero_meta_data, df_scaled):
   return hero_meta_data
 
 def group_heroes_by_lane_and_rank(hero_meta_data, hero_data):
-  lane_rank_dict = {
-    'Jungle': {'S+': [], 'S': [], 'A+': [], 'A': [], 'B': [], 'C': []},
-    'Gold': {'S+': [], 'S': [], 'A+': [], 'A': [], 'B': [], 'C': []},
-    'EXP': {'S+': [], 'S': [], 'A+': [], 'A': [], 'B': [], 'C': []},
-    'Roam': {'S+': [], 'S': [], 'A+': [], 'A': [], 'B': [], 'C': []},
-    'Mid': {'S+': [], 'S': [], 'A+': [], 'A': [], 'B': [], 'C': []}
+  role_rank_dict = {
+    'Fighter': {'S+': [], 'S': [], 'A+': [], 'A': [], 'B': [], 'C': []},
+    'Mage': {'S+': [], 'S': [], 'A+': [], 'A': [], 'B': [], 'C': []},
+    'Tank': {'S+': [], 'S': [], 'A+': [], 'A': [], 'B': [], 'C': []},
+    'Assassin': {'S+': [], 'S': [], 'A+': [], 'A': [], 'B': [], 'C': []},
+    'Marksman': {'S+': [], 'S': [], 'A+': [], 'A': [], 'B': [], 'C': []},
+    'Support': {'S+': [], 'S': [], 'A+': [], 'A': [], 'B': [], 'C': []}
   }
-
   for hero, info in hero_meta_data.items():
     rank = info['Rank']
-    suggested_lane = hero_data[hero]['suggested_lane']
-    suggested_lane_list = suggested_lane.split(",")
-    for lane in suggested_lane_list:
-      lane_rank_dict[lane][rank].append(hero)
-  return lane_rank_dict
+    role = hero_data[hero]['role']
+    role_rank_dict[role][rank].append(hero)
+  return role_rank_dict
 
 def generate_tier_tags(lane_rank_dict, hero_data):
   tier_tags = {}
@@ -136,128 +134,152 @@ lane_rank_dict = group_heroes_by_lane_and_rank(hero_meta_data, hero_data)
 # タグ生成
 tier_tags = generate_tier_tags(lane_rank_dict, hero_data)
 
-splusJungleHero = tier_tags['Jungle']['S+']
-sJungleHero = tier_tags['Jungle']['S']
-aplusJungleHero = tier_tags['Jungle']['A+']
-aJungleHero = tier_tags['Jungle']['A']
-bJungleHero = tier_tags['Jungle']['B']
-cJungleHero = tier_tags['Jungle']['C']
+splusFighterHero = tier_tags['Fighter']['S+']
+sFighterHero = tier_tags['Fighter']['S']
+aplusFighterHero = tier_tags['Fighter']['A+']
+aFighterHero = tier_tags['Fighter']['A']
+bFighterHero = tier_tags['Fighter']['B']
+cFighterHero = tier_tags['Fighter']['C']
 
-splusRoamHero = tier_tags['Roam']['S+']
-sRoamHero = tier_tags['Roam']['S']
-aplusRoamHero = tier_tags['Roam']['A+']
-aRoamHero = tier_tags['Roam']['A']
-bRoamHero = tier_tags['Roam']['B']
-cRoamHero = tier_tags['Roam']['C']
+splusMageHero = tier_tags['Mage']['S+']
+sMageHero = tier_tags['Mage']['S']
+aplusMageHero = tier_tags['Mage']['A+']
+aMageHero = tier_tags['Mage']['A']
+bMageHero = tier_tags['Mage']['B']
+cMageHero = tier_tags['Mage']['C']
 
-splusMidHero = tier_tags['Mid']['S+']
-sMidHero = tier_tags['Mid']['S']
-aplusMidHero = tier_tags['Mid']['A+']
-aMidHero = tier_tags['Mid']['A']
-bMidHero = tier_tags['Mid']['B']
-cMidHero = tier_tags['Mid']['C']
+splusTankHero = tier_tags['Tank']['S+']
+sTankHero = tier_tags['Tank']['S']
+aplusTankHero = tier_tags['Tank']['A+']
+aTankHero = tier_tags['Tank']['A']
+bTankHero = tier_tags['Tank']['B']
+cTankHero = tier_tags['Tank']['C']
 
-splusGoldHero = tier_tags['Gold']['S+']
-sGoldHero = tier_tags['Gold']['S']
-aplusGoldHero = tier_tags['Gold']['A+']
-aGoldHero = tier_tags['Gold']['A']
-bGoldHero = tier_tags['Gold']['B']
-cGoldHero = tier_tags['Gold']['C']
+splusAssassinHero = tier_tags['Assassin']['S+']
+sAssassinHero = tier_tags['Assassin']['S']
+aplusAssassinHero = tier_tags['Assassin']['A+']
+aAssassinHero = tier_tags['Assassin']['A']
+bAssassinHero = tier_tags['Assassin']['B']
+cAssassinHero = tier_tags['Assassin']['C']
 
-splusExpHero = tier_tags['EXP']['S+']
-sExpHero = tier_tags['EXP']['S']
-aplusExpHero = tier_tags['EXP']['A+']
-aExpHero = tier_tags['EXP']['A']
-bExpHero = tier_tags['EXP']['B']
-cExpHero = tier_tags['EXP']['C']
+splusMarksmanHero = tier_tags['Marksman']['S+']
+sMarksmanHero = tier_tags['Marksman']['S']
+aplusMarksmanHero = tier_tags['Marksman']['A+']
+aMarksmanHero = tier_tags['Marksman']['A']
+bMarksmanHero = tier_tags['Marksman']['B']
+cMarksmanHero = tier_tags['Marksman']['C']
+
+splusSupportHero = tier_tags['Support']['S+']
+sSupportHero = tier_tags['Support']['S']
+aplusSupportHero = tier_tags['Support']['A+']
+aSupportHero = tier_tags['Support']['A']
+bSupportHero = tier_tags['Support']['B']
+cSupportHero = tier_tags['Support']['C']
 
 # タブ始まり
-print('<!-- wp:loos/tab {"tabId":"9e24a182","tabWidthPC":"flex-50","tabWidthSP":"flex-50","tabHeaders":["Jg","Gold","Exp","Roam","Mid"],"className":"is-style-balloon"} -->')
-print('<div class="swell-block-tab is-style-balloon" data-width-pc="flex-50" data-width-sp="flex-50"><ul class="c-tabList" role="tablist"><li class="c-tabList__item" role="presentation"><button class="c-tabList__button" aria-selected="true" aria-controls="tab-9e24a182-0" data-onclick="tabControl">Jg</button></li><li class="c-tabList__item" role="presentation"><button class="c-tabList__button" aria-selected="false" aria-controls="tab-9e24a182-1" data-onclick="tabControl">Gold</button></li><li class="c-tabList__item" role="presentation"><button class="c-tabList__button" aria-selected="false" aria-controls="tab-9e24a182-2" data-onclick="tabControl">Exp</button></li><li class="c-tabList__item" role="presentation"><button class="c-tabList__button" aria-selected="false" aria-controls="tab-9e24a182-3" data-onclick="tabControl">Roam</button></li><li class="c-tabList__item" role="presentation"><button class="c-tabList__button" aria-selected="false" aria-controls="tab-9e24a182-4" data-onclick="tabControl">Mid</button></li></ul><div class="c-tabBody">')
+print('<!-- wp:loos/tab {"tabId":"55c27d22","tabWidthPC":"flex-50","tabHeaders":["Fighter","Mage","Tank","Assassin","Marksman","Support"],"className":"is-style-balloon"} -->')
+print('<div class="swell-block-tab is-style-balloon" data-width-pc="flex-50" data-width-sp="auto"><ul class="c-tabList" role="tablist"><li class="c-tabList__item" role="presentation"><button role="tab" class="c-tabList__button" aria-selected="true" aria-controls="tab-55c27d22-0" data-onclick="tabControl">Fighter</button></li><li class="c-tabList__item" role="presentation"><button role="tab" class="c-tabList__button" aria-selected="false" aria-controls="tab-55c27d22-1" data-onclick="tabControl">Mage</button></li><li class="c-tabList__item" role="presentation"><button role="tab" class="c-tabList__button" aria-selected="false" aria-controls="tab-55c27d22-2" data-onclick="tabControl">Tank</button></li><li class="c-tabList__item" role="presentation"><button role="tab" class="c-tabList__button" aria-selected="false" aria-controls="tab-55c27d22-3" data-onclick="tabControl">Assassin</button></li><li class="c-tabList__item" role="presentation"><button role="tab" class="c-tabList__button" aria-selected="false" aria-controls="tab-55c27d22-4" data-onclick="tabControl">Marksman</button></li><li class="c-tabList__item" role="presentation"><button role="tab" class="c-tabList__button" aria-selected="false" aria-controls="tab-55c27d22-5" data-onclick="tabControl">Support</button></li></ul><div class="c-tabBody">')
 
-# Jungle
-print('<!-- wp:loos/tab-body {"tabId":"9e24a182"} --><div id="tab-9e24a182-0" class="c-tabBody__item" aria-hidden="false"><!-- wp:table {"className":"is-style-regular is-all-centered\u002d\u002dva td_to_th_"} --><figure class="wp-block-table is-style-regular is-all-centered--va td_to_th_"><table><tbody>')
+# Fighter
+print('<!-- wp:loos/tab-body {"tabId":"55c27d22"} --><div id="tab-55c27d22-0" class="c-tabBody__item" aria-hidden="false"><!-- wp:table {"className":"is-style-regular is-all-centered\u002d\u002dva td_to_th_"} --><figure class="wp-block-table is-style-regular is-all-centered--va td_to_th_"><table><tbody>')
 # tr追加場所
 # S+
-print(tag.createTrSPlusStartTag() + splusJungleHero + tag.createTrEndTag())
+print(tag.createTrSPlusStartTag() + splusFighterHero + tag.createTrEndTag())
 # S
-print(tag.createTrSStartTag() + sJungleHero + tag.createTrEndTag())
+print(tag.createTrSStartTag() + sFighterHero + tag.createTrEndTag())
 # A+
-print(tag.createTrAPlusStartTag() + aplusJungleHero + tag.createTrEndTag())
+print(tag.createTrAPlusStartTag() + aplusFighterHero + tag.createTrEndTag())
 # A
-print(tag.createTrAStartTag() + aJungleHero + tag.createTrEndTag())
+print(tag.createTrAStartTag() + aFighterHero + tag.createTrEndTag())
 # B
-print(tag.createTrBStartTag() + bJungleHero + tag.createTrEndTag())
+print(tag.createTrBStartTag() + bFighterHero + tag.createTrEndTag())
 # C
-print(tag.createTrCStartTag() + cJungleHero + tag.createTrEndTag())
+print(tag.createTrCStartTag() + cFighterHero + tag.createTrEndTag())
 print('</tbody></table></figure><!-- /wp:table --></div><!-- /wp:loos/tab-body -->')
 
-# ゴールド
-print('<!-- wp:loos/tab-body {"id":1,"tabId":"9e24a182"} --><div id="tab-9e24a182-1" class="c-tabBody__item" aria-hidden="true"><!-- wp:table {"className":"is-style-regular is-all-centered\u002d\u002dva td_to_th_"} --><figure class="wp-block-table is-style-regular is-all-centered--va td_to_th_"><table><tbody>')
+# Mage
+print('<!-- wp:loos/tab-body {"id":1,"tabId":"55c27d22"} --><div id="tab-55c27d22-1" class="c-tabBody__item" aria-hidden="true"><!-- wp:table {"className":"is-style-regular is-all-centered\u002d\u002dva td_to_th_"} --><figure class="wp-block-table is-style-regular is-all-centered--va td_to_th_"><table><tbody>')
 # tr追加場所
 # S+
-print(tag.createTrSPlusStartTag() + splusGoldHero + tag.createTrEndTag())
+print(tag.createTrSPlusStartTag() + splusMageHero + tag.createTrEndTag())
 # S
-print(tag.createTrSStartTag() + sGoldHero + tag.createTrEndTag())
+print(tag.createTrSStartTag() + sMageHero + tag.createTrEndTag())
 # A+
-print(tag.createTrAPlusStartTag() + aplusGoldHero + tag.createTrEndTag())
+print(tag.createTrAPlusStartTag() + aplusMageHero + tag.createTrEndTag())
 # A
-print(tag.createTrAStartTag() + aGoldHero + tag.createTrEndTag())
+print(tag.createTrAStartTag() + aMageHero + tag.createTrEndTag())
 # B
-print(tag.createTrBStartTag() + bGoldHero + tag.createTrEndTag())
+print(tag.createTrBStartTag() + bMageHero + tag.createTrEndTag())
 # C
-print(tag.createTrCStartTag() + cGoldHero + tag.createTrEndTag())
+print(tag.createTrCStartTag() + cMageHero + tag.createTrEndTag())
 print('</tbody></table></figure><!-- /wp:table --></div><!-- /wp:loos/tab-body -->')
 
-# EXP
-print('<!-- wp:loos/tab-body {"id":2,"tabId":"9e24a182"} --> <div id="tab-9e24a182-2" class="c-tabBody__item" aria-hidden="true"><!-- wp:table {"className":"is-style-regular is-all-centered\u002d\u002dva td_to_th_"} --><figure class="wp-block-table is-style-regular is-all-centered--va td_to_th_"><table><tbody>')
+# Tank
+print('<!-- wp:loos/tab-body {"id":2,"tabId":"55c27d22"} --><div id="tab-55c27d22-2" class="c-tabBody__item" aria-hidden="true"><!-- wp:table {"className":"is-style-regular is-all-centered\u002d\u002dva td_to_th_"} --><figure class="wp-block-table is-style-regular is-all-centered--va td_to_th_"><table><tbody>')
 # tr追加場所
 # S+
-print(tag.createTrSPlusStartTag() + splusExpHero + tag.createTrEndTag())
+print(tag.createTrSPlusStartTag() + splusTankHero + tag.createTrEndTag())
 # S
-print(tag.createTrSStartTag() + sExpHero + tag.createTrEndTag())
+print(tag.createTrSStartTag() + sTankHero + tag.createTrEndTag())
 # A+
-print(tag.createTrAPlusStartTag() + aplusExpHero + tag.createTrEndTag())
+print(tag.createTrAPlusStartTag() + aplusTankHero + tag.createTrEndTag())
 # A
-print(tag.createTrAStartTag() + aExpHero + tag.createTrEndTag())
+print(tag.createTrAStartTag() + aTankHero + tag.createTrEndTag())
 # B
-print(tag.createTrBStartTag() + bExpHero + tag.createTrEndTag())
+print(tag.createTrBStartTag() + bTankHero + tag.createTrEndTag())
 # C
-print(tag.createTrCStartTag() + cExpHero + tag.createTrEndTag())
+print(tag.createTrCStartTag() + cTankHero + tag.createTrEndTag())
 print('</tbody></table></figure><!-- /wp:table --></div><!-- /wp:loos/tab-body -->')
 
-# ローム
-print('<!-- wp:loos/tab-body {"id":3,"tabId":"9e24a182"} --><div id="tab-9e24a182-3" class="c-tabBody__item" aria-hidden="true"><!-- wp:table {"className":"is-style-regular is-all-centered\u002d\u002dva td_to_th_"} --><figure class="wp-block-table is-style-regular is-all-centered--va td_to_th_"><table><tbody>')
+# Assassin
+print('<!-- wp:loos/tab-body {"id":3,"tabId":"55c27d22"} --><div id="tab-55c27d22-3" class="c-tabBody__item" aria-hidden="true"><!-- wp:table {"className":"is-style-regular is-all-centered\u002d\u002dva td_to_th_"} --><figure class="wp-block-table is-style-regular is-all-centered--va td_to_th_"><table><tbody>')
 # tr追加場所
 # S+
-print(tag.createTrSPlusStartTag() + splusRoamHero + tag.createTrEndTag())
+print(tag.createTrSPlusStartTag() + splusAssassinHero + tag.createTrEndTag())
 # S
-print(tag.createTrSStartTag() + sRoamHero + tag.createTrEndTag())
+print(tag.createTrSStartTag() + sAssassinHero + tag.createTrEndTag())
 # A+
-print(tag.createTrAPlusStartTag() + aplusRoamHero + tag.createTrEndTag())
+print(tag.createTrAPlusStartTag() + aplusAssassinHero + tag.createTrEndTag())
 # A
-print(tag.createTrAStartTag() + aRoamHero + tag.createTrEndTag())
+print(tag.createTrAStartTag() + aAssassinHero + tag.createTrEndTag())
 # B
-print(tag.createTrBStartTag() + bRoamHero + tag.createTrEndTag())
+print(tag.createTrBStartTag() + bAssassinHero + tag.createTrEndTag())
 # C
-print(tag.createTrCStartTag() + cRoamHero + tag.createTrEndTag())
+print(tag.createTrCStartTag() + cAssassinHero + tag.createTrEndTag())
 print('</tbody></table></figure><!-- /wp:table --></div><!-- /wp:loos/tab-body -->')
 
-# ミッド
-print('<!-- wp:loos/tab-body {"id":4,"tabId":"9e24a182"} --><div id="tab-9e24a182-4" class="c-tabBody__item" aria-hidden="true"><!-- wp:table {"className":"is-style-regular is-all-centered\u002d\u002dva td_to_th_"} --><figure class="wp-block-table is-style-regular is-all-centered--va td_to_th_"><table><tbody>')
+# Marksman
+print('<!-- wp:loos/tab-body {"id":4,"tabId":"55c27d22"} --><div id="tab-55c27d22-4" class="c-tabBody__item" aria-hidden="true"><!-- wp:table {"className":"is-style-regular is-all-centered\u002d\u002dva td_to_th_"} --><figure class="wp-block-table is-style-regular is-all-centered--va td_to_th_"><table><tbody>')
 # tr追加場所
 # S+
-print(tag.createTrSPlusStartTag() + splusMidHero + tag.createTrEndTag())
+print(tag.createTrSPlusStartTag() + splusMarksmanHero + tag.createTrEndTag())
 # S
-print(tag.createTrSStartTag() + sMidHero + tag.createTrEndTag())
+print(tag.createTrSStartTag() + sMarksmanHero + tag.createTrEndTag())
 # A+
-print(tag.createTrAPlusStartTag() + aplusMidHero + tag.createTrEndTag())
+print(tag.createTrAPlusStartTag() + aplusMarksmanHero + tag.createTrEndTag())
 # A
-print(tag.createTrAStartTag() + aMidHero + tag.createTrEndTag())
+print(tag.createTrAStartTag() + aMarksmanHero + tag.createTrEndTag())
 # B
-print(tag.createTrBStartTag() + bMidHero + tag.createTrEndTag())
+print(tag.createTrBStartTag() + bMarksmanHero + tag.createTrEndTag())
 # C
-print(tag.createTrCStartTag() + cMidHero + tag.createTrEndTag())
+print(tag.createTrCStartTag() + cMarksmanHero + tag.createTrEndTag())
+print('</tbody></table></figure><!-- /wp:table --></div><!-- /wp:loos/tab-body -->')
+
+# Support
+print('<!-- wp:loos/tab-body {"id":5,"tabId":"55c27d22"} --><div id="tab-55c27d22-5" class="c-tabBody__item" aria-hidden="true"><!-- wp:table {"className":"is-style-regular is-all-centered\u002d\u002dva td_to_th_"} --><figure class="wp-block-table is-style-regular is-all-centered--va td_to_th_"><table><tbody>')
+# tr追加場所
+# S+
+print(tag.createTrSPlusStartTag() + splusSupportHero + tag.createTrEndTag())
+# S
+print(tag.createTrSStartTag() + sSupportHero + tag.createTrEndTag())
+# A+
+print(tag.createTrAPlusStartTag() + aplusSupportHero + tag.createTrEndTag())
+# A
+print(tag.createTrAStartTag() + aSupportHero + tag.createTrEndTag())
+# B
+print(tag.createTrBStartTag() + bSupportHero + tag.createTrEndTag())
+# C
+print(tag.createTrCStartTag() + cSupportHero + tag.createTrEndTag())
 print('</tbody></table></figure><!-- /wp:table --></div><!-- /wp:loos/tab-body -->')
 
 #タブ終わり
