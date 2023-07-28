@@ -35,8 +35,19 @@ options = uc.ChromeOptions()
 options.add_argument("--auto-open-devtools-for-tabs")
 options.add_argument('--headless') 
 driver = uc.Chrome(use_subprocess=True, options=options) 
-driver.get("https://uniteapi.dev/meta") 
-time.sleep(15) 
+# driver.get("https://uniteapi.dev/meta") 
+# time.sleep(10) 
+
+driver.execute_script('''window.open("http://nowsecure.nl","_blank");''') # open page in new tab
+time.sleep(5) # wait until page has loaded
+driver.switch_to.window(window_name=driver.window_handles[0])   # switch to first tab
+driver.close() # close first tab
+driver.switch_to.window(window_name=driver.window_handles[0] )  # switch back to new tab
+time.sleep(2)
+driver.get("https://google.com")
+time.sleep(2)
+driver.get("https://uniteapi.dev/meta") # this should pass cloudflare captchas now
+time.sleep(10) 
 
 html = driver.page_source.encode('utf-8')
 soup = BeautifulSoup(html, 'html.parser')

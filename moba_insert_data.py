@@ -1303,6 +1303,12 @@ def get_unite_pokemon_data():
     "style": "attacker",
     "article_url": "https://shanbenzzz.com/pokemon-unite/pokemon/style/speedster/leafeon",
     "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/07/Inteleon.png"
+  },
+  "MewtwoX": {
+    "name": "ミュウツーX",
+    "style": "all-rounder",
+    "article_url": "https://shanbenzzz.com/pokemon-unite/pokemon/style/all-rounder/mewtwox",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/07/MewtwoX.png"
   }
 }
 
