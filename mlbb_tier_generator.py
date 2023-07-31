@@ -11,13 +11,17 @@ from sklearn.preprocessing import MinMaxScaler
 from fetch_moba_database import save_to_hero_meta_data
 from moba_version_generator import get_mlbb_version
 from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.chrome.options import Options
 
 DISPLAY_URL = "https://m.mobilelegends.com/en/rank"
 WAIT_TIME = 10
 
+chrome_options = Options()
+chrome_options.binary_location = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
+
 def initialize_driver():
   service = Service(ChromeDriverManager().install())
-  driver = webdriver.Chrome(service=service)
+  driver = webdriver.Chrome(service=service, options=chrome_options)
   driver.implicitly_wait(WAIT_TIME)
   return driver
 
