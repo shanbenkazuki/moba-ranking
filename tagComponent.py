@@ -1,7 +1,4 @@
 import re
-from googletrans import Translator
-
-translator = Translator()
 
 # 見出しh3タグの生成
 def createH3Heading(name):
@@ -50,16 +47,6 @@ def createStrongTag(strongStr, status):
     statusTag = createStatusTag(status)
     #強調タグにして返す
     return '<tr><td><span class="swl-cell-bg has-swl-gray-background-color" data-text-color="black" aria-hidden="true">&nbsp;</span><strong><span class="swl-cell-text-centered">' + strongStr + statusTag + '</span></strong></td></tr>'
-
-#liコンテンツ
-def createLiContentTag(td):
-    content=''
-    lis = td.find_all('li')
-    for li in lis:
-        liTextJa = translator.translate(li.text, src="en", dest="ja").text
-        content += (liTextJa + '<br>')
-    return '<tr><td>' + content + '</td></tr>'
-
 
 #↓Tierで使うタグ
 
