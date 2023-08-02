@@ -1,5 +1,3 @@
-import undetected_chromedriver as uc 
-import time 
 import urllib.parse
 import tagComponent as tag
 import pandas as pd
@@ -8,13 +6,9 @@ from fetch_moba_database import save_to_pokemon_meta_data
 from fetch_moba_database import get_pokemon_data
 from moba_version_generator import get_unite_version
 from bs4 import BeautifulSoup
-from datetime import datetime
 from sklearn.preprocessing import MinMaxScaler
 from copy_text import get_unite_winrate_html
 from copy_text import get_unite_pickrate_html
-
-winrate_html = get_unite_winrate_html()
-pickrate_html = get_unite_pickrate_html()
 
 def get_pokemon_info(pokemon_rate):
   print(pokemon_rate)
@@ -41,39 +35,10 @@ def get_pokemon_info(pokemon_rate):
   print(pokemon_name)
   return pokemon_name, float(rate)
 
-# options = uc.ChromeOptions() 
-# options.add_argument("--auto-open-devtools-for-tabs")
-# options.add_argument('--headless') 
-# driver = uc.Chrome(use_subprocess=True, options=options) 
-# # driver.get("https://uniteapi.dev/meta") 
-# # time.sleep(10) 
-
-# driver.execute_script('''window.open("http://nowsecure.nl","_blank");''') # open page in new tab
-# time.sleep(5) # wait until page has loaded
-# driver.switch_to.window(window_name=driver.window_handles[0])   # switch to first tab
-# driver.close() # close first tab
-# driver.switch_to.window(window_name=driver.window_handles[0] )  # switch back to new tab
-# time.sleep(2)
-# driver.get("https://google.com")
-# time.sleep(2)
-# driver.get("https://uniteapi.dev/meta") # this should pass cloudflare captchas now
-# time.sleep(10) 
-
-# html = driver.page_source.encode('utf-8')
-# soup = BeautifulSoup(html, 'html.parser')
-
-# print(soup)
-
-# # 参照日を出力　
-# element = soup.select_one('h3.sc-1198f0c0-2.EhlYE')
-# text = element.get_text(strip=True)
-# prefix = "Last Updated:"
-# if text.startswith(prefix):
-#   text = text[len(prefix):].strip()
-# date_obj = datetime.strptime(text, "%d %B %Y")
-# reference_date = date_obj.strftime("%Y-%m-%d")
-
 pokemon_info_dict = {}
+
+winrate_html = get_unite_winrate_html()
+pickrate_html = get_unite_pickrate_html()
 
 win_rate_list = BeautifulSoup(winrate_html, 'html.parser').find_all('tr')
 print(win_rate_list[0])
