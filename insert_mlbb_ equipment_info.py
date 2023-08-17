@@ -21,7 +21,7 @@ cursor.execute('''
 
 equipments = get_mlbb_equipments()
 
-# heroesのデータを追加
+# 装備のデータを追加
 for equipment, info in equipments.items():
     name_ja = info['name']
     name_en = equipment

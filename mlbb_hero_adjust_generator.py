@@ -1,3 +1,5 @@
+import re
+
 from fetch_moba_database import get_hero_data
 from DeepL_API.en_to_ja_translation_generator import conv_mlbb_en_to_ja_translation
 from copy_text import get_hero_adjust_txt
@@ -8,9 +10,8 @@ hero_data_line = text.strip().split("\n\n")
 
 # テキストからヒーロー名を取得
 hero_data_name = hero_data_line[0]
-split_line = hero_data_name.split(' ')
-name = ' '.join([i.strip('[]()') for i in split_line if i.strip('[]()')])
-hero_name = name.split(" ")[0]
+match = re.search(r'\[(.*?)\]', hero_data_name)
+hero_name = match.group(1)
 
 # ヒーロー名からヒーローの画像データを取得
 hero_data = get_hero_data()

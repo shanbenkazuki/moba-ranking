@@ -1337,7 +1337,7 @@ def get_mlbb_equipments():
   "Starlium Scythe": {
     "name": "星の大鎌",
     "type": "Magic",
-    "image_url": ""
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/08/Starlium_Scythe.webp"
   },
   "Concentrated Energy": {
     "name": "濃縮エネルギー",
@@ -1358,5 +1358,40 @@ def get_mlbb_equipments():
     "name": "ミスティックコンテナー",
     "type": "Magic",
     "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/07/Mystic_Container.webp"
+  },
+  "Haas' Claws": {
+    "name": "ブラッドクロウ",
+    "type": "Attack",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2022/05/haas-s-claws.png"
+  },
+  "Scarlet Phantom": {
+    "name": "スカーレットファントム",
+    "type": "Attack",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/08/scarlet-phantom.png"
+  },
+  "Great Dragon Spear": {
+    "name": "龍神の槍",
+    "type": "Attack",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/08/great-dragon-spear.png"
+  },
+  "Rapid Boots": {
+    "name": "ラピッドブーツ",
+    "type": "Move",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2022/09/rapid-boots.png"
+  },
+  "Twilight Armor": {
+    "name": "トワイライトアーマー",
+    "type": "Defense",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2022/05/twilight-armor.png"
+  },
+  "Blade Armor": {
+    "name": "ブレードアーマー",
+    "type": "Defense",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2022/05/blade-armor.png"
+  },
+  "Steel Legplates": {
+    "name": "スチールレッグプレート",
+    "type": "Defense",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2022/05/Steel_Legplates.png"
   }
 }
