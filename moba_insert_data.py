@@ -1309,6 +1309,12 @@ def get_unite_pokemon_data():
     "style": "all-rounder",
     "article_url": "https://shanbenzzz.com/pokemon-unite/pokemon/style/all-rounder/mewtwox",
     "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/07/MewtwoX.png"
+  },
+  "MewtwoY": {
+    "name": "ミュウツーY",
+    "style": "attacker",
+    "article_url": "https://shanbenzzz.com/pokemon-unite/pokemon/style/attacker/mewtwo-y",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/08/MewtwoY.png"
   }
 }
 

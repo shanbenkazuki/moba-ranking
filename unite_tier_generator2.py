@@ -1,6 +1,8 @@
-import urllib.parse
+# DB保存時参照日変更！
+
 import tagComponent as tag
 import pandas as pd
+import os
 
 from fetch_moba_database import save_to_pokemon_meta_data
 from fetch_moba_database import get_pokemon_data
@@ -11,37 +13,23 @@ from copy_text import get_unite_winrate_html
 from copy_text import get_unite_pickrate_html
 
 def get_pokemon_info(pokemon_rate):
-  print(pokemon_rate)
-  td_tags = pokemon_rate.find_all('td')
-  rate = td_tags[1].find('div').find('div').get('value')
-  print(rate)
-  img_tags = pokemon_rate.find_all('img')
-  try:
-      second_img_tag = img_tags[1]
-  except IndexError:
-      second_img_tag = img_tags[0] 
-  src = second_img_tag['src']
-  parsed_url = urllib.parse.urlparse(src)
-  params = urllib.parse.parse_qs(parsed_url.query)
-  url_param = params.get('url')[0] if 'url' in params else None
-  pokemon_name = ''
-  if url_param:
-    split_url_param = url_param.split('/')
-    last_element = split_url_param[-1]
-    split_last_element = last_element.replace('.png', '').split('_')
-    pokemon_name = split_last_element[-1]
-  if pokemon_name == 'Single':
-    pokemon_name = 'Urshifu'
-  print(pokemon_name)
+  rate = pokemon_rate.select_one('td div div')['value']
+  src = pokemon_rate.select_one('img')['src']
+
+  name_without_prefix = os.path.splitext(os.path.basename(src))[0].replace('t_Square_', '')
+  parts = name_without_prefix.split('_')
+
+  pokemon_name = name_without_prefix if len(parts) == 1 else '_'.join(parts[:-1])
+
   return pokemon_name, float(rate)
 
 pokemon_info_dict = {}
 
+# HTMLを取得
 winrate_html = get_unite_winrate_html()
 pickrate_html = get_unite_pickrate_html()
 
 win_rate_list = BeautifulSoup(winrate_html, 'html.parser').find_all('tr')
-print(win_rate_list[0])
 for pokemon_rate in win_rate_list:
   pokemon_name, win_rate = get_pokemon_info(pokemon_rate)
   pokemon_info_dict[pokemon_name] = {'winrate': win_rate}
@@ -60,7 +48,6 @@ df_scaled['score'] = df_scaled.mean(axis=1)
 for hero, score in df_scaled['score'].items():
     pokemon_info_dict[hero]['score'] = score
 
-print(pokemon_info_dict)
 
 # Define the rank thresholds
 ranks = {
@@ -85,7 +72,8 @@ for pokemon_name, pokemon_info in pokemon_info_dict.items():
 version = get_unite_version()
 
 # データベースに保存する
-save_to_pokemon_meta_data(pokemon_info_dict, '2023-07-26', version)
+# DB保存時参照日変更！
+save_to_pokemon_meta_data(pokemon_info_dict, '2023-08-23', version)
 
 # ポケモンの情報を取得
 pokemon_data = get_pokemon_data()
