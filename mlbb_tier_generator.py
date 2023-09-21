@@ -110,6 +110,7 @@ def generate_tier_tags(lane_rank_dict, hero_data):
 # 画面遷移とデータ取得の処理を関数化
 driver = initialize_driver()
 driver.get(DISPLAY_URL)
+time.sleep(10)
 switch_to_mystic_400(driver)
 rateList = extract_ranking_data(driver)
 

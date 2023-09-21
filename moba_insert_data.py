@@ -1315,7 +1315,14 @@ def get_unite_pokemon_data():
     "style": "attacker",
     "article_url": "https://shanbenzzz.com/pokemon-unite/pokemon/style/attacker/mewtwo-y",
     "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/08/MewtwoY.png"
+  },
+    "Blaziken": {
+    "name": "バシャーモ",
+    "style": "all-rounder",
+    "article_url": "https://shanbenzzz.com/pokemon-unite/pokemon/style/all-rounder/blaziken",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/09/Blaziken.png"
   }
+
 }
 
 def get_mlbb_equipments():
