@@ -1,4 +1,4 @@
-from DeepL_API.en_to_ja_translation_generator import conv_mlbb_en_to_ja_translation
+from deepl_english_to_japanese import conv_mlbb_en_to_ja_translation
 from copy_text import get_new_revamped_hero_txt
 
 text = get_new_revamped_hero_txt()

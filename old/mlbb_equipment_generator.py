@@ -1,26 +1,24 @@
 import re
 
-from fetch_moba_database import get_hero_data
-from DeepL_API.en_to_ja_translation_generator import conv_mlbb_en_to_ja_translation
+from fetch_moba_database import get_mlbb_equipments
 from copy_text import get_hero_adjust_txt
+from deepl_english_to_japanese import conv_mlbb_en_to_ja_translation
 
 text = get_hero_adjust_txt()
 
-hero_data_line = text.strip().split("\n\n")
+equipment_data_line = text.strip().split("\n\n")
 
-# テキストからヒーロー名を取得
-hero_data_name = hero_data_line[0]
-match = re.search(r'\[(.*?)\]', hero_data_name)
-hero_name = match.group(1)
+# 装備名を取得
+equipment_name = re.search(r'\[(.*?)\]', equipment_data_line[0]).group(1)
 
-# ヒーロー名からヒーローの画像データを取得
-hero_data = get_hero_data()
-hero_image_url = hero_data[hero_name]['image_url']
+# 装備名からヒーローの画像データを取得
+equipments = get_mlbb_equipments()
+equipment_image_url = equipments[equipment_name]['image_url']
 
 image_html = f'''
 <!-- wp:image {{"align":"center","id":1146,"width":125,"height":125,"sizeSlug":"full","linkDestination":"none"}} -->
 <figure class="wp-block-image aligncenter size-full is-resized">
-  <img src="{hero_image_url}" alt="" class="wp-image-1146" width="125" height="125"/>
+  <img src="{equipment_image_url}" alt="" class="wp-image-1146" width="125" height="125"/>
 </figure>
 <!-- /wp:image -->
 '''
@@ -28,7 +26,7 @@ image_html = f'''
 print(image_html)
 
 # アコーディオンのHTMLを生成
-description = hero_data_line[1]
+description = equipment_data_line[1]
 
 description_html = f'''
 <!-- wp:loos/accordion {{"className":"u-mb-ctrl u-mb-10"}} -->
@@ -52,11 +50,11 @@ description_html = f'''
 
 print(description_html)
 
-# ヒーロー調整用のHTMLを生成
+# 装備調整用のHTMLを生成
 hero_adjust_trs = ''
 
 counter = 0
-for element in hero_data_line[2:]:
+for element in equipment_data_line[2:]:
   if counter % 2 == 0:
     # 偶数番目の処理
     hero_adjust_trs += '<tr><td><span class="swl-cell-bg has-swl-gray-background-color" data-text-color="black"aria-hidden="true">&nbsp;</span><strong><span class="swl-cell-text-centered">'

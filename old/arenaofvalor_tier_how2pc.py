@@ -1,6 +1,6 @@
 import time
 import tagComponent as tag
-import conv.arena_of_valor.conv_arenaofvalor as conv_arena_of_valor
+import old.conv_arenaofvalor as conv_arena_of_valor
 
 from selenium import webdriver
 from webdriver_manager.chrome import ChromeDriverManager
