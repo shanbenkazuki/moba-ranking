@@ -13,8 +13,7 @@ cursor.execute('''
     name TEXT UNIQUE,
     name_en TEXT UNIQUE,
     role TEXT,
-    sub_role TEXT,
-    suggested_lane TEXT,
+    skill_name TEXT,
     article_url TEXT,
     image_url TEXT,
     created_at TEXT,
@@ -29,8 +28,7 @@ for hero, info in heroes.items():
     name = info['name_jp']
     name_en = hero
     role = info['role']
-    sub_role = info['sub_role']
-    suggested_lane = info['suggested_lane']
+    skill_name = info['skill_name']
     article_url = info['article_url']
     image_url = info['image_url']
     created_at = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -40,9 +38,9 @@ for hero, info in heroes.items():
     try:
         # データを挿入
         cursor.execute('''
-            INSERT INTO mlbb_hero_info (name, name_en, role, sub_role, suggested_lane, article_url, image_url, created_at, updated_at)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-        ''', (name, name_en, role, sub_role, suggested_lane, article_url, image_url, created_at, updated_at))
+            INSERT INTO mlbb_hero_info (name, name_en, role, skill_name, article_url, image_url, created_at, updated_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        ''', (name, name_en, role, skill_name, article_url, image_url, created_at, updated_at))
     except sqlite3.IntegrityError:
         print(f"Duplicated entry: {name}")
 
