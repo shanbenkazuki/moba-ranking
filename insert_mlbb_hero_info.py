@@ -1,19 +1,16 @@
 import sqlite3
-
 from datetime import datetime
 from moba_insert_data import get_mlbb_hero_data
 
-# SQLiteデータベースに接続
 conn = sqlite3.connect('moba_database.sqlite3')
 cursor = conn.cursor()
 
-# mlbbのデータを保存するテーブルを作成
 cursor.execute('''
   CREATE TABLE IF NOT EXISTS mlbb_hero_info (
-    name TEXT UNIQUE,
     name_en TEXT UNIQUE,
+    name_jp TEXT,
     role TEXT,
-    skill_name TEXT,
+    translate_term TEXT,
     article_url TEXT,
     image_url TEXT,
     created_at TEXT,
@@ -23,30 +20,23 @@ cursor.execute('''
 
 heroes = get_mlbb_hero_data()
 
-# heroesのデータを追加
 for hero, info in heroes.items():
-    name = info['name_jp']
     name_en = hero
+    name_jp = info['name_jp']
     role = info['role']
-    skill_name = info['skill_name']
+    translate_term = info.get('translate_term', '')
     article_url = info['article_url']
     image_url = info['image_url']
     created_at = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     updated_at = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
-    # データを挿入
     try:
-        # データを挿入
         cursor.execute('''
-            INSERT INTO mlbb_hero_info (name, name_en, role, skill_name, article_url, image_url, created_at, updated_at)
+            INSERT INTO mlbb_hero_info (name_en, name_jp, role, translate_term, article_url, image_url, created_at, updated_at)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-        ''', (name, name_en, role, skill_name, article_url, image_url, created_at, updated_at))
+        ''', (name_en, name_jp, role, translate_term, article_url, image_url, created_at, updated_at))
     except sqlite3.IntegrityError:
-        print(f"Duplicated entry: {name}")
+        print(f"Duplicated entry: {name_jp}")
 
-
-# 変更を保存
 conn.commit()
-
-# データベース接続を閉じる
 conn.close()

@@ -70,13 +70,12 @@ def get_hero_data():
 
   results = {}
   for row in rows:
-    name, name_en, role, sub_role, suggested_lane, article_url, image_url, created_at, updated_at = row
+    name_en, name_jp, role, translate_term, article_url, image_url, created_at, updated_at = row
     result = {
-      "name_jp": name,
+      "name_jp": name_jp,
       "name_en": name_en,
       "role": role,
-      "sub_role": sub_role,
-      "suggested_lane": suggested_lane,
+      "translate_term": translate_term,
       "article_url": article_url,
       "image_url": image_url,
       "created_at": created_at,

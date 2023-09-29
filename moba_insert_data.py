@@ -480,11 +480,7 @@ def get_mlbb_hero_data():
       "Pharsa": {
     "name_jp": "ファーサ",
     "role": "Mage",
-    "translate_passive": "",
-    "translate_skill_1": "",
-    "translate_skill_2": "",
-    "translate_skill_3": "",
-    "translate_skill_4": "",
+    "translate_term": "",
     "article_url": "https://shanbenzzz.com/mobile-legends/hero/mage/pharsa",
     "image_url": "https://shanbenzzz.com/wp-content/uploads/2022/05/c8489278c24f4d0905497bc65268a976.png"
     },
@@ -854,7 +850,7 @@ def get_mlbb_hero_data():
     },
     "Nolan": {
       "name_jp": "ノーラン",
-      "role": "assassin",
+      "role": "Assassin",
       "translate_term": "Dimensional Rift,次元の裂け目\nExpansion,開拓\Gauge,測量\nFracture,帰航",
       "article_url": "https://shanbenzzz.com/mobile-legends/hero/assassin/nolan",
       "image_url": ""
