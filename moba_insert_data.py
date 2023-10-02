@@ -1292,5 +1292,45 @@ def get_mlbb_equipments():
     "name": "スチールレッグプレート",
     "type": "Defense",
     "image_url": "https://shanbenzzz.com/wp-content/uploads/2022/05/Steel_Legplates.png"
-  }
+  },
+  "Swift Boots": {
+    "name": "スイフトブーツ",
+    "type": "Move",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2022/05/swift-boots.png"
+  },
+  "Windtalker": {
+    "name": "ウィンドテラー",
+    "type": "Attack",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2022/12/windtalker.png"
+  },
+  "Berserker's Fury": {
+    "name": "バーサーク",
+    "type": "Attack",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2022/05/berserker-s-fury.png"
+  },
+  "Demon Hunter Sword": {
+    "name": "デモンハント",
+    "type": "Attack",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2022/05/demon-hunter-sword.png"
+  },
+  "Golden Staff": {
+    "name": "如意棒",
+    "type": "Attack",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2022/12/golden-staff.png"
+  },
+  "Corrosion Scythe": {
+    "name": "ラスティサイズ",
+    "type": "Attack",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2022/05/corrosion-scythe.png"
+  },
+  "Wind of Nature": {
+    "name": "ナチュラルウィンド",
+    "type": "Attack",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/10/wind-of-nature.png"
+  },
+  "Blade of Despair": {
+    "name": "ディスペアブレイド",
+    "type": "Attack",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2022/05/blade-of-despair.png"
+  },
 }
