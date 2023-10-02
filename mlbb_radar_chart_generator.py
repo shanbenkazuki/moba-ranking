@@ -45,11 +45,11 @@ offense = convert_width_to_score(get_width_from_label('Offense'))
 ability_effects = convert_width_to_score(get_width_from_label('Ability Effects'))
 difficulty = convert_width_to_score(get_width_from_label('Difficulty'))
 
-print(ability_effects / 2, offense / 2, durability / 2, difficulty / 2)
+print(ability_effects, offense, durability, difficulty)
 
 # データの例
-labels = np.array(['生存', '攻撃', 'コントロール', '難易度'])
-values = np.array([ability_effects, offense, durability, difficulty])
+labels = np.array(['攻撃', '生存', 'コントロール', '難易度'])
+values = np.array([offense, ability_effects, durability, difficulty])
 
 # レーダーチャートを作るための角度を計算
 angles = np.linspace(0, 2*np.pi, len(labels), endpoint=False).tolist()
