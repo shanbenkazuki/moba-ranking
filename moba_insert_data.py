@@ -1333,4 +1333,39 @@ def get_mlbb_equipments():
     "type": "Attack",
     "image_url": "https://shanbenzzz.com/wp-content/uploads/2022/05/blade-of-despair.png"
   },
+  "Cursed Helmet": {
+    "name": "カースヘルム",
+    "type": "Defense",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2022/05/cursed-helmet.png"
+  },
+  "Warrior Boots": {
+    "name": "ウォリアーブーツ",
+    "type": "Move",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/10/warrior-boots.png"
+  },
+  "War Axe": {
+    "name": "常勝の神斧",
+    "type": "Attack",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/05/war-axe.png"
+  },
+  "Bloodlust Axe": {
+    "name": "ブラッドアックス",
+    "type": "Attack",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2022/05/bloodlust-axe.png"
+  },
+  "Queen's Wings": {
+    "name": "クイーンズウィング",
+    "type": "Defense",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2022/05/queen-s-wings.png"
+  },
+  "Brute Force Breastplate": {
+    "name": "ブレストプレート",
+    "type": "Defense",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2022/05/brute-force-breastplate.png"
+  },
+  "Immortality": {
+    "name": "イモータル",
+    "type": "Defense",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2022/05/immortality.png"
+  },
 }

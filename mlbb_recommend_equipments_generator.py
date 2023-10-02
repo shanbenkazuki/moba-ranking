@@ -1,6 +1,8 @@
 import sqlite3
 
-equipments = ['ウィンドテラー', 'スイフトブーツ', '龍神の槍', 'バーサーク', 'ディスペアブレイド', 'ナチュラルウィンド']
+from copy_text import get_equipment_list
+
+equipments = get_equipment_list()
 
 # sqlite3に接続
 conn = sqlite3.connect('moba_database.sqlite3')
