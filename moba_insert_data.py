@@ -1213,105 +1213,75 @@ def get_unite_pokemon_data():
 
 def get_mlbb_equipments():
   return {
-  "Malefic Roar": {
-    "name": "スピリットシャウト",
+  "Sea Halberd": {
+    "name": "トライデント",
     "type": "Attack",
-    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/07/malefic-roar.png"
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/10/sea-halberd.png"
   },
-  "Divine Glaive": {
-    "name": "魔法の聖剣",
-    "type": "Magic",
-    "image_url": "https://shanbenzzz.com/wp-content/uploads/2022/05/divine-glaive.png"
-  },
-  "Shadow Twinblades": {
-    "name": "黒影の双剣",
-    "type": "Magic",
-    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/07/shadow-twinblades.png"
-  },
-  "Calamity Reaper": {
-    "name": "カラミティサイス",
-    "type": "Magic",
-    "image_url": "https://shanbenzzz.com/wp-content/uploads/2022/05/calamity-reaper.png"
-  },
-  "Starlium Scythe": {
-    "name": "星の大鎌",
-    "type": "Magic",
-    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/08/Starlium_Scythe.webp"
-  },
-  "Concentrated Energy": {
-    "name": "濃縮エネルギー",
-    "type": "Magic",
-    "image_url": "https://shanbenzzz.com/wp-content/uploads/2022/05/concentrated-energy.png"
-  },
-  "Feather of Heaven": {
-    "name": "ヘブンウィング",
-    "type": "Magic",
-    "image_url": "https://shanbenzzz.com/wp-content/uploads/2022/05/feather-of-heaven.png"
-  },
-  "Endless Battle": {
-    "name": "エンドレスバトル",
+  "Rose Gold Meteor": {
+    "name": "デモンフォール",
     "type": "Attack",
-    "image_url": "https://shanbenzzz.com/wp-content/uploads/2022/05/endless-battle.png"
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2022/05/rose-gold-meteor.png"
   },
-  "Mystic Container": {
-    "name": "ミスティックコンテナー",
-    "type": "Magic",
-    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/07/Mystic_Container.webp"
-  },
-  "Haas' Claws": {
-    "name": "ブラッドクロウ",
+  "Bloodlust Axe": {
+    "name": "ブラッドアックス",
     "type": "Attack",
-    "image_url": "https://shanbenzzz.com/wp-content/uploads/2022/05/haas-s-claws.png"
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2022/05/bloodlust-axe.png"
   },
-  "Scarlet Phantom": {
-    "name": "スカーレットファントム",
+  "Hunter Strike": {
+    "name": "ハンターストライク",
     "type": "Attack",
-    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/08/scarlet-phantom.png"
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/10/hunter-strike.png"
+  },
+  "Blade of Despair": {
+    "name": "ディスペアブレイド",
+    "type": "Attack",
+    "image_url": ""
+  },
+  "Blade of the Heptaseas": {
+    "name": "オーシャンエッジ",
+    "type": "Attack",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2022/05/blade-of-the-heptaseas.png"
   },
   "Great Dragon Spear": {
     "name": "龍神の槍",
     "type": "Attack",
     "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/08/great-dragon-spear.png"
   },
-  "Rapid Boots": {
-    "name": "ラピッドブーツ",
-    "type": "Move",
-    "image_url": "https://shanbenzzz.com/wp-content/uploads/2022/09/rapid-boots.png"
-  },
-  "Twilight Armor": {
-    "name": "トワイライトアーマー",
-    "type": "Defense",
-    "image_url": "https://shanbenzzz.com/wp-content/uploads/2022/05/twilight-armor.png"
-  },
-  "Blade Armor": {
-    "name": "ブレードアーマー",
-    "type": "Defense",
-    "image_url": "https://shanbenzzz.com/wp-content/uploads/2022/05/blade-armor.png"
-  },
-  "Steel Legplates": {
-    "name": "スチールレッグプレート",
-    "type": "Defense",
-    "image_url": "https://shanbenzzz.com/wp-content/uploads/2022/05/Steel_Legplates.png"
-  },
-  "Swift Boots": {
-    "name": "スイフトブーツ",
-    "type": "Move",
-    "image_url": "https://shanbenzzz.com/wp-content/uploads/2022/05/swift-boots.png"
-  },
   "Windtalker": {
     "name": "ウィンドテラー",
     "type": "Attack",
     "image_url": "https://shanbenzzz.com/wp-content/uploads/2022/12/windtalker.png"
+  },
+  "Endless Battle": {
+    "name": "エンドレスバトル",
+    "type": "Attack",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2022/05/endless-battle.png"
   },
   "Berserker's Fury": {
     "name": "バーサーク",
     "type": "Attack",
     "image_url": "https://shanbenzzz.com/wp-content/uploads/2022/05/berserker-s-fury.png"
   },
-  "Demon Hunter Sword": {
-    "name": "デモンハント",
+  "Haas's Claws": {
+    "name": "ブラッドクロウ",
     "type": "Attack",
-    "image_url": "https://shanbenzzz.com/wp-content/uploads/2022/05/demon-hunter-sword.png"
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2022/05/haas-s-claws.png"
+  },
+  "Malefic Roar": {
+    "name": "スピリットシャウト",
+    "type": "Attack",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/07/malefic-roar.png"
+  },
+  "War Axe": {
+    "name": "常勝の神斧",
+    "type": "Attack",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/05/war-axe.png"
+  },
+  "Wind of Nature": {
+    "name": "ナチュラルウィンド",
+    "type": "Attack",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/10/wind-of-nature.png"
   },
   "Golden Staff": {
     "name": "如意棒",
@@ -1323,49 +1293,389 @@ def get_mlbb_equipments():
     "type": "Attack",
     "image_url": "https://shanbenzzz.com/wp-content/uploads/2022/05/corrosion-scythe.png"
   },
-  "Wind of Nature": {
-    "name": "ナチュラルウィンド",
+  "Demon Hunter Sword": {
+    "name": "デモンハント",
     "type": "Attack",
-    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/10/wind-of-nature.png"
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2022/05/demon-hunter-sword.png"
   },
-  "Blade of Despair": {
-    "name": "ディスペアブレイド",
+  "Swift Crossbow": {
+    "name": "",
     "type": "Attack",
-    "image_url": "https://shanbenzzz.com/wp-content/uploads/2022/05/blade-of-despair.png"
+    "image_url": ""
   },
-  "Cursed Helmet": {
-    "name": "カースヘルム",
+  "Magic Blade": {
+    "name": "",
+    "type": "Attack",
+    "image_url": ""
+  },
+  "Fury Hammer": {
+    "name": "",
+    "type": "Attack",
+    "image_url": ""
+  },
+  "Rogue Meteor": {
+    "name": "",
+    "type": "Attack",
+    "image_url": ""
+  },
+  "Ogre Tomahawk": {
+    "name": "",
+    "type": "Attack",
+    "image_url": ""
+  },
+  "Legion Sword": {
+    "name": "",
+    "type": "Attack",
+    "image_url": ""
+  },
+  "Regular Spear": {
+    "name": "",
+    "type": "Attack",
+    "image_url": ""
+  },
+  "Iron Hunting Bow": {
+    "name": "",
+    "type": "Attack",
+    "image_url": ""
+  },
+  "Vampire Mallet": {
+    "name": "",
+    "type": "Attack",
+    "image_url": ""
+  },
+  "Javelin": {
+    "name": "",
+    "type": "Attack",
+    "image_url": ""
+  },
+  "Knife": {
+    "name": "",
+    "type": "Attack",
+    "image_url": ""
+  },
+  "Dagger": {
+    "name": "",
+    "type": "Attack",
+    "image_url": ""
+  },
+  "Power Potion": {
+    "name": "",
+    "type": "Attack",
+    "image_url": ""
+  },
+  "Flask of the Oasis": {
+    "name": "オアシスのフラスコ",
+    "type": "Magic",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/10/flask_of_the_oasis.png"
+  },
+  "Genius Wand": {
+    "name": "ジーニアスワンド",
+    "type": "Magic",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2022/05/genius-wand.png"
+  },
+  "Lightning Truncheon": {
+    "name": "ボルトロッド",
+    "type": "Magic",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2022/12/lightning-truncheon.png"
+  },
+  "Fleeting Time": {
+    "name": "フリーティングタイム",
+    "type": "Magic",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2022/05/fleeting-time.png"
+  },
+  "Blood Wings": {
+    "name": "ブラッドウイング",
+    "type": "Magic",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2022/05/blood-wings.png"
+  },
+  "Clock of Destiny": {
+    "name": "デスティニー",
+    "type": "Magic",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2022/05/clock-of-destiny.png"
+  },
+  "Starlium Scythe": {
+    "name": "星の大鎌",
+    "type": "Magic",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/08/Starlium_Scythe.webp"
+  },
+  "Glowing Wand": {
+    "name": "ヒートロッド",
+    "type": "Magic",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2022/05/glowing-wand.png"
+  },
+  "Ice Queen Wand": {
+    "name": "フロスト",
+    "type": "Magic",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/10/ice-queen-wand.png"
+  },
+  "Concentrated Energy": {
+    "name": "濃縮エネルギー",
+    "type": "Magic",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2022/05/concentrated-energy.png"
+  },
+  "Holy Crystal": {
+    "name": "ガーディアンレリック",
+    "type": "Magic",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/10/holy-crystal.png"
+  },
+  "Divine Glaive": {
+    "name": "魔法の聖剣",
+    "type": "Magic",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2022/05/divine-glaive.png"
+  },
+  "Necklace of Durance": {
+    "name": "ソウルバインド",
+    "type": "Magic",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/10/necklace-of-durance.png"
+  },
+  "Feather of Heaven": {
+    "name": "ヘヴンウィング",
+    "type": "Magic",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2022/05/feather-of-heaven.png"
+  },
+  "Winter Truncheon": {
+    "name": "ウィンターロッド",
+    "type": "Magic",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/10/winter-truncheon.png"
+  },
+  "Enchanted Talisman": {
+    "name": "タリスマン",
+    "type": "Magic",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2022/05/enchanted-talisman.png"
+  },
+  "Elegant Gem": {
+    "name": "",
+    "type": "Magic",
+    "image_url": ""
+  },
+  "Exotic Veil": {
+    "name": "",
+    "type": "Magic",
+    "image_url": ""
+  },
+  "Azure Blade": {
+    "name": "",
+    "type": "Magic",
+    "image_url": ""
+  },
+  "Tome of Evil": {
+    "name": "",
+    "type": "Magic",
+    "image_url": ""
+  },
+  "Magic Wand": {
+    "name": "",
+    "type": "Magic",
+    "image_url": ""
+  },
+  "Mystic Container": {
+    "name": "",
+    "type": "Magic",
+    "image_url": ""
+  },
+  "Book of Sages": {
+    "name": "",
+    "type": "Magic",
+    "image_url": ""
+  },
+  "Magic Necklace": {
+    "name": "",
+    "type": "Magic",
+    "image_url": ""
+  },
+  "Power Crystal": {
+    "name": "",
+    "type": "Magic",
+    "image_url": ""
+  },
+  "Mystery Codex": {
+    "name": "",
+    "type": "Magic",
+    "image_url": ""
+  },
+  "Magic Potion": {
+    "name": "",
+    "type": "Magic",
+    "image_url": ""
+  },
+  "Allow Throw": {
+    "name": "",
+    "type": "Magic",
+    "image_url": ""
+  },
+  "Throw Forbidden": {
+    "name": "",
+    "type": "Magic",
+    "image_url": ""
+  },
+  "Broken Heart": {
+    "name": "",
+    "type": "Magic",
+    "image_url": ""
+  },
+  "Radiant Armor": {
+    "name": "聖光の鎧",
     "type": "Defense",
-    "image_url": "https://shanbenzzz.com/wp-content/uploads/2022/05/cursed-helmet.png"
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/10/radiant-armor.png"
   },
-  "Warrior Boots": {
-    "name": "ウォリアーブーツ",
-    "type": "Move",
-    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/10/warrior-boots.png"
-  },
-  "War Axe": {
-    "name": "常勝の神斧",
-    "type": "Attack",
-    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/05/war-axe.png"
-  },
-  "Bloodlust Axe": {
-    "name": "ブラッドアックス",
-    "type": "Attack",
-    "image_url": "https://shanbenzzz.com/wp-content/uploads/2022/05/bloodlust-axe.png"
-  },
-  "Queen's Wings": {
-    "name": "クイーンズウィング",
+  "Twilight Armor": {
+    "name": "トワイライトアーマー",
     "type": "Defense",
-    "image_url": "https://shanbenzzz.com/wp-content/uploads/2022/05/queen-s-wings.png"
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2022/05/twilight-armor.png"
   },
   "Brute Force Breastplate": {
     "name": "ブレストプレート",
     "type": "Defense",
-    "image_url": "https://shanbenzzz.com/wp-content/uploads/2022/05/brute-force-breastplate.png"
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/10/Brute_Force_Breastplate.webp"
   },
   "Immortality": {
     "name": "イモータル",
     "type": "Defense",
     "image_url": "https://shanbenzzz.com/wp-content/uploads/2022/05/immortality.png"
   },
+  "Dominance Ice": {
+    "name": "ドミナントシールド",
+    "type": "Defense",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2022/05/dominance-ice.png"
+  },
+  "Athena's Shield": {
+    "name": "ヴァルキュリアブレス",
+    "type": "Defense",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2022/05/athena-s-shield.png"
+  },
+  "Oracle": {
+    "name": "オラクル",
+    "type": "Defense",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/10/oracle.png"
+  },
+  "Antique Cuirass": {
+    "name": "上古の鎧",
+    "type": "Defense",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2022/05/antique-cuirass.png"
+  },
+  "Guardian Helmet": {
+    "name": "守り人の兜",
+    "type": "Defense",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2022/05/guardian-helmet.png"
+  },
+  "Cursed Helmet": {
+    "name": "カースヘルム",
+    "type": "Defense",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2022/05/cursed-helmet.png"
+  },
+  "Thunder Belt": {
+    "name": "サンダーベルト",
+    "type": "Defense",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/10/thunder-belt.png"
+  },
+  "Queen's Wings": {
+    "name": "クイーンズウィング",
+    "type": "Defense",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2022/05/queen-s-wings.png"
+  },
+  "Blade Armor": {
+    "name": "ブレイドアーマー",
+    "type": "Defense",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2022/05/blade-armor.png"
+  },
+  "Steel Legplates": {
+    "name": "スチールレッグプレート",
+    "type": "Defense",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2022/05/Steel_Legplates.png"
+  },
+  "Dreadnaught Armor": {
+    "name": "ドレッドノートメイル",
+    "type": "Defense",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/06/Dreadnaught_Armor.webp"
+  },
+  "Black Ice Shield": {
+    "name": "アイスシールド",
+    "type": "Defense",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2022/12/Item_Black_Ice_Shield_ML.png"
+  },
+  "Silence Robe": {
+    "name": "",
+    "type": "Defense",
+    "image_url": ""
+  },
+  "Molten Essence": {
+    "name": "",
+    "type": "Defense",
+    "image_url": ""
+  },
+  "Ares Belt": {
+    "name": "",
+    "type": "Defense",
+    "image_url": ""
+  },
+  "Hero's Ring": {
+    "name": "",
+    "type": "Defense",
+    "image_url": ""
+  },
+  "Healing Necklace": {
+    "name": "",
+    "type": "Defense",
+    "image_url": ""
+  },
+  "Magic Resist Cloak": {
+    "name": "",
+    "type": "Defense",
+    "image_url": ""
+  },
+  "Leather Jerkin": {
+    "name": "",
+    "type": "Defense",
+    "image_url": ""
+  },
+  "Vitality Crystal": {
+    "name": "",
+    "type": "Defense",
+    "image_url": ""
+  },
+  "Rock Potion": {
+    "name": "",
+    "type": "Defense",
+    "image_url": ""
+  },
+  "Demon Shoes": {
+    "name": "デモンシューズ",
+    "type": "Move",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2022/05/demon-shoes.png"
+  },
+  "Rapid Boots": {
+    "name": "ラピッドブーツ",
+    "type": "Move",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2022/09/rapid-boots.png"
+  },
+  "Swift Boots": {
+    "name": "スイフトブーツ",
+    "type": "Move",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2022/05/swift-boots.png"
+  },
+  "Arcane Boots": {
+    "name": "アーケインブーツ",
+    "type": "Move",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2022/05/arcane-boots.png"
+  },
+  "Magic Shoes": {
+    "name": "マジックシューズ",
+    "type": "Move",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/10/magic-shoes.png"
+  },
+  "Tough Boots": {
+    "name": "タフブーツ",
+    "type": "Move",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/10/tough-boots.png"
+  },
+  "Warrior Boots": {
+    "name": "ウォリアーブーツ",
+    "type": "Move",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/10/Warrior_Boots.webp"
+  },
+  "Boots": {
+    "name": "",
+    "type": "Move",
+    "image_url": ""
+  }
 }

@@ -10,7 +10,7 @@ cursor = conn.cursor()
 # mlbbのデータを保存するテーブルを作成
 cursor.execute('''
   CREATE TABLE IF NOT EXISTS mlbb_equipments (
-    name_ja TEXT UNIQUE,
+    name_ja TEXT,
     name_en TEXT UNIQUE,
     equipment_type TEXT,
     image_url TEXT,
