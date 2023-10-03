@@ -48,8 +48,8 @@ difficulty = convert_width_to_score(get_width_from_label('Difficulty'))
 print(ability_effects, offense, durability, difficulty)
 
 # データの例
-labels = np.array(['攻撃', '生存', 'コントロール', '難易度'])
-values = np.array([offense, ability_effects, durability, difficulty])
+labels = np.array(['攻撃', '生存', '難易度', 'コントロール'])
+values = np.array([offense, ability_effects, difficulty, durability])
 
 # レーダーチャートを作るための角度を計算
 angles = np.linspace(0, 2*np.pi, len(labels), endpoint=False).tolist()
