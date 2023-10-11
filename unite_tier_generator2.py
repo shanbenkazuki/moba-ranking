@@ -73,7 +73,7 @@ version = get_unite_version()
 
 # データベースに保存する
 # DB保存時参照日変更！
-save_to_pokemon_meta_data(pokemon_info_dict, '2023-09-11', version)
+save_to_pokemon_meta_data(pokemon_info_dict, '2023-10-06', '1.8.20')
 
 # ポケモンの情報を取得
 pokemon_data = get_pokemon_data()

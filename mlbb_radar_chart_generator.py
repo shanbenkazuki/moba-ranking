@@ -75,3 +75,47 @@ ax.set_yticks(np.arange(0, 5.1, 0.5))
 
 # 表示
 plt.show()
+
+image = "https://shanbenzzz.com/wp-content/uploads/2023/10/Martis.png"
+
+
+kaiseki_html = f"""
+<!-- wp:table {{"className":"is-style-regular is-all-centered"}} -->
+<figure class="wp-block-table is-style-regular is-all-centered">
+  <table>
+    <tbody>
+      <tr>
+        <td><span class="swl-cell-bg has-swl-gray-background-color" data-text-color="black"
+            aria-hidden="true">&nbsp;</span><strong>生存能力</strong></td>
+        <td>[review_stars {ability_effects}/5]</td>
+      </tr>
+      <tr>
+        <td><span class="swl-cell-bg has-swl-gray-background-color" data-text-color="black"
+            aria-hidden="true">&nbsp;</span><strong>攻撃能力</strong></td>
+        <td>[review_stars {offense}/5]</td>
+      </tr>
+      <tr>
+        <td><span class="swl-cell-bg has-swl-gray-background-color" data-text-color="black"
+            aria-hidden="true">&nbsp;</span><strong>コントロール効果</strong></td>
+        <td>[review_stars {durability}/5]</td>
+      </tr>
+      <tr>
+        <td><strong><span class="swl-cell-bg has-swl-gray-background-color" data-text-color="black"
+              aria-hidden="true">&nbsp;</span><strong>難易度</strong></strong></td>
+        <td>[review_stars {difficulty}/5]</td>
+      </tr>
+      <tr>
+        <td colspan="2"><img class="wp-image-4629" style="width: 500px;"
+            src="{image}" alt=""></td>
+      </tr>
+    </tbody>
+  </table>
+</figure>
+<!-- /wp:table -->
+"""
+
+# print(kaiseki_html)
+
+# ファイルに書き出す
+with open("hero_rader_chart.html", "w", encoding="utf-8") as f:
+    f.write(kaiseki_html)
