@@ -11,6 +11,7 @@ soup = BeautifulSoup(html, 'html.parser')
 
 # Arlottを取得するための要素を探す
 hero_name_en_element = soup.find('h2', class_='pi-item pi-item-spacing pi-title pi-secondary-background')
+print(hero_name_en_element)
 
 # Arlottのテキストを取得する
 hero_name_en = hero_name_en_element.br.previous_sibling.strip()
@@ -82,10 +83,13 @@ role_image_url = "".join(roles_image)
 print(role_image_url)
 
 # tableの中の2番目のtd要素内のaタグを探す
-physical_element = soup.select_one('table.pi-horizontal-group td:nth-child(2) a')
+# physical_element = soup.select_one('aside:nth-child(4) > div:nth-child(9) > div > a')
+# print(physical_element)
 
-# aタグのテキストを取得する
-damage_type = physical_element.text if physical_element else None
+# # aタグのテキストを取得する
+# damage_type = physical_element.text if physical_element else None
+damage_type = soup.select_one('div[data-source="dmg_type"]').select_one('div.pi-data-value').get_text().strip()
+
 print(damage_type)
 
 damage_type_ja = ''
@@ -101,12 +105,17 @@ print(damage_type_ja)
 # "Lane Recc."に対応するdiv要素の次のdiv要素内のaタグを探す
 lane_element = soup.select_one('h3.pi-data-label:-soup-contains("Lane Recc.") + div a')
 
+print(lane_element)
+
 if lane_element:
     lane_text = lane_element.text.strip()
 else:
     # aタグが見つからなかった場合、"Lane Recc."に対応するdiv要素の次のdiv要素のテキストを取得する
     lane_element_div = soup.select_one('h3.pi-data-label:-soup-contains("Lane Recc.") + div.pi-data-value')
     lane_text = lane_element_div.text.strip() if lane_element_div else None
+
+if lane_text:
+    lane_text = lane_text.split()[0]  # "EXP Lane"をスペースで分割し、最初の要素"EXP"を取得する
 
 print(lane_text)
 
@@ -184,6 +193,16 @@ for specialty_text in specialty_texts:
         specialty_texts_ja.append("チェイス")
     elif specialty_text == "Control":
         specialty_texts_ja.append("コントロール")
+    elif specialty_text == "Regen":
+        specialty_texts_ja.append("回復")
+    elif specialty_text == "Reap":
+        specialty_texts_ja.append("追撃")
+    elif specialty_text == "Guard":
+        specialty_texts_ja.append("ガード")
+    elif specialty_text == "Magic Damage":
+        specialty_texts_ja.append("魔法ダメージ")
+    elif specialty_text == "Poak":
+        specialty_texts_ja.append("ポーク")
 
 # 日本語に変換する
 
