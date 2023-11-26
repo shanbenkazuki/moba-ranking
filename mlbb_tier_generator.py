@@ -1,5 +1,5 @@
 import pandas as pd
-import tagComponent as tag
+import components.swell_tag_component as tag
 import sqlite3
 
 from selenium import webdriver
@@ -49,11 +49,13 @@ WebDriverWait(driver, WAIT_TIME).until(EC.element_to_be_clickable((By.XPATH, "//
 WebDriverWait(driver, WAIT_TIME).until(EC.element_to_be_clickable((By.XPATH, "//*[@id='rank']/div[1]/div[2]/ul/li[3]"))).click()
 rank_level = 'Mythic Glory+'
 
+# 画面が表示されるまで待つ
 WebDriverWait(driver, WAIT_TIME).until(
   EC.presence_of_element_located((By.CSS_SELECTOR, ".slotwrapper > ul > li > a"))
 )
-rateList = BeautifulSoup(driver.page_source, 'html.parser').select(".slotwrapper > ul > li > a")
 
+# データをスクレイピングして整形する
+rateList = BeautifulSoup(driver.page_source, 'html.parser').select(".slotwrapper > ul > li > a")
 hero_meta_data = {}
 for heroRate in rateList:
   heroEn = heroRate.span.string

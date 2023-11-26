@@ -1,40 +1,76 @@
-# DB保存時参照日変更！
-
-import tagComponent as tag
+import undetected_chromedriver as uc 
+import time 
+import urllib.parse
+import components.swell_tag_component as tag
 import pandas as pd
-import os
 
 from fetch_moba_database import save_to_pokemon_meta_data
 from fetch_moba_database import get_pokemon_data
 from moba_version_generator import get_unite_version
 from bs4 import BeautifulSoup
+from datetime import datetime
 from sklearn.preprocessing import MinMaxScaler
-from copy_text import get_unite_winrate_html
-from copy_text import get_unite_pickrate_html
 
 def get_pokemon_info(pokemon_rate):
-  rate = pokemon_rate.select_one('td div div')['value']
-  src = pokemon_rate.select_one('img')['src']
-
-  name_without_prefix = os.path.splitext(os.path.basename(src))[0].replace('t_Square_', '')
-  parts = name_without_prefix.split('_')
-
-  pokemon_name = name_without_prefix if len(parts) == 1 else '_'.join(parts[:-1])
-
+  td_tags = pokemon_rate.find_all('td')
+  rate = td_tags[1].find('div').find('div').get('value')
+  img_tags = pokemon_rate.find_all('img')
+  second_img_tag = img_tags[1]
+  src = second_img_tag['src']
+  parsed_url = urllib.parse.urlparse(src)
+  params = urllib.parse.parse_qs(parsed_url.query)
+  url_param = params.get('url')[0] if 'url' in params else None
+  pokemon_name = ''
+  if url_param:
+    split_url_param = url_param.split('/')
+    last_element = split_url_param[-1]
+    split_last_element = last_element.replace('.png', '').split('_')
+    pokemon_name = split_last_element[-1]
+  if pokemon_name == 'Single':
+    pokemon_name = 'Urshifu'
+  
   return pokemon_name, float(rate)
+
+options = uc.ChromeOptions() 
+options.add_argument("--auto-open-devtools-for-tabs")
+options.add_argument('--headless') 
+driver = uc.Chrome(use_subprocess=True, options=options) 
+# driver.get("https://uniteapi.dev/meta") 
+# time.sleep(10) 
+
+driver.execute_script('''window.open("http://nowsecure.nl","_blank");''') # open page in new tab
+time.sleep(5) # wait until page has loaded
+driver.switch_to.window(window_name=driver.window_handles[0])   # switch to first tab
+driver.close() # close first tab
+driver.switch_to.window(window_name=driver.window_handles[0] )  # switch back to new tab
+time.sleep(2)
+driver.get("https://google.com")
+time.sleep(2)
+driver.get("https://uniteapi.dev/meta") # this should pass cloudflare captchas now
+time.sleep(10) 
+
+html = driver.page_source.encode('utf-8')
+soup = BeautifulSoup(html, 'html.parser')
+
+print(soup)
+
+# 参照日を出力　
+element = soup.select_one('h3.sc-1198f0c0-2.EhlYE')
+text = element.get_text(strip=True)
+prefix = "Last Updated:"
+if text.startswith(prefix):
+  text = text[len(prefix):].strip()
+date_obj = datetime.strptime(text, "%d %B %Y")
+reference_date = date_obj.strftime("%Y-%m-%d")
 
 pokemon_info_dict = {}
 
-# HTMLを取得
-winrate_html = get_unite_winrate_html()
-pickrate_html = get_unite_pickrate_html()
-
-win_rate_list = BeautifulSoup(winrate_html, 'html.parser').find_all('tr')
+win_rate_list = soup.select('#content-container > div > div.sc-eaff77bf-0.fJbBUh > div:nth-child(2) > div > div > table > tbody > tr')
 for pokemon_rate in win_rate_list:
   pokemon_name, win_rate = get_pokemon_info(pokemon_rate)
   pokemon_info_dict[pokemon_name] = {'winrate': win_rate}
 
-pick_rate_list = BeautifulSoup(pickrate_html, 'html.parser').find_all('tr')
+pick_rate_list = soup.select('#content-container > div > div.sc-eaff77bf-0.fJbBUh > div:nth-child(1) > div > div > table > tbody > tr')
 for pokemon_rate in pick_rate_list:
   pokemon_name, pick_rate = get_pokemon_info(pokemon_rate)
   if pokemon_name in pokemon_info_dict:
@@ -47,7 +83,6 @@ df_scaled['score'] = df_scaled.mean(axis=1)
 
 for hero, score in df_scaled['score'].items():
     pokemon_info_dict[hero]['score'] = score
-
 
 # Define the rank thresholds
 ranks = {
@@ -72,8 +107,7 @@ for pokemon_name, pokemon_info in pokemon_info_dict.items():
 version = get_unite_version()
 
 # データベースに保存する
-# DB保存時参照日変更！
-save_to_pokemon_meta_data(pokemon_info_dict, '2023-10-06', '1.8.20')
+save_to_pokemon_meta_data(pokemon_info_dict, reference_date, version)
 
 # ポケモンの情報を取得
 pokemon_data = get_pokemon_data()

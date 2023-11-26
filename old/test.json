@@ -1,0 +1,238 @@
+{
+  "Zacian": {
+    "winrate": 53.97,
+    "pickrate": 11.3
+  },
+  "MewtwoY": {
+    "winrate": 53.21,
+    "pickrate": 8.66
+  },
+  "Mew": {
+    "winrate": 53.2,
+    "pickrate": 16.88
+  },
+  "Dodrio": {
+    "winrate": 52.01,
+    "pickrate": 5.22
+  },
+  "Crustle": {
+    "winrate": 51.86,
+    "pickrate": 8.91
+  },
+  "Greedent": {
+    "winrate": 51.67,
+    "pickrate": 1.55
+  },
+  "Inteleon": {
+    "winrate": 51.55,
+    "pickrate": 27.19
+  },
+  "Urshifu": {
+    "winrate": 51.52,
+    "pickrate": 6.37
+  },
+  "Tyranitar": {
+    "winrate": 51.48,
+    "pickrate": 2.14
+  },
+  "Clefable": {
+    "winrate": 51.47,
+    "pickrate": 17.71
+  },
+  "Hoopa": {
+    "winrate": 51.12,
+    "pickrate": 11.17
+  },
+  "Mimikyu": {
+    "winrate": 51.07,
+    "pickrate": 35.23
+  },
+  "Garchomp": {
+    "winrate": 51.01,
+    "pickrate": 3.37
+  },
+  "Duraludon": {
+    "winrate": 50.96,
+    "pickrate": 1.49
+  },
+  "Eldegoss": {
+    "winrate": 50.91,
+    "pickrate": 9.39
+  },
+  "MewtwoX": {
+    "winrate": 50.68,
+    "pickrate": 8.89
+  },
+  "Blissey": {
+    "winrate": 50.62,
+    "pickrate": 6.17
+  },
+  "Trevenant": {
+    "winrate": 50.58,
+    "pickrate": 10.04
+  },
+  "Slowbro": {
+    "winrate": 50.32,
+    "pickrate": 14.21
+  },
+  "Snorlax": {
+    "winrate": 50.27,
+    "pickrate": 8.82
+  },
+  "Dragonite": {
+    "winrate": 50.23,
+    "pickrate": 5.21
+  },
+  "Blastoise": {
+    "winrate": 50.16,
+    "pickrate": 20.2
+  },
+  "Charizard": {
+    "winrate": 50.14,
+    "pickrate": 7.83
+  },
+  "Lapras": {
+    "winrate": 49.86,
+    "pickrate": 7.92
+  },
+  "Chandelure": {
+    "winrate": 49.82,
+    "pickrate": 5.99
+  },
+  "Lucario": {
+    "winrate": 49.7,
+    "pickrate": 4.97
+  },
+  "Zoroark": {
+    "winrate": 49.67,
+    "pickrate": 10.59
+  },
+  "Tsareena": {
+    "winrate": 49.67,
+    "pickrate": 1.74
+  },
+  "Machamp": {
+    "winrate": 49.52,
+    "pickrate": 3.39
+  },
+  "Blaziken": {
+    "winrate": 49.51,
+    "pickrate": 7.16
+  },
+  "Mamoswine": {
+    "winrate": 49.49,
+    "pickrate": 5.14
+  },
+  "Glaceon": {
+    "winrate": 49.47,
+    "pickrate": 22.58
+  },
+  "MrMime": {
+    "winrate": 49.45,
+    "pickrate": 2.2
+  },
+  "Decidueye": {
+    "winrate": 49.27,
+    "pickrate": 12.41
+  },
+  "Umbreon": {
+    "winrate": 49.16,
+    "pickrate": 17.13
+  },
+  "Sableye": {
+    "winrate": 49.04,
+    "pickrate": 3.2
+  },
+  "Absol": {
+    "winrate": 48.93,
+    "pickrate": 8.38
+  },
+  "Gardevoir": {
+    "winrate": 48.83,
+    "pickrate": 6.72
+  },
+  "Azumarill": {
+    "winrate": 48.77,
+    "pickrate": 5.14
+  },
+  "Gengar": {
+    "winrate": 48.65,
+    "pickrate": 4.32
+  },
+  "Delphox": {
+    "winrate": 48.62,
+    "pickrate": 4.7
+  },
+  "Buzzwole": {
+    "winrate": 48.43,
+    "pickrate": 5.44
+  },
+  "Venusaur": {
+    "winrate": 48.41,
+    "pickrate": 18.37
+  },
+  "Zeraora": {
+    "winrate": 48.41,
+    "pickrate": 5.53
+  },
+  "Ninetales": {
+    "winrate": 48.38,
+    "pickrate": 5.33
+  },
+  "Cinderace": {
+    "winrate": 48.23,
+    "pickrate": 6.59
+  },
+  "Aegislash": {
+    "winrate": 48.18,
+    "pickrate": 4.17
+  },
+  "Espeon": {
+    "winrate": 48.17,
+    "pickrate": 11.1
+  },
+  "Wigglytuff": {
+    "winrate": 47.95,
+    "pickrate": 3.11
+  },
+  "Cramorant": {
+    "winrate": 47.87,
+    "pickrate": 1.98
+  },
+  "Goodra": {
+    "winrate": 47.69,
+    "pickrate": 5.47
+  },
+  "Pikachu": {
+    "winrate": 47.68,
+    "pickrate": 9.95
+  },
+  "Talonflame": {
+    "winrate": 47.62,
+    "pickrate": 9.74
+  },
+  "Sylveon": {
+    "winrate": 47.59,
+    "pickrate": 3.39
+  },
+  "Greninja": {
+    "winrate": 47.58,
+    "pickrate": 6.71
+  },
+  "Comfey": {
+    "winrate": 47.48,
+    "pickrate": 8.3
+  },
+  "Scizor": {
+    "winrate": 47.29,
+    "pickrate": 5.45
+  },
+  "Dragapult": {
+    "winrate": 47.28,
+    "pickrate": 1.67
+  },
+  "Leafeon": {
+    "winrate": 47.18,
+    "pickrate": 5.03
+  }
+}

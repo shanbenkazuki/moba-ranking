@@ -1,6 +1,6 @@
 import time
 import pandas as pd
-import tagComponent as tag
+import components.swell_tag_component as tag
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np

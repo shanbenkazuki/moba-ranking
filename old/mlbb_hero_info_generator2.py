@@ -1,6 +1,6 @@
 import time
 import pandas as pd
-import tagComponent as tag
+import components.swell_tag_component as tag
 import sqlite3
 
 from selenium import webdriver

@@ -1,180 +1,244 @@
-import undetected_chromedriver as uc 
-import time 
-import urllib.parse
-import tagComponent as tag
+import time
+import components.swell_tag_component as tag
 import pandas as pd
 
-from fetch_moba_database import save_to_pokemon_meta_data
-from fetch_moba_database import get_pokemon_data
-from moba_version_generator import get_unite_version
+from DrissionPage import ChromiumPage
 from bs4 import BeautifulSoup
+import os
+import pandas as pd
+import sqlite3
+from fetch_moba_database import get_pokemon_data
 from datetime import datetime
-from sklearn.preprocessing import MinMaxScaler
 
 def get_pokemon_info(pokemon_rate):
-  td_tags = pokemon_rate.find_all('td')
-  rate = td_tags[1].find('div').find('div').get('value')
-  img_tags = pokemon_rate.find_all('img')
-  second_img_tag = img_tags[1]
-  src = second_img_tag['src']
-  parsed_url = urllib.parse.urlparse(src)
-  params = urllib.parse.parse_qs(parsed_url.query)
-  url_param = params.get('url')[0] if 'url' in params else None
-  pokemon_name = ''
-  if url_param:
-    split_url_param = url_param.split('/')
-    last_element = split_url_param[-1]
-    split_last_element = last_element.replace('.png', '').split('_')
-    pokemon_name = split_last_element[-1]
-  if pokemon_name == 'Single':
-    pokemon_name = 'Urshifu'
-  
+  rate = pokemon_rate.select_one('td div div')['value']
+  src = pokemon_rate.select_one('img')['src']
+
+  name_without_prefix = os.path.splitext(os.path.basename(src))[0].replace('t_Square_', '')
+  parts = name_without_prefix.split('_')
+
+  pokemon_name = name_without_prefix if len(parts) == 1 else '_'.join(parts[:-1])
+
   return pokemon_name, float(rate)
 
-options = uc.ChromeOptions() 
-options.add_argument("--auto-open-devtools-for-tabs")
-options.add_argument('--headless') 
-driver = uc.Chrome(use_subprocess=True, options=options) 
-# driver.get("https://uniteapi.dev/meta") 
-# time.sleep(10) 
+def get_rank_from_score(score):
+  if score >= 1.5:
+    return 'S+'
+  elif score >= 1.0:
+    return 'S'
+  elif score >= 0.5:
+    return 'A+'
+  elif score >= -1.0:
+    return 'A'
+  elif score >= -1.5:
+    return 'B'
+  else:
+    return 'C'
 
-driver.execute_script('''window.open("http://nowsecure.nl","_blank");''') # open page in new tab
-time.sleep(5) # wait until page has loaded
-driver.switch_to.window(window_name=driver.window_handles[0])   # switch to first tab
-driver.close() # close first tab
-driver.switch_to.window(window_name=driver.window_handles[0] )  # switch back to new tab
-time.sleep(2)
-driver.get("https://google.com")
-time.sleep(2)
-driver.get("https://uniteapi.dev/meta") # this should pass cloudflare captchas now
-time.sleep(10) 
-
-html = driver.page_source.encode('utf-8')
+# Tierのデータを取得
+page = ChromiumPage()
+page.get('https://uniteapi.dev/meta')
+time.sleep(5)
+html = page.run_js('return document.documentElement.outerHTML')
 soup = BeautifulSoup(html, 'html.parser')
 
-print(soup)
+# データをスクレイピングして整形する
+pokemon_tier_data = {}
+for key, value in get_pokemon_data().items():
+  # 各ポケモンのstyleを取得
+  pokemon_style = value['style']
 
-# 参照日を出力　
-element = soup.select_one('h3.sc-1198f0c0-2.EhlYE')
-text = element.get_text(strip=True)
-prefix = "Last Updated:"
-if text.startswith(prefix):
-  text = text[len(prefix):].strip()
-date_obj = datetime.strptime(text, "%d %B %Y")
-reference_date = date_obj.strftime("%Y-%m-%d")
+  # 新しい辞書にポケモン名とそのstyleを追加
+  pokemon_tier_data[key] = {'style': pokemon_style}
+  pokemon_tier_data[key]['image_url'] = value['image_url']
 
-pokemon_info_dict = {}
-
-win_rate_list = soup.select('#content-container > div > div.sc-eaff77bf-0.fJbBUh > div:nth-child(2) > div > div > table > tbody > tr')
+# 勝率を取得
+win_rate_list = soup.select('#content-container > div > div.sc-eaff77bf-0.fJbBUh > div:nth-child(3) > div > div > table > tbody > tr')
 for pokemon_rate in win_rate_list:
   pokemon_name, win_rate = get_pokemon_info(pokemon_rate)
-  pokemon_info_dict[pokemon_name] = {'winrate': win_rate}
+  if pokemon_name in pokemon_tier_data:
+    pokemon_tier_data[pokemon_name]['win_rate'] = win_rate
 
+# 選択率を取得
 pick_rate_list = soup.select('#content-container > div > div.sc-eaff77bf-0.fJbBUh > div:nth-child(1) > div > div > table > tbody > tr')
 for pokemon_rate in pick_rate_list:
   pokemon_name, pick_rate = get_pokemon_info(pokemon_rate)
-  if pokemon_name in pokemon_info_dict:
-    pokemon_info_dict[pokemon_name].update({'pickrate': pick_rate})
+  if pokemon_name in pokemon_tier_data:
+    pokemon_tier_data[pokemon_name]['pick_rate'] = pick_rate
 
-df = pd.DataFrame(pokemon_info_dict).T.astype(float)
-scaler = MinMaxScaler()
-df_scaled = pd.DataFrame(scaler.fit_transform(df), columns=df.columns, index=df.index)
-df_scaled['score'] = df_scaled.mean(axis=1)
+# データベースに保存
+# 参照日を取得
+text = soup.select_one('#content-container > div > h3').get_text(strip=True)
+date_str = text.replace("Last Updated:", "").strip()
+reference_date = datetime.strptime(date_str, "%d %B %Y").strftime("%Y-%m-%d")
 
-for hero, score in df_scaled['score'].items():
-    pokemon_info_dict[hero]['score'] = score
+conn = sqlite3.connect('moba_database.sqlite3')
+c = conn.cursor()
 
-# Define the rank thresholds
-ranks = {
-    'S+': 0.5,
-    'S': 0.4,
-    'A+': 0.3,
-    'A': 0.2,
-    'B': 0.1
-}
+insert_query = '''
+INSERT INTO pokemon_meta_data (name, win_rate, pick_rate, reference_date)
+VALUES (?, ?, ?, ?)
+'''
 
-# Add ranks to the data
-for pokemon_name, pokemon_info in pokemon_info_dict.items():
-  score = pokemon_info['score']
-  for rank, threshold in ranks.items():
-    if score >= threshold:
-      pokemon_info_dict[pokemon_name]['rank'] = rank
-      break
-    else:
-      pokemon_info_dict[pokemon_name]['rank'] = 'C'
+for hero, data_dict in pokemon_tier_data.items():
+  try:
+    c.execute(insert_query, (hero, data_dict['win_rate'], data_dict['pick_rate'], reference_date))
+  except sqlite3.IntegrityError:
+    error_message = f"Duplicate entry found for {hero} on {reference_date}"
+    print(error_message)
 
-# バージョン情報を取得
-version = get_unite_version()
+conn.commit()
+conn.close()
 
-# データベースに保存する
-save_to_pokemon_meta_data(pokemon_info_dict, reference_date, version)
+# スクレイピングしたデータからz-scoreを計算
+df = pd.DataFrame(pokemon_tier_data).T
 
-# ポケモンの情報を取得
-pokemon_data = get_pokemon_data()
+df = df.astype({'win_rate': 'float', 'pick_rate': 'float'})
 
-# ポケモンをスタイルとランクに基づいてグループ化する辞書を作成
-style_rank_dict = {
-  'all-rounder': {'S+': [], 'S': [], 'A+': [], 'A': [], 'B': [], 'C': []},
-  'attacker': {'S+': [], 'S': [], 'A+': [], 'A': [], 'B': [], 'C': []},
-  'defender': {'S+': [], 'S': [], 'A+': [], 'A': [], 'B': [], 'C': []},
-  'speedster': {'S+': [], 'S': [], 'A+': [], 'A': [], 'B': [], 'C': []},
-  'supporter': {'S+': [], 'S': [], 'A+': [], 'A': [], 'B': [], 'C': []}
-}
+# Z-score を計算
+df['win_rate_z'] = (df['win_rate'] - df['win_rate'].mean()) / df['win_rate'].std()
+df['pick_rate_z'] = (df['pick_rate'] - df['pick_rate'].mean()) / df['pick_rate'].std()
 
-# ポケモンをスタイルとランクごとにグループ化
-for pokemon, info in pokemon_info_dict.items():
-  rank = info['rank']
-  style = pokemon_data[pokemon]['style']
-  style_rank_dict[style][rank].append(pokemon)
+df['interaction'] = df['win_rate_z'] * df['pick_rate_z']
 
-# 各スタイルとランクのポケモンをタグとして追加
-tier_tags = {}
-for style, rank_dict in style_rank_dict.items():
-  tier_tags[style] = {}
-  for rank, pokemon_list in rank_dict.items():
-    tier_tags[style][rank] = ''
-    for pokemon in pokemon_list:
-      pokemon_image_url = pokemon_data[pokemon]['image_url']
-      pokemon_article_url = pokemon_data[pokemon]['article_url']
-      pokemon_a_tag = tag.createHeroATag(pokemon_image_url, pokemon_article_url)
-      tier_tags[style][rank] += pokemon_a_tag
 
-# 各変数を設定
-splus_balance = tier_tags['all-rounder']['S+']
-splus_attack = tier_tags['attacker']['S+']
-splus_defense = tier_tags['defender']['S+']
-splus_speed = tier_tags['speedster']['S+']
-splus_support = tier_tags['supporter']['S+']
+# 総合スコアを計算（win_rate の Z-score に 60% の重み、pick_rate の Z-score に 40% の重み）
+df['tier_score'] = 0.6 * df['win_rate_z'] + 0.4 * df['pick_rate_z'] - 0.1 * df['interaction']
 
-s_balance = tier_tags['all-rounder']['S']
-s_attack = tier_tags['attacker']['S']
-s_defense = tier_tags['defender']['S']
-s_speed = tier_tags['speedster']['S']
-s_support = tier_tags['supporter']['S']
+for pokemon in pokemon_tier_data:
+  pokemon_tier_data[pokemon]['tier_score'] = df.at[pokemon, 'tier_score']
 
-a_plus_balance = tier_tags['all-rounder']['A+']
-a_plus_attack = tier_tags['attacker']['A+']
-a_plus_defense = tier_tags['defender']['A+']
-a_plus_speed = tier_tags['speedster']['A+']
-a_plus_support = tier_tags['supporter']['A+']
 
-a_balance = tier_tags['all-rounder']['A']
-a_attack = tier_tags['attacker']['A']
-a_defense = tier_tags['defender']['A']
-a_speed = tier_tags['speedster']['A']
-a_support = tier_tags['supporter']['A']
+# styleごとにdictを分ける
+balance_dict = {}
+attack_dict = {}
+defense_dict = {}
+speed_dict = {}
+support_dict = {}
 
-b_balance = tier_tags['all-rounder']['B']
-b_attack = tier_tags['attacker']['B']
-b_defense = tier_tags['defender']['B']
-b_speed = tier_tags['speedster']['B']
-b_support = tier_tags['supporter']['B']
+for pokemon, info in pokemon_tier_data.items():
+  style = info['style']
+  if style == 'all-rounder':
+    balance_dict[pokemon] = info
+  elif style == 'attacker':
+    attack_dict[pokemon] = info
+  elif style == 'defender':
+    defense_dict[pokemon] = info
+  elif style == 'speedster':
+    speed_dict[pokemon] = info
+  elif style == 'supporter':
+    support_dict[pokemon] = info
 
-c_balance = tier_tags['all-rounder']['C']
-c_attack = tier_tags['attacker']['C']
-c_defense = tier_tags['defender']['C']
-c_speed = tier_tags['speedster']['C']
-c_support = tier_tags['supporter']['C']
+splus_balance = ''
+s_balance = ''
+a_plus_balance = ''
+a_balance = ''
+b_balance = ''
+c_balance = ''
+
+splus_attack = ''
+s_attack = ''
+a_plus_attack = ''
+a_attack = ''
+b_attack = ''
+c_attack = ''
+
+splus_defense = ''
+s_defense = ''
+a_plus_defense = ''
+a_defense = ''
+b_defense = ''
+c_defense = ''
+
+splus_speed = ''
+s_speed = ''
+a_plus_speed = ''
+a_speed = ''
+b_speed = ''
+c_speed = ''
+
+splus_support = ''
+s_support = ''
+a_plus_support = ''
+a_support = ''
+b_support = ''
+c_support = ''
+
+# styleごとにランクを分ける
+for pokemon, data in balance_dict.items():
+  pokemon_tier_img_tag = tag.createHeroImgTag(data['image_url'])
+  if get_rank_from_score(data['tier_score']) == 'S+':
+    splus_balance += pokemon_tier_img_tag
+  elif get_rank_from_score(data['tier_score']) == 'S':
+    s_balance += pokemon_tier_img_tag
+  elif get_rank_from_score(data['tier_score']) == 'A+':
+    a_plus_balance += pokemon_tier_img_tag
+  elif get_rank_from_score(data['tier_score']) == 'A':
+    a_balance += pokemon_tier_img_tag
+  elif get_rank_from_score(data['tier_score']) == 'B':
+    b_balance += pokemon_tier_img_tag
+  elif get_rank_from_score(data['tier_score']) == 'C':
+    c_balance += pokemon_tier_img_tag
+
+for pokemon, data in attack_dict.items():
+  pokemon_tier_img_tag = tag.createHeroImgTag(data['image_url'])
+  if get_rank_from_score(data['tier_score']) == 'S+':
+    splus_attack += pokemon_tier_img_tag
+  elif get_rank_from_score(data['tier_score']) == 'S':
+    s_attack += pokemon_tier_img_tag
+  elif get_rank_from_score(data['tier_score']) == 'A+':
+    a_plus_attack += pokemon_tier_img_tag
+  elif get_rank_from_score(data['tier_score']) == 'A':
+    a_attack += pokemon_tier_img_tag
+  elif get_rank_from_score(data['tier_score']) == 'B':
+    b_attack += pokemon_tier_img_tag
+  elif get_rank_from_score(data['tier_score']) == 'C':
+    c_attack += pokemon_tier_img_tag
+
+for pokemon, data in defense_dict.items():
+  pokemon_tier_img_tag = tag.createHeroImgTag(data['image_url'])
+  if get_rank_from_score(data['tier_score']) == 'S+':
+    splus_defense += pokemon_tier_img_tag
+  elif get_rank_from_score(data['tier_score']) == 'S':
+    s_defense += pokemon_tier_img_tag
+  elif get_rank_from_score(data['tier_score']) == 'A+':
+    a_plus_defense += pokemon_tier_img_tag
+  elif get_rank_from_score(data['tier_score']) == 'A':
+    a_defense += pokemon_tier_img_tag
+  elif get_rank_from_score(data['tier_score']) == 'B':
+    b_defense += pokemon_tier_img_tag
+  elif get_rank_from_score(data['tier_score']) == 'C':
+    c_defense += pokemon_tier_img_tag
+
+for pokemon, data in speed_dict.items():
+  pokemon_tier_img_tag = tag.createHeroImgTag(data['image_url'])
+  if get_rank_from_score(data['tier_score']) == 'S+':
+    splus_speed += pokemon_tier_img_tag
+  elif get_rank_from_score(data['tier_score']) == 'S':
+    s_speed += pokemon_tier_img_tag
+  elif get_rank_from_score(data['tier_score']) == 'A+':
+    a_plus_speed += pokemon_tier_img_tag
+  elif get_rank_from_score(data['tier_score']) == 'A':
+    a_speed += pokemon_tier_img_tag
+  elif get_rank_from_score(data['tier_score']) == 'B':
+    b_speed += pokemon_tier_img_tag
+  elif get_rank_from_score(data['tier_score']) == 'C':
+    c_speed += pokemon_tier_img_tag
+
+for pokemon, data in support_dict.items():
+  pokemon_tier_img_tag = tag.createHeroImgTag(data['image_url'])
+  if get_rank_from_score(data['tier_score']) == 'S+':
+    splus_support += pokemon_tier_img_tag
+  elif get_rank_from_score(data['tier_score']) == 'S':
+    s_support += pokemon_tier_img_tag
+  elif get_rank_from_score(data['tier_score']) == 'A+':
+    a_plus_support += pokemon_tier_img_tag
+  elif get_rank_from_score(data['tier_score']) == 'A':
+    a_support += pokemon_tier_img_tag
+  elif get_rank_from_score(data['tier_score']) == 'B':
+    b_support += pokemon_tier_img_tag
+  elif get_rank_from_score(data['tier_score']) == 'C':
+    c_support += pokemon_tier_img_tag
 
 # タブ始まり
 print('<!-- wp:loos/tab {"tabId":"479b3ce7","tabWidthPC":"flex-50","tabWidthSP":"flex-50","tabHeaders":["バランス","アタック","スピード","ディフェンス","サポート"],"className":"is-style-balloon"} -->')
@@ -267,3 +331,6 @@ print('</tbody></table></figure><!-- /wp:table --></div><!-- /wp:loos/tab-body -
 
 #タブ終わり
 print('</div></div><!-- /wp:loos/tab -->')
+
+
+page.quit()
