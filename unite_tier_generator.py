@@ -39,7 +39,7 @@ def get_rank_from_score(score):
 page = ChromiumPage()
 page.get('https://uniteapi.dev/meta')
 time.sleep(5)
-html = page.run_js('return document.documentElement.outerHTML')
+html = page.html
 soup = BeautifulSoup(html, 'html.parser')
 
 # データをスクレイピングして整形する
