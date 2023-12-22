@@ -101,7 +101,7 @@ df['ban_rate_z'] = (df['ban_rate'] - df['ban_rate'].mean()) / df['ban_rate'].std
 df['interaction'] = df['win_rate_z'] * df['pick_rate_z']
 df['tier_score_z'] = 0.6 * df['win_rate_z'] + 0.25 * df['pick_rate_z'] + 0.15 * df['ban_rate_z'] - 0.2 * df['interaction']
 
-df.to_csv('hero_meta_data.csv', index=True)
+# df.to_csv('hero_meta_data.csv', index=True)
 
 # hero_dictにzscoreを保存する
 hero_dict = {}
