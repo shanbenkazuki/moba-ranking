@@ -1,0 +1,734 @@
+[
+  {
+    "name_jp": "ロイン",
+    "name_en": "Lolita",
+    "role": "Support",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/12/Lolita.webp"
+  },
+  {
+    "name_jp": "フォヴィウス",
+    "name_en": "Phoveus",
+    "role": "Fighter",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/12/Phoveus.webp"
+  },
+  {
+    "name_jp": "ウラノス",
+    "name_en": "Uranus",
+    "role": "Tank",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/12/Uranus.webp"
+  },
+  {
+    "name_jp": "アウルス",
+    "name_en": "Aulus",
+    "role": "Fighter",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/12/Aulus.webp"
+  },
+  {
+    "name_jp": "セシリオン",
+    "name_en": "Cecilion",
+    "role": "Mage",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/12/Cecilion.webp"
+  },
+  {
+    "name_jp": "イヴ",
+    "name_en": "Yve",
+    "role": "Mage",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/12/Yve.webp"
+  },
+  {
+    "name_jp": "バレンティナ",
+    "name_en": "Valentina",
+    "role": "Mage",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/12/Valentina.webp"
+  },
+  {
+    "name_jp": "クリント",
+    "name_en": "Clint",
+    "role": "Marksman",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/12/Clint.webp"
+  },
+  {
+    "name_jp": "ディガー",
+    "name_en": "Diggie",
+    "role": "Support",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/12/Diggie.webp"
+  },
+  {
+    "name_jp": "アルドス",
+    "name_en": "Aldous",
+    "role": "Fighter",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/12/Aldous.webp"
+  },
+  {
+    "name_jp": "エスメラルダ",
+    "name_en": "Esmeralda",
+    "role": "Mage",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/12/Esmeralda.webp"
+  },
+  {
+    "name_jp": "ジミー",
+    "name_en": "Kimmy",
+    "role": "Marksman",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/12/Kimmy.webp"
+  },
+  {
+    "name_jp": "グルー",
+    "name_en": "Gloo",
+    "role": "Tank",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/12/Gloo.webp"
+  },
+  {
+    "name_jp": "ボボル&クバ",
+    "name_en": "Popol and Kupa",
+    "role": "Marksman",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/12/Popol-and-Kupa.webp"
+  },
+  {
+    "name_jp": "リリア",
+    "name_en": "Lylia",
+    "role": "Mage",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/12/Lylia.webp"
+  },
+  {
+    "name_jp": "マチルダ",
+    "name_en": "Mathilda",
+    "role": "Support",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/12/Mathilda.webp"
+  },
+  {
+    "name_jp": "フレイヤ",
+    "name_en": "Freya",
+    "role": "Fighter",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/12/Freya.webp"
+  },
+  {
+    "name_jp": "マーシャ",
+    "name_en": "Masha",
+    "role": "Fighter",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/12/Masha.webp"
+  },
+  {
+    "name_jp": "エレシル",
+    "name_en": "Irithel",
+    "role": "Marksman",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/12/Irithel.webp"
+  },
+  {
+    "name_jp": "ジェイソン",
+    "name_en": "Johnson",
+    "role": "Tank",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/12/Johnson.webp"
+  },
+  {
+    "name_jp": "カチャ",
+    "name_en": "Kaja",
+    "role": "Fighter",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/12/Kaja.webp"
+  },
+  {
+    "name_jp": "ランスロット",
+    "name_en": "Lancelot",
+    "role": "Assassin",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/12/Lancelot.webp"
+  },
+  {
+    "name_jp": "悟空",
+    "name_en": "Sun",
+    "role": "Fighter",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/12/Sun.webp"
+  },
+  {
+    "name_jp": "クッフラー",
+    "name_en": "Khufra",
+    "role": "Tank",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/12/Khufra.webp"
+  },
+  {
+    "name_jp": "カーミラ",
+    "name_en": "Carmilla",
+    "role": "Support",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/12/Carmilla.webp"
+  },
+  {
+    "name_jp": "イスンシン",
+    "name_en": "Yi Sun-shin",
+    "role": "Assassin",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/12/Yi-Sun-shin.webp"
+  },
+  {
+    "name_jp": "ベイン",
+    "name_en": "Bane",
+    "role": "Fighter",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/12/Bane.webp"
+  },
+  {
+    "name_jp": "アルゴス",
+    "name_en": "Argus",
+    "role": "Fighter",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/12/Argus.webp"
+  },
+  {
+    "name_jp": "マイヤ",
+    "name_en": "Miya",
+    "role": "Marksman",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/11/Miya.webp"
+  },
+  {
+    "name_jp": "クラウド",
+    "name_en": "Claude",
+    "role": "Marksman",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/12/Claude.webp"
+  },
+  {
+    "name_jp": "ファニー",
+    "name_en": "Fanny",
+    "role": "Assassin",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/12/Fanny.webp"
+  },
+  {
+    "name_jp": "モスコブ",
+    "name_en": "Moskov",
+    "role": "Marksman",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/11/Moskov.webp"
+  },
+  {
+    "name_jp": "ラファエル",
+    "name_en": "Rafaela",
+    "role": "Support",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/12/Rafaela.webp"
+  },
+  {
+    "name_jp": "カティタ",
+    "name_en": "Kadita",
+    "role": "Mage",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/12/Kadita.webp"
+  },
+  {
+    "name_jp": "カレード",
+    "name_en": "Khaleed",
+    "role": "Fighter",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/12/Khaleed.webp"
+  },
+  {
+    "name_jp": "ハカート",
+    "name_en": "Helcurt",
+    "role": "Assassin",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/12/Helcurt.webp"
+  },
+  {
+    "name_jp": "ヘラクレス",
+    "name_en": "Hylos",
+    "role": "Tank",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/12/Hylos.webp"
+  },
+  {
+    "name_jp": "ゾン",
+    "name_en": "Yu Zhong",
+    "role": "Fighter",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/12/Yu-Zhong.webp"
+  },
+  {
+    "name_jp": "アリス",
+    "name_en": "Alice",
+    "role": "Mage",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/12/Alice.webp"
+  },
+  {
+    "name_jp": "オデット",
+    "name_en": "Odette",
+    "role": "Mage",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/12/Odetto.webp"
+  },
+  {
+    "name_jp": "ビアトリクス",
+    "name_en": "Beatrix",
+    "role": "Marksman",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/12/Beatrix.webp"
+  },
+  {
+    "name_jp": "ルビー",
+    "name_en": "Ruby",
+    "role": "Fighter",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/12/Ruby.webp"
+  },
+  {
+    "name_jp": "サイクロプス",
+    "name_en": "Cyclops",
+    "role": "Mage",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/12/Cyclops.webp"
+  },
+  {
+    "name_jp": "カグラ",
+    "name_en": "Kagura",
+    "role": "Mage",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/12/Kagura.webp"
+  },
+  {
+    "name_jp": "ヴェル",
+    "name_en": "Vale",
+    "role": "Mage",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/12/Vale.webp"
+  },
+  {
+    "name_jp": "ブルーノ",
+    "name_en": "Bruno",
+    "role": "Marksman",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/11/Bruno.webp"
+  },
+  {
+    "name_jp": "琥珀",
+    "name_en": "Wanwan",
+    "role": "Marksman",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/12/Wanwan.webp"
+  },
+  {
+    "name_jp": "ゴセン",
+    "name_en": "Gusion",
+    "role": "Assassin",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/12/Gusion.webp"
+  },
+  {
+    "name_jp": "バラッツ",
+    "name_en": "Barats",
+    "role": "Tank",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/12/Barats.webp"
+  },
+  {
+    "name_jp": "星夢",
+    "name_en": "Lunox",
+    "role": "Mage",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/12/Lunox.webp"
+  },
+  {
+    "name_jp": "ロジャー",
+    "name_en": "Roger",
+    "role": "Fighter",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/12/Roger.webp"
+  },
+  {
+    "name_jp": "エウドラ",
+    "name_en": "Eudora",
+    "role": "Mage",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/12/Eudora.webp"
+  },
+  {
+    "name_jp": "ローイ",
+    "name_en": "Luo Yi",
+    "role": "Mage",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/12/Luo-Yi.webp"
+  },
+  {
+    "name_jp": "フローラ",
+    "name_en": "Floryn",
+    "role": "Support",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/12/Floryn.webp"
+  },
+  {
+    "name_jp": "グレンジャー",
+    "name_en": "Granger",
+    "role": "Marksman",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/12/Granger.webp"
+  },
+  {
+    "name_jp": "玄覇",
+    "name_en": "Baxia",
+    "role": "Tank",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/12/Baxia.webp"
+  },
+  {
+    "name_jp": "半蔵",
+    "name_en": "Hanzo",
+    "role": "Assassin",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/12/Hanzo.webp"
+  },
+  {
+    "name_jp": "寅",
+    "name_en": "Yin",
+    "role": "Fighter",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/12/Yin.webp"
+  },
+  {
+    "name_jp": "セリナ",
+    "name_en": "Selena",
+    "role": "Assassin",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/12/Selena.webp"
+  },
+  {
+    "name_jp": "子龍",
+    "name_en": "Zilong",
+    "role": "Fighter",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/12/Zilong.webp"
+  },
+  {
+    "name_jp": "オーロラ",
+    "name_en": "Aurora",
+    "role": "Mage",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/12/Aurora.webp"
+  },
+  {
+    "name_jp": "嫦娥",
+    "name_en": "Chang'e",
+    "role": "Mage",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/12/Change.webp"
+  },
+  {
+    "name_jp": "フランコ",
+    "name_en": "Franco",
+    "role": "Tank",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/12/Franco.webp"
+  },
+  {
+    "name_jp": "ブロディ",
+    "name_en": "Brody",
+    "role": "Marksman",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/12/Brody.webp"
+  },
+  {
+    "name_jp": "ナタリア",
+    "name_en": "Natalia",
+    "role": "Assassin",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/12/Natalia.webp"
+  },
+  {
+    "name_jp": "隼",
+    "name_en": "Hayabusa",
+    "role": "Assassin",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/12/Hayabusa.webp"
+  },
+  {
+    "name_jp": "アテラス",
+    "name_en": "Atlas",
+    "role": "Tank",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/12/Atlas.webp"
+  },
+  {
+    "name_jp": "リン",
+    "name_en": "Ling",
+    "role": "Assassin",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/12/Ling.webp"
+  },
+  {
+    "name_jp": "ファーサ",
+    "name_en": "Pharsa",
+    "role": "Mage",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/12/Pharsa.webp"
+  },
+  {
+    "name_jp": "ディアス",
+    "name_en": "Dyrroth",
+    "role": "Fighter",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/12/Dyrroth.webp"
+  },
+  {
+    "name_jp": "ベレリック",
+    "name_en": "Belerick",
+    "role": "Tank",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/12/Belerick.webp"
+  },
+  {
+    "name_jp": "ミノタウル",
+    "name_en": "Minotaur",
+    "role": "Tank",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/12/Minotaur.webp"
+  },
+  {
+    "name_jp": "シルバンナ",
+    "name_en": "Silvanna",
+    "role": "Fighter",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/12/Silvanna.webp"
+  },
+  {
+    "name_jp": "メリッサ",
+    "name_en": "Melissa",
+    "role": "Marksman",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/12/Melissa.webp"
+  },
+  {
+    "name_jp": "メタルヘッド",
+    "name_en": "Jawhead",
+    "role": "Fighter",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/12/Jawhead.webp"
+  },
+  {
+    "name_jp": "ガイ",
+    "name_en": "Akai",
+    "role": "Tank",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/12/Akai.webp"
+  },
+  {
+    "name_jp": "イーディス",
+    "name_en": "Edith",
+    "role": "Marksman",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/12/Edith.webp"
+  },
+  {
+    "name_jp": "アンジェラ",
+    "name_en": "Angela",
+    "role": "Support",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/12/Angela.webp"
+  },
+  {
+    "name_jp": "カリナ",
+    "name_en": "Karina",
+    "role": "Assassin",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/12/Karina.webp"
+  },
+  {
+    "name_jp": "ベラ",
+    "name_en": "Benedetta",
+    "role": "Assassin",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/12/Benedetta.webp"
+  },
+  {
+    "name_jp": "ファラミス",
+    "name_en": "Faramis",
+    "role": "Support",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/12/Faramis.webp"
+  },
+  {
+    "name_jp": "パキート",
+    "name_en": "Paquito",
+    "role": "Fighter",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/12/Paquito.webp"
+  },
+  {
+    "name_jp": "ラプラプ",
+    "name_en": "Lapu-Lapu",
+    "role": "Fighter",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/12/Lapu-Lapu.webp"
+  },
+  {
+    "name_jp": "アルカード",
+    "name_en": "Alucard",
+    "role": "Fighter",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/12/Alucard.webp"
+  },
+  {
+    "name_jp": "エスタス",
+    "name_en": "Estes",
+    "role": "Support",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/12/Estes.webp"
+  },
+  {
+    "name_jp": "ハナビ",
+    "name_en": "Hanabi",
+    "role": "Marksman",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/12/Hanabi.webp"
+  },
+  {
+    "name_jp": "セイバー",
+    "name_en": "Saber",
+    "role": "Assassin",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/12/Saber.webp"
+  },
+  {
+    "name_jp": "バターン",
+    "name_en": "Badang",
+    "role": "Fighter",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/12/Badang.webp"
+  },
+  {
+    "name_jp": "ガトートカチャ",
+    "name_en": "Gatotkaca",
+    "role": "Tank",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/12/Gatotkaca.webp"
+  },
+  {
+    "name_jp": "エックス",
+    "name_en": "X.Borg",
+    "role": "Fighter",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/11/X-Borg.webp"
+  },
+  {
+    "name_jp": "ニュート",
+    "name_en": "Natan",
+    "role": "Marksman",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/12/Natan.webp"
+  },
+  {
+    "name_jp": "シュウ",
+    "name_en": "Chou",
+    "role": "Fighter",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/12/Chou.webp"
+  },
+  {
+    "name_jp": "レオモルド",
+    "name_en": "Leomord",
+    "role": "Fighter",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/12/Leomord.webp"
+  },
+  {
+    "name_jp": "ガレック",
+    "name_en": "Grock",
+    "role": "Tank",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/12/Grock.webp"
+  },
+  {
+    "name_jp": "ラズリー",
+    "name_en": "Lesley",
+    "role": "Marksman",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/12/Lesley.webp"
+  },
+  {
+    "name_jp": "ハーリー",
+    "name_en": "Harley",
+    "role": "Assassin",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/12/Harley.webp"
+  },
+  {
+    "name_jp": "バルモンド",
+    "name_en": "Balmond",
+    "role": "Fighter",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/12/Balmond.webp"
+  },
+  {
+    "name_jp": "ヴァリル",
+    "name_en": "Valir",
+    "role": "Mage",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/12/Valir.webp"
+  },
+  {
+    "name_jp": "ヒルダ",
+    "name_en": "Hilda",
+    "role": "Fighter",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/12/Hilda.webp"
+  },
+  {
+    "name_jp": "アルファ",
+    "name_en": "Alpha",
+    "role": "Fighter",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/12/Alpha.webp"
+  },
+  {
+    "name_jp": "グネヴィア",
+    "name_en": "Guinevere",
+    "role": "Fighter",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/12/Guinevere.webp"
+  },
+  {
+    "name_jp": "ザスク",
+    "name_en": "Zhask",
+    "role": "Mage",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/12/Zhask.webp"
+  },
+  {
+    "name_jp": "アモン",
+    "name_en": "Aamon",
+    "role": "Assassin",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/12/Aamon.webp"
+  },
+  {
+    "name_jp": "マイシータール",
+    "name_en": "Minsitthar",
+    "role": "Fighter",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/12/Minsitthar.webp"
+  },
+  {
+    "name_jp": "グールド",
+    "name_en": "Gord",
+    "role": "Mage",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/12/Gord.webp"
+  },
+  {
+    "name_jp": "ナナ",
+    "name_en": "Nana",
+    "role": "Support",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/12/Nana.webp"
+  },
+  {
+    "name_jp": "キャリー",
+    "name_en": "Karrie",
+    "role": "Marksman",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/12/Karrie.webp"
+  },
+  {
+    "name_jp": "デームス",
+    "name_en": "Thamuz",
+    "role": "Fighter",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/12/Thamuz.webp"
+  },
+  {
+    "name_jp": "ティグラル",
+    "name_en": "Tigreal",
+    "role": "Tank",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/12/Tigreal.webp"
+  },
+  {
+    "name_jp": "マーティス",
+    "name_en": "Martis",
+    "role": "Fighter",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/12/Martis.webp"
+  },
+  {
+    "name_jp": "ハリス",
+    "name_en": "Harith",
+    "role": "Mage",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/12/Harith.webp"
+  },
+  {
+    "name_jp": "ライラ",
+    "name_en": "Layla",
+    "role": "Marksman",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/12/Layla.webp"
+  },
+  {
+    "name_jp": "ディスラー",
+    "name_en": "Terizla",
+    "role": "Fighter",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/12/Terizla.webp"
+  },
+  {
+    "name_jp": "サナ",
+    "name_en": "Vexana",
+    "role": "Mage",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/12/Vexana.webp"
+  },
+  {
+    "name_jp": "ザビエル",
+    "name_en": "Xavier",
+    "role": "Mage",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/12/Xavier.webp"
+  },
+  {
+    "name_jp": "ジュリアン",
+    "name_en": "Julian",
+    "role": "Fighter",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/12/Julian.webp"
+  },
+  {
+    "name_jp": "フレッドリン",
+    "name_en": "Fredrinn",
+    "role": "Fighter",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/12/Fredrinn.webp"
+  },
+  {
+    "name_jp": "ジョイ",
+    "name_en": "Joy",
+    "role": "Assassin",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/12/Joy.webp"
+  },
+  {
+    "name_jp": "アーロット",
+    "name_en": "Arlott",
+    "role": "Fighter",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/12/Arlott.webp"
+  },
+  {
+    "name_jp": "ノヴァリア",
+    "name_en": "Novaria",
+    "role": "Mage",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/12/Novaria.webp"
+  },
+  {
+    "name_jp": "イクシア",
+    "name_en": "Ixia",
+    "role": "Marksman",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/12/Ixia.webp"
+  },
+  {
+    "name_jp": "ノーラン",
+    "name_en": "Nolan",
+    "role": "Assassin",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/12/Nolan.webp"
+  }
+]
