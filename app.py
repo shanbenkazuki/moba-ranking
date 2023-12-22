@@ -5,9 +5,18 @@ import json
 from PIL import Image
 from io import BytesIO
 
+# 画像をキャッシュするための関数
+@st.cache_data
+def load_image(url):
+  try:
+    response = requests.get(url)
+    image = Image.open(BytesIO(response.content))
+    return image
+  except Exception as e:
+    return None
+
 # Streamlit アプリ
 st.title('キャラクター評価')
-
 st.header('モバイル・レジェンド')
 
 # mlbb_ranking.jsonを読み込む
@@ -29,12 +38,9 @@ for rank in ["S+", "S", "A+", "A", "B", "C"]:
       # 各画像を表示
       for j, img in enumerate(images[i:i+8]):
         # 画像の読み込み
-        response = requests.get(img['url'])
-        # もしImage.open()でエラーが出たら、そのurlを表示
-        try:
-          image = Image.open(BytesIO(response.content))
-        except:
-          st.write(img['url'])
-          continue
-        # 列に画像を配置
-        cols[j].image(image, caption=img["url"].split('/')[-1].split('.')[0], width=100)
+        image = load_image(img['url'])
+        if image:
+          # 列に画像を配置
+          cols[j].image(image, caption=img["url"].split('/')[-1].split('.')[0], width=100)
+        else:
+          st.write(f"画像を読み込めませんでした: {img['url']}")
