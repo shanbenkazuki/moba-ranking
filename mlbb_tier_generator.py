@@ -43,12 +43,12 @@ driver.get(DISPLAY_URL)
 WebDriverWait(driver, WAIT_TIME).until(EC.element_to_be_clickable((By.XPATH, "//*[@id='mt-cb-policy']/div/div[2]"))).click()
 
 # Mythic+のタブに切り替える
-# WebDriverWait(driver, WAIT_TIME).until(EC.element_to_be_clickable((By.XPATH, "//*[@id='rank']/div[1]/div[2]/ul/li[2]"))).click()
-# rank_level = 'Mythic+'
+WebDriverWait(driver, WAIT_TIME).until(EC.element_to_be_clickable((By.XPATH, "//*[@id='rank']/div[1]/div[2]/ul/li[2]"))).click()
+rank_level = 'Mythic+'
 
 # Mythic Glory+のタブに切り替える
-WebDriverWait(driver, WAIT_TIME).until(EC.element_to_be_clickable((By.XPATH, "//*[@id='rank']/div[1]/div[2]/ul/li[3]"))).click()
-rank_level = 'Mythic Glory+'
+# WebDriverWait(driver, WAIT_TIME).until(EC.element_to_be_clickable((By.XPATH, "//*[@id='rank']/div[1]/div[2]/ul/li[3]"))).click()
+# rank_level = 'Mythic Glory+'
 
 # 画面が表示されるまで待つ
 WebDriverWait(driver, WAIT_TIME).until(
