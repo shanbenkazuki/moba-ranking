@@ -56,6 +56,8 @@ for key, value in get_pokemon_data().items():
 win_rate_list = soup.select('#content-container > div > div.sc-eaff77bf-0.fJbBUh > div:nth-child(3) > div > div > table > tbody > tr')
 for pokemon_rate in win_rate_list:
   pokemon_name, win_rate = get_pokemon_info(pokemon_rate)
+  if pokemon_name == 'Meowscara':
+    pokemon_name = 'Meowscarada'
   if pokemon_name in pokemon_tier_data:
     pokemon_tier_data[pokemon_name]['win_rate'] = win_rate
 
@@ -63,7 +65,11 @@ for pokemon_rate in win_rate_list:
 pick_rate_list = soup.select('#content-container > div > div.sc-eaff77bf-0.fJbBUh > div:nth-child(1) > div > div > table > tbody > tr')
 for pokemon_rate in pick_rate_list:
   pokemon_name, pick_rate = get_pokemon_info(pokemon_rate)
+  # もしpokemon_nameがMeowscaraならMeowscaradaに変更
+  if pokemon_name == 'Meowscara':
+    pokemon_name = 'Meowscarada'
   if pokemon_name in pokemon_tier_data:
+    # print(pokemon_name)
     pokemon_tier_data[pokemon_name]['pick_rate'] = pick_rate
 
 # データベースに保存
