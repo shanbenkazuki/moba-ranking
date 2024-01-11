@@ -4,7 +4,7 @@ import sqlite3
 import time
 
 from selenium import webdriver
-from webdriver_manager.chrome import ChromeDriverManager
+# from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.common.by import By
 from bs4 import BeautifulSoup
 from fetch_moba_database import get_hero_data
@@ -30,12 +30,13 @@ def get_rank_from_score(score):
 DISPLAY_URL = "https://m.mobilelegends.com/en/rank"
 WAIT_TIME = 10
 
-chrome_options = Options()
-chrome_options.binary_location = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
+# chrome_options = Options()
+# chrome_options.binary_location = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
 
-service = Service(ChromeDriverManager().install())
+# service = Service(ChromeDriverManager().install())
+service = Service('/usr/local/bin/chromedriver')
 
-driver = webdriver.Chrome(service=service, options=chrome_options)
+driver = webdriver.Chrome(service=service)
 driver.implicitly_wait(WAIT_TIME)
 driver.get(DISPLAY_URL)
 
@@ -62,6 +63,10 @@ rateList = BeautifulSoup(driver.page_source, 'html.parser').select(".slotwrapper
 hero_meta_data = {}
 for heroRate in rateList:
   heroEn = heroRate.span.string
+  print(heroEn)
+  # x.borgはx-borgに変換する
+  # if heroEn == 'X.Borg':
+  #   heroEn = 'X-Borg'
   winRatePoint = heroRate.contents[2].string.split("%")[0]
   popRatePoint = heroRate.contents[4].string.split("%")[0]
   banRatePoint = heroRate.contents[6].string.split("%")[0]
