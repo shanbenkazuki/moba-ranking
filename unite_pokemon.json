@@ -353,16 +353,22 @@
     "article_url": "https://shanbenzzz.com/pokemon-unite/pokemon/style/all-rounder/mimikyu",
     "image_url": "https://shanbenzzz.com/wp-content/uploads/2023/10/mimikyu.webp"
   },
-  "Meowscarada" : {
-  "name": "マスカーニャ",
-  "style": "speedster",
-  "article_url": "",
-  "image_url": "https://shanbenzzz.com/wp-content/uploads/2024/01/Meowscarada.webp"
+    "Meowscarada" : {
+    "name": "マスカーニャ",
+    "style": "speedster",
+    "article_url": "",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2024/01/Meowscarada.webp"
   },
     "Metagross": {
     "name": "メタグロス",
     "style": "all-rounder",
     "article_url": "",
     "image_url": "https://shanbenzzz.com/wp-content/uploads/2024/01/Metagross.webp"
+  },
+    "Gyarados": {
+    "name": "ギャラドス",
+    "style": "all-rounder",
+    "article_url": "",
+    "image_url": "https://shanbenzzz.com/wp-content/uploads/2024/02/gyarados.webp"
   }
 }

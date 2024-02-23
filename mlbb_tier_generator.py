@@ -4,7 +4,7 @@ import sqlite3
 import time
 
 from selenium import webdriver
-# from webdriver_manager.chrome import ChromeDriverManager
+from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.common.by import By
 from bs4 import BeautifulSoup
 from fetch_moba_database import get_hero_data
@@ -30,11 +30,11 @@ def get_rank_from_score(score):
 DISPLAY_URL = "https://m.mobilelegends.com/en/rank"
 WAIT_TIME = 10
 
-# chrome_options = Options()
-# chrome_options.binary_location = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
+chrome_options = Options()
+chrome_options.binary_location = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
 
-# service = Service(ChromeDriverManager().install())
-service = Service('/usr/local/bin/chromedriver')
+service = Service(ChromeDriverManager().install())
+# service = Service('/usr/local/bin/chromedriver')
 
 driver = webdriver.Chrome(service=service)
 driver.implicitly_wait(WAIT_TIME)

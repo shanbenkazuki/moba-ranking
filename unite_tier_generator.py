@@ -51,10 +51,13 @@ for key, value in get_pokemon_data().items():
   # 新しい辞書にポケモン名とそのstyleを追加
   pokemon_tier_data[key] = {'style': pokemon_style}
   pokemon_tier_data[key]['image_url'] = value['image_url']
+  pokemon_tier_data[key]['win_rate'] = None
+  pokemon_tier_data[key]['pick_rate'] = None
 
 # 勝率を取得
 win_rate_list = soup.select('#content-container > div > div.sc-eaff77bf-0.fJbBUh > div:nth-child(3) > div > div > table > tbody > tr')
 for pokemon_rate in win_rate_list:
+  print(pokemon_rate)
   pokemon_name, win_rate = get_pokemon_info(pokemon_rate)
   if pokemon_name == 'Meowscara':
     pokemon_name = 'Meowscarada'
@@ -72,6 +75,7 @@ for pokemon_rate in pick_rate_list:
     # print(pokemon_name)
     pokemon_tier_data[pokemon_name]['pick_rate'] = pick_rate
 
+
 # データベースに保存
 # 参照日を取得
 text = soup.select_one('#content-container > div > h3').get_text(strip=True)
@@ -87,6 +91,7 @@ VALUES (?, ?, ?, ?)
 '''
 
 for hero, data_dict in pokemon_tier_data.items():
+  print(data_dict)
   try:
     c.execute(insert_query, (hero, data_dict['win_rate'], data_dict['pick_rate'], reference_date))
   except sqlite3.IntegrityError:
