@@ -41,6 +41,21 @@ def is_duplicate_entry(cursor, reference_date, name):
   return count > 0
 
 def get_pokemon_data():
+  """
+    ポケモンのデータをデータベースから取得し、処理された形式で返します。
+
+    Returns:
+        dict: 処理されたポケモンのデータを格納した辞書型。
+              キーはポケモンの英語名、値は各ポケモンの詳細情報を格納した辞書型。
+              詳細情報の辞書型には以下のキーが含まれます。
+              - "name_jp": ポケモンの日本語名
+              - "style": ポケモンのスタイル
+              - "article_url": ポケモンの記事URL
+              - "image_url": ポケモンの画像URL
+
+    Raises:
+        DatabaseError: データベース接続エラーが発生した場合。
+  """
   conn = get_db_connection()
   cursor = conn.cursor()
   query = "SELECT name, name_en, style, article_url, image_url FROM unite_pokemon_info"
@@ -59,6 +74,30 @@ def get_pokemon_data():
   cursor.close()
   conn.close()
   return processed_data
+
+def get_pokemon_data(columns):
+    """
+    指定された列のポケモンデータをデータベースから取得し、リスト型で返します。
+
+    Args:
+        columns (list): 取得する列名のリスト。
+
+    Returns:
+        list: 指定された列のポケモンデータを格納したリスト型。
+
+    Raises:
+        DatabaseError: データベース接続エラーが発生した場合。
+    """
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    columns_str = ", ".join(columns)
+    query = f"SELECT {columns_str} FROM unite_pokemon_info"
+    cursor.execute(query)
+    rows = cursor.fetchall()
+    pokemon_data = [tuple(row) for row in rows]
+    cursor.close()
+    conn.close()
+    return pokemon_data
 
 
 def get_hero_data():
