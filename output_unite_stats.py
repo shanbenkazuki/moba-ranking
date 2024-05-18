@@ -10,7 +10,6 @@ from fetch_moba_database import get_pokemon_data
 async def main():
     # データベースからポケモンの名前を取得
     pokemon_names = get_pokemon_data(["name_en"])
-    # print(pokemon_names)
 
     browser = await uc.start()
     page = await browser.get('https://uniteapi.dev/meta')
@@ -18,7 +17,6 @@ async def main():
     await page.wait(10)
 
     game_info = await page.query_selector('#__next > div.sc-bd5970f2-0.krVYZr > div.sc-eaff77bf-0.bvmFlh > h3')
-    # print(game_info.text_all)
 
     # 日付の抽出
     date_match = re.search(r"(\d{1,2}\s\w+\s\d{4})", game_info.text_all)
@@ -35,15 +33,11 @@ async def main():
         stats_date = None
 
     # ゲーム数の抽出
-    # print(game_info.text_all)
     game_count_match = re.search(r"(\d+)\s*games", game_info.text_all)
     if game_count_match:
         game_count = int(game_count_match.group(1))
     else:
         game_count = None
-
-    # print(f"stats_date: {stats_date}")
-    # print(f"game_count: {game_count}")
 
     # 勝率を取得
     win_rates = {}
@@ -71,9 +65,6 @@ async def main():
                 win_rate = win_rate_element.attrs.get('value')
             win_rates[pokemon_name] = win_rate
 
-    # print("win_rates")
-    # print(win_rates)
-
     # ピック率を取得
     pick_rates = {}
     pick_rate_selector = '#__next > div.sc-bd5970f2-0.krVYZr > div.sc-eaff77bf-0.bvmFlh > div.sc-eaff77bf-0.fJbBUh > div:nth-child(2) > div > div'
@@ -99,9 +90,6 @@ async def main():
             if pick_rate_element:
                 pick_rate = pick_rate_element.attrs.get('value')
             pick_rates[pokemon_name] = pick_rate
-
-    # print("pick_rates")
-    # print(pick_rates)
 
     # バン率を取得
     ban_rates = {}
@@ -129,9 +117,6 @@ async def main():
                 ban_rate = ban_rate_element.attrs.get('value')
             ban_rates[pokemon_name] = ban_rate
 
-    # print("ban_rates")
-    # print(ban_rates)
-
     # 出力先のディレクトリを指定
     output_dir = "stats/unite"
 
@@ -153,56 +138,6 @@ async def main():
             writer.writerow([name, win_rate, pick_rate, ban_rate])  # データ行を書き込む
 
     print(f"CSV file '{filename}' has been created.")
-
-
-
-    # rate_selector = '#__next > div.sc-bd5970f2-0.krVYZr > div.sc-eaff77bf-0.bvmFlh > div.sc-17dce764-1.cleyPt'
-    # win_rate_html = await page.query_selector(rate_selector)
-
-    # pokemon_data = []
-
-    # if win_rate_html:
-    #     pokemon_elements = await win_rate_html.query_selector_all('.chakra-stack.css-19r6kcj')
-
-    #     # win rateを取得
-    #     for pokemon_element in pokemon_elements:
-    #         name_element = await pokemon_element.query_selector('.sc-7bda52f2-1.jrvggu')
-    #         win_rate_element = await pokemon_element.query_selector('.sc-71f8e1a4-1')
-
-    #         if name_element and win_rate_element:
-    #             name = name_element.text
-    #             if name == 'Mewtwo':
-    #                 img_element = await pokemon_element.query_selector('img')
-    #                 if img_element:
-    #                     img_src = img_element.attrs.get('src')
-    #                     if 'MewtwoY' in img_src:
-    #                         name = 'MewtwoY'
-    #                     elif 'MewtwoX' in img_src:
-    #                         name = 'MewtwoX'
-    #             win_rate = win_rate_element.text
-    #             win_rate = win_rate.strip('%')
-
-    #             pokemon_data.append({
-    #                 'name_en': name,
-    #                 'win_rate': win_rate
-    #             })
-    # else:
-    #     print('win rate not found')
-    #     browser.stop()
-
-    # # pick rateのタブのエレメントを取得
-    # element = await page.query_selector('#__next > div.sc-bd5970f2-0.krVYZr > div.sc-eaff77bf-0.bvmFlh > div:nth-child(6) > div > div:nth-child(2)')
-    # print(element)
-    # # クリック
-    # await element.click()
-    # await page.wait(6)
-
-    # pick_rate_html = await page.query_selector(rate_selector)
-
-    
-    # print(json.dumps(pokemon_data, indent=2))
-
-
 
 if __name__ == '__main__':
 
