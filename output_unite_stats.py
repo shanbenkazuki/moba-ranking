@@ -1,5 +1,4 @@
 import asyncio
-import json
 import nodriver as uc
 import re
 import csv
