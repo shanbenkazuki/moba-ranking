@@ -72,7 +72,7 @@ df = df[['hero', 'win_rate', 'pick_rate', 'ban_rate', 'z_score']]
 
 reference_date = BeautifulSoup(driver.page_source, 'html.parser').select_one("#rank > div.header > div:nth-child(1) > ul > li").text
 
-output_folder = "stats/mlbb"
+output_folder = "/Users/yamamotokazuki/develop/moba-ranking-rails/db/csv/hero_rates"
 
 try:
     # CSVファイルに出力

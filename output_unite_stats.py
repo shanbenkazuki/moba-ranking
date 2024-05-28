@@ -117,7 +117,7 @@ async def main():
             ban_rates[pokemon_name] = ban_rate
 
     # 出力先のディレクトリを指定
-    output_dir = "stats/unite"
+    output_dir = "/Users/yamamotokazuki/develop/moba-ranking-rails/db/csv/pokemon_rates"
 
     # 出力先のディレクトリが存在しない場合は作成
     os.makedirs(output_dir, exist_ok=True)
