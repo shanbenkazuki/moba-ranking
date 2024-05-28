@@ -123,12 +123,12 @@ async def main():
     os.makedirs(output_dir, exist_ok=True)
 
     # CSVファイル名を作成
-    filename = f"{output_dir}/pokemon_stats_{stats_date}_{game_count}.csv"
+    filename = f"{output_dir}/pokemon_rates_{stats_date}_{game_count}.csv"
 
     # CSVファイルに書き込む
     with open(filename, 'w', newline='') as file:
         writer = csv.writer(file)
-        writer.writerow(['Pokemon', 'Win Rate', 'Pick Rate', 'Ban Rate'])  # ヘッダー行を書き込む
+        writer.writerow(['Pokemon', 'win_rate', 'pick_rate', 'ban_rate'])  # ヘッダー行を書き込む
         for pokemon in pokemon_names:
             name = pokemon[0]
             win_rate = win_rates.get(name, '-')

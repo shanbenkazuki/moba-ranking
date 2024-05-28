@@ -76,7 +76,7 @@ output_folder = "/Users/yamamotokazuki/develop/moba-ranking-rails/db/csv/hero_ra
 
 try:
     # CSVファイルに出力
-    csv_filename = f"{output_folder}/hero_stats_{reference_date}.csv"
+    csv_filename = f"{output_folder}/hero_rates_{reference_date}.csv"
     df.to_csv(csv_filename, index=False)
     print(f"CSVファイル '{csv_filename}' の出力に成功しました。")
 except Exception as e:
