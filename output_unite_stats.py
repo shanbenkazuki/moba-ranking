@@ -13,12 +13,12 @@ async def main():
     browser = await uc.start()
     page = await browser.get('https://uniteapi.dev/meta')
 
-    await page.wait(10)
+    await page.wait(5)
 
     game_info = await page.query_selector('#__next > div.sc-bd5970f2-0.krVYZr > div.sc-eaff77bf-0.bvmFlh > h3')
 
     # 日付の抽出
-    date_match = re.search(r"(\d{1,2}\s\w+\s\d{4})", game_info.text_all)
+    date_match = re.search(r"(\w+\s\d{1,2})", game_info.text_all)
     if date_match:
         english_date = date_match.group(1)
         # 英語の日付を日本語の形式に変換
@@ -27,7 +27,7 @@ async def main():
             "January": "01", "February": "02", "March": "03", "April": "04", "May": "05", "June": "06",
             "July": "07", "August": "08", "September": "09", "October": "10", "November": "11", "December": "12"
         }
-        stats_date = f"{stats_date[2]}-{month_dict[stats_date[1]]}-{stats_date[0].zfill(2)}"
+        stats_date = f"2024-{month_dict[stats_date[0]]}-{stats_date[1].zfill(2)}"
     else:
         stats_date = None
 
