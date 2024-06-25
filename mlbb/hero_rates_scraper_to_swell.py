@@ -19,6 +19,7 @@ from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from datetime import datetime
 
 # ヒーローのスコアに基づいてランクを決定する
 def get_rank_from_score(score):
@@ -302,111 +303,91 @@ for hero, data in mage_hero_dict.items():
     elif get_rank_from_score(data['z_score']) == 'C':
         c_mage_hero += tier_hero_img_tag
 
-# タブ始まり
-print('<!-- wp:loos/tab {"tabId":"55c27d22","tabWidthPC":"flex-50","tabHeaders":["ファイター","メイジ","タンク","アサシン","ハンター","サポート"],"className":"is-style-balloon"} -->')
-print('<div class="swell-block-tab is-style-balloon" data-width-pc="flex-50" data-width-sp="auto"><ul class="c-tabList" role="tablist"><li class="c-tabList__item" role="presentation"><button role="tab" class="c-tabList__button" aria-selected="true" aria-controls="tab-55c27d22-0" data-onclick="tabControl">ファイター</button></li><li class="c-tabList__item" role="presentation"><button role="tab" class="c-tabList__button" aria-selected="false" aria-controls="tab-55c27d22-1" data-onclick="tabControl">メイジ</button></li><li class="c-tabList__item" role="presentation"><button role="tab" class="c-tabList__button" aria-selected="false" aria-controls="tab-55c27d22-2" data-onclick="tabControl">タンク</button></li><li class="c-tabList__item" role="presentation"><button role="tab" class="c-tabList__button" aria-selected="false" aria-controls="tab-55c27d22-3" data-onclick="tabControl">アサシン</button></li><li class="c-tabList__item" role="presentation"><button role="tab" class="c-tabList__button" aria-selected="false" aria-controls="tab-55c27d22-4" data-onclick="tabControl">ハンター</button></li><li class="c-tabList__item" role="presentation"><button role="tab" class="c-tabList__button" aria-selected="false" aria-controls="tab-55c27d22-5" data-onclick="tabControl">サポート</button></li></ul><div class="c-tabBody">')
+# 出力ディレクトリを作成（存在しない場合）
+output_dir = 'mlbb/swell_text'
+os.makedirs(output_dir, exist_ok=True)
 
-# Fighter
-print('<!-- wp:loos/tab-body {"tabId":"55c27d22"} --><div id="tab-55c27d22-0" class="c-tabBody__item" aria-hidden="false"><!-- wp:table {"className":"is-style-regular is-all-centered\u002d\u002dva td_to_th_"} --><figure class="wp-block-table is-style-regular is-all-centered--va td_to_th_"><table><tbody>')
-# tr追加場所
-# S+
-print(tag.create_tr_splus_start_tag() + splus_fighter_hero + tag.create_tr_end_tag())
-# S
-print(tag.create_tr_s_start_tag() + s_fighter_hero + tag.create_tr_end_tag())
-# A+
-print(tag.create_tr_aplus_start_tag() + aplus_fighter_hero + tag.create_tr_end_tag())
-# A
-print(tag.create_tr_a_start_tag() + a_fighter_hero + tag.create_tr_end_tag())
-# B
-print(tag.create_tr_b_start_tag() + b_fighter_hero + tag.create_tr_end_tag())
-# C
-print(tag.create_tr_c_start_tag() + c_fighter_hero + tag.create_tr_end_tag())
-print('</tbody></table></figure><!-- /wp:table --></div><!-- /wp:loos/tab-body -->')
+reference_date_str = BeautifulSoup(driver.page_source, 'html.parser').select_one("#root > div > div.mt-2673591.mt-empty > div > div.mt-2693420.mt-empty > div.mt-2693423.mt-empty > div.mt-2693419.mt-text > span").text
 
-# Mage
-print('<!-- wp:loos/tab-body {"id":1,"tabId":"55c27d22"} --><div id="tab-55c27d22-1" class="c-tabBody__item" aria-hidden="true"><!-- wp:table {"className":"is-style-regular is-all-centered\u002d\u002dva td_to_th_"} --><figure class="wp-block-table is-style-regular is-all-centered--va td_to_th_"><table><tbody>')
-# tr追加場所
-# S+
-print(tag.create_tr_splus_start_tag() + splus_mage_hero + tag.create_tr_end_tag())
-# S
-print(tag.create_tr_s_start_tag() + s_mage_hero + tag.create_tr_end_tag())
-# A+
-print(tag.create_tr_aplus_start_tag() + aplus_mage_hero + tag.create_tr_end_tag())
-# A
-print(tag.create_tr_a_start_tag() + a_mage_hero + tag.create_tr_end_tag())
-# B
-print(tag.create_tr_b_start_tag() + b_mage_hero + tag.create_tr_end_tag())
-# C
-print(tag.create_tr_c_start_tag() + c_mage_hero + tag.create_tr_end_tag())
-print('</tbody></table></figure><!-- /wp:table --></div><!-- /wp:loos/tab-body -->')
+reference_date = datetime.strptime(reference_date_str, '%d-%m-%Y %H:%M:%S').strftime('%Y-%m-%d')
 
-# Tank
-print('<!-- wp:loos/tab-body {"id":2,"tabId":"55c27d22"} --><div id="tab-55c27d22-2" class="c-tabBody__item" aria-hidden="true"><!-- wp:table {"className":"is-style-regular is-all-centered\u002d\u002dva td_to_th_"} --><figure class="wp-block-table is-style-regular is-all-centered--va td_to_th_"><table><tbody>')
-# tr追加場所
-# S+
-print(tag.create_tr_splus_start_tag() + splus_tank_hero + tag.create_tr_end_tag())
-# S
-print(tag.create_tr_s_start_tag() + s_tank_hero + tag.create_tr_end_tag())
-# A+
-print(tag.create_tr_aplus_start_tag() + aplus_tank_hero + tag.create_tr_end_tag())
-# A
-print(tag.create_tr_a_start_tag() + a_tank_hero + tag.create_tr_end_tag())
-# B
-print(tag.create_tr_b_start_tag() + b_tank_hero + tag.create_tr_end_tag())
-# C
-print(tag.create_tr_c_start_tag() + c_tank_hero + tag.create_tr_end_tag())
-print('</tbody></table></figure><!-- /wp:table --></div><!-- /wp:loos/tab-body -->')
+# 出力ファイルのパスを設定（日付を含む）
+output_file = os.path.join(output_dir, f'tier_{reference_date}.txt')
 
-# Assassin
-print('<!-- wp:loos/tab-body {"id":3,"tabId":"55c27d22"} --><div id="tab-55c27d22-3" class="c-tabBody__item" aria-hidden="true"><!-- wp:table {"className":"is-style-regular is-all-centered\u002d\u002dva td_to_th_"} --><figure class="wp-block-table is-style-regular is-all-centered--va td_to_th_"><table><tbody>')
-# tr追加場所
-# S+
-print(tag.create_tr_splus_start_tag() + splus_assassin_hero + tag.create_tr_end_tag())
-# S
-print(tag.create_tr_s_start_tag() + s_assassin_hero + tag.create_tr_end_tag())
-# A+
-print(tag.create_tr_aplus_start_tag() + aplus_assassin_hero + tag.create_tr_end_tag())
-# A
-print(tag.create_tr_a_start_tag() + a_assassin_hero + tag.create_tr_end_tag())
-# B
-print(tag.create_tr_b_start_tag() + b_assassin_hero + tag.create_tr_end_tag())
-# C
-print(tag.create_tr_c_start_tag() + c_assassin_hero + tag.create_tr_end_tag())
-print('</tbody></table></figure><!-- /wp:table --></div><!-- /wp:loos/tab-body -->')
+# ファイルに書き込む
+with open(output_file, 'w', encoding='utf-8') as f:
+    # タブ始まり
+    f.write('<!-- wp:loos/tab {"tabId":"55c27d22","tabWidthPC":"flex-50","tabHeaders":["ファイター","メイジ","タンク","アサシン","ハンター","サポート"],"className":"is-style-balloon"} -->\n')
+    f.write('<div class="swell-block-tab is-style-balloon" data-width-pc="flex-50" data-width-sp="auto"><ul class="c-tabList" role="tablist"><li class="c-tabList__item" role="presentation"><button role="tab" class="c-tabList__button" aria-selected="true" aria-controls="tab-55c27d22-0" data-onclick="tabControl">ファイター</button></li><li class="c-tabList__item" role="presentation"><button role="tab" class="c-tabList__button" aria-selected="false" aria-controls="tab-55c27d22-1" data-onclick="tabControl">メイジ</button></li><li class="c-tabList__item" role="presentation"><button role="tab" class="c-tabList__button" aria-selected="false" aria-controls="tab-55c27d22-2" data-onclick="tabControl">タンク</button></li><li class="c-tabList__item" role="presentation"><button role="tab" class="c-tabList__button" aria-selected="false" aria-controls="tab-55c27d22-3" data-onclick="tabControl">アサシン</button></li><li class="c-tabList__item" role="presentation"><button role="tab" class="c-tabList__button" aria-selected="false" aria-controls="tab-55c27d22-4" data-onclick="tabControl">ハンター</button></li><li class="c-tabList__item" role="presentation"><button role="tab" class="c-tabList__button" aria-selected="false" aria-controls="tab-55c27d22-5" data-onclick="tabControl">サポート</button></li></ul><div class="c-tabBody">\n')
 
-# Marksman
-print('<!-- wp:loos/tab-body {"id":4,"tabId":"55c27d22"} --><div id="tab-55c27d22-4" class="c-tabBody__item" aria-hidden="true"><!-- wp:table {"className":"is-style-regular is-all-centered\u002d\u002dva td_to_th_"} --><figure class="wp-block-table is-style-regular is-all-centered--va td_to_th_"><table><tbody>')
-# tr追加場所
-# S+
-print(tag.create_tr_splus_start_tag() + splus_marksman_hero + tag.create_tr_end_tag())
-# S
-print(tag.create_tr_s_start_tag() + s_marksman_hero + tag.create_tr_end_tag())
-# A+
-print(tag.create_tr_aplus_start_tag() + aplus_marksman_hero + tag.create_tr_end_tag())
-# A
-print(tag.create_tr_a_start_tag() + a_marksman_hero + tag.create_tr_end_tag())
-# B
-print(tag.create_tr_b_start_tag() + b_marksman_hero + tag.create_tr_end_tag())
-# C
-print(tag.create_tr_c_start_tag() + c_marksman_hero + tag.create_tr_end_tag())
-print('</tbody></table></figure><!-- /wp:table --></div><!-- /wp:loos/tab-body -->')
+    # Fighter
+    f.write('<!-- wp:loos/tab-body {"tabId":"55c27d22"} --><div id="tab-55c27d22-0" class="c-tabBody__item" aria-hidden="false"><!-- wp:table {"className":"is-style-regular is-all-centered\u002d\u002dva td_to_th_"} --><figure class="wp-block-table is-style-regular is-all-centered--va td_to_th_"><table><tbody>\n')
+    # tr追加場所
+    # S+
+    f.write(tag.create_tr_splus_start_tag() + splus_fighter_hero + tag.create_tr_end_tag() + '\n')
+    # S
+    f.write(tag.create_tr_s_start_tag() + s_fighter_hero + tag.create_tr_end_tag() + '\n')
+    # A+
+    f.write(tag.create_tr_aplus_start_tag() + aplus_fighter_hero + tag.create_tr_end_tag() + '\n')
+    # A
+    f.write(tag.create_tr_a_start_tag() + a_fighter_hero + tag.create_tr_end_tag() + '\n')
+    # B
+    f.write(tag.create_tr_b_start_tag() + b_fighter_hero + tag.create_tr_end_tag() + '\n')
+    # C
+    f.write(tag.create_tr_c_start_tag() + c_fighter_hero + tag.create_tr_end_tag() + '\n')
+    f.write('</tbody></table></figure><!-- /wp:table --></div><!-- /wp:loos/tab-body -->\n')
 
-# Support
-print('<!-- wp:loos/tab-body {"id":5,"tabId":"55c27d22"} --><div id="tab-55c27d22-5" class="c-tabBody__item" aria-hidden="true"><!-- wp:table {"className":"is-style-regular is-all-centered\u002d\u002dva td_to_th_"} --><figure class="wp-block-table is-style-regular is-all-centered--va td_to_th_"><table><tbody>')
-# tr追加場所
-# S+
-print(tag.create_tr_splus_start_tag() + splus_support_hero + tag.create_tr_end_tag())
-# S
-print(tag.create_tr_s_start_tag() + s_support_hero + tag.create_tr_end_tag())
-# A+
-print(tag.create_tr_aplus_start_tag() + aplus_support_hero + tag.create_tr_end_tag())
-# A
-print(tag.create_tr_a_start_tag() + a_support_hero + tag.create_tr_end_tag())
-# B
-print(tag.create_tr_b_start_tag() + b_support_hero + tag.create_tr_end_tag())
-# C
-print(tag.create_tr_c_start_tag() + c_support_hero + tag.create_tr_end_tag())
-print('</tbody></table></figure><!-- /wp:table --></div><!-- /wp:loos/tab-body -->')
+    # Mage
+    f.write('<!-- wp:loos/tab-body {"id":1,"tabId":"55c27d22"} --><div id="tab-55c27d22-1" class="c-tabBody__item" aria-hidden="true"><!-- wp:table {"className":"is-style-regular is-all-centered\u002d\u002dva td_to_th_"} --><figure class="wp-block-table is-style-regular is-all-centered--va td_to_th_"><table><tbody>\n')
+    f.write(tag.create_tr_splus_start_tag() + splus_mage_hero + tag.create_tr_end_tag() + '\n')
+    f.write(tag.create_tr_s_start_tag() + s_mage_hero + tag.create_tr_end_tag() + '\n')
+    f.write(tag.create_tr_aplus_start_tag() + aplus_mage_hero + tag.create_tr_end_tag() + '\n')
+    f.write(tag.create_tr_a_start_tag() + a_mage_hero + tag.create_tr_end_tag() + '\n')
+    f.write(tag.create_tr_b_start_tag() + b_mage_hero + tag.create_tr_end_tag() + '\n')
+    f.write(tag.create_tr_c_start_tag() + c_mage_hero + tag.create_tr_end_tag() + '\n')
+    f.write('</tbody></table></figure><!-- /wp:table --></div><!-- /wp:loos/tab-body -->\n')
 
-#タブ終わり
-print('</div></div><!-- /wp:loos/tab -->')
+    # Tank
+    f.write('<!-- wp:loos/tab-body {"id":2,"tabId":"55c27d22"} --><div id="tab-55c27d22-2" class="c-tabBody__item" aria-hidden="true"><!-- wp:table {"className":"is-style-regular is-all-centered\u002d\u002dva td_to_th_"} --><figure class="wp-block-table is-style-regular is-all-centered--va td_to_th_"><table><tbody>\n')
+    f.write(tag.create_tr_splus_start_tag() + splus_tank_hero + tag.create_tr_end_tag() + '\n')
+    f.write(tag.create_tr_s_start_tag() + s_tank_hero + tag.create_tr_end_tag() + '\n')
+    f.write(tag.create_tr_aplus_start_tag() + aplus_tank_hero + tag.create_tr_end_tag() + '\n')
+    f.write(tag.create_tr_a_start_tag() + a_tank_hero + tag.create_tr_end_tag() + '\n')
+    f.write(tag.create_tr_b_start_tag() + b_tank_hero + tag.create_tr_end_tag() + '\n')
+    f.write(tag.create_tr_c_start_tag() + c_tank_hero + tag.create_tr_end_tag() + '\n')
+    f.write('</tbody></table></figure><!-- /wp:table --></div><!-- /wp:loos/tab-body -->\n')
+
+    # Assassin
+    f.write('<!-- wp:loos/tab-body {"id":3,"tabId":"55c27d22"} --><div id="tab-55c27d22-3" class="c-tabBody__item" aria-hidden="true"><!-- wp:table {"className":"is-style-regular is-all-centered\u002d\u002dva td_to_th_"} --><figure class="wp-block-table is-style-regular is-all-centered--va td_to_th_"><table><tbody>\n')
+    f.write(tag.create_tr_splus_start_tag() + splus_assassin_hero + tag.create_tr_end_tag() + '\n')
+    f.write(tag.create_tr_s_start_tag() + s_assassin_hero + tag.create_tr_end_tag() + '\n')
+    f.write(tag.create_tr_aplus_start_tag() + aplus_assassin_hero + tag.create_tr_end_tag() + '\n')
+    f.write(tag.create_tr_a_start_tag() + a_assassin_hero + tag.create_tr_end_tag() + '\n')
+    f.write(tag.create_tr_b_start_tag() + b_assassin_hero + tag.create_tr_end_tag() + '\n')
+    f.write(tag.create_tr_c_start_tag() + c_assassin_hero + tag.create_tr_end_tag() + '\n')
+    f.write('</tbody></table></figure><!-- /wp:table --></div><!-- /wp:loos/tab-body -->\n')
+
+    # Marksman
+    f.write('<!-- wp:loos/tab-body {"id":4,"tabId":"55c27d22"} --><div id="tab-55c27d22-4" class="c-tabBody__item" aria-hidden="true"><!-- wp:table {"className":"is-style-regular is-all-centered\u002d\u002dva td_to_th_"} --><figure class="wp-block-table is-style-regular is-all-centered--va td_to_th_"><table><tbody>\n')
+    f.write(tag.create_tr_splus_start_tag() + splus_marksman_hero + tag.create_tr_end_tag() + '\n')
+    f.write(tag.create_tr_s_start_tag() + s_marksman_hero + tag.create_tr_end_tag() + '\n')
+    f.write(tag.create_tr_aplus_start_tag() + aplus_marksman_hero + tag.create_tr_end_tag() + '\n')
+    f.write(tag.create_tr_a_start_tag() + a_marksman_hero + tag.create_tr_end_tag() + '\n')
+    f.write(tag.create_tr_b_start_tag() + b_marksman_hero + tag.create_tr_end_tag() + '\n')
+    f.write(tag.create_tr_c_start_tag() + c_marksman_hero + tag.create_tr_end_tag() + '\n')
+    f.write('</tbody></table></figure><!-- /wp:table --></div><!-- /wp:loos/tab-body -->\n')
+
+    # Support
+    f.write('<!-- wp:loos/tab-body {"id":5,"tabId":"55c27d22"} --><div id="tab-55c27d22-5" class="c-tabBody__item" aria-hidden="true"><!-- wp:table {"className":"is-style-regular is-all-centered\u002d\u002dva td_to_th_"} --><figure class="wp-block-table is-style-regular is-all-centered--va td_to_th_"><table><tbody>\n')
+    f.write(tag.create_tr_splus_start_tag() + splus_support_hero + tag.create_tr_end_tag() + '\n')
+    f.write(tag.create_tr_s_start_tag() + s_support_hero + tag.create_tr_end_tag() + '\n')
+    f.write(tag.create_tr_aplus_start_tag() + aplus_support_hero + tag.create_tr_end_tag() + '\n')
+    f.write(tag.create_tr_a_start_tag() + a_support_hero + tag.create_tr_end_tag() + '\n')
+    f.write(tag.create_tr_b_start_tag() + b_support_hero + tag.create_tr_end_tag() + '\n')
+    f.write(tag.create_tr_c_start_tag() + c_support_hero + tag.create_tr_end_tag() + '\n')
+    f.write('</tbody></table></figure><!-- /wp:table --></div><!-- /wp:loos/tab-body -->\n')
+
+    #タブ終わり
+    f.write('</div></div><!-- /wp:loos/tab -->\n')
+
+print(f"Output has been written to {output_file}")
