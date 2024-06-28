@@ -7,7 +7,7 @@ from selenium import webdriver
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.common.by import By
 from bs4 import BeautifulSoup
-from fetch_moba_database import get_hero_data
+from components.fetch_moba_database import get_hero_data
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import WebDriverWait

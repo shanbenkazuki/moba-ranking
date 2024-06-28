@@ -4,8 +4,8 @@ import urllib.parse
 import components.swell_tag_component as tag
 import pandas as pd
 
-from fetch_moba_database import save_to_pokemon_meta_data
-from fetch_moba_database import get_pokemon_data
+from components.fetch_moba_database import save_to_pokemon_meta_data
+from components.fetch_moba_database import get_pokemon_data
 from moba_version_generator import get_unite_version
 from bs4 import BeautifulSoup
 from datetime import datetime

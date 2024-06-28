@@ -7,7 +7,7 @@ from bs4 import BeautifulSoup
 import os
 import pandas as pd
 import sqlite3
-from fetch_moba_database import get_pokemon_data
+from components.fetch_moba_database import get_pokemon_data
 from datetime import datetime
 
 def get_pokemon_info(pokemon_rate):

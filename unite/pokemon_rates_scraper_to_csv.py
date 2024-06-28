@@ -3,19 +3,23 @@ import nodriver as uc
 import re
 import csv
 import os
-from fetch_moba_database import get_pokemon_data
+import sys
 
+# プロジェクトのルートディレクトリをパスに追加します
+project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(project_root)
+from components import fetch_moba_database as fmd
 
 async def main():
     # データベースからポケモンの名前を取得
-    pokemon_names = get_pokemon_data(["name_en"])
+    pokemon_names = fmd.get_pokemon_data(["name_en"])
 
     browser = await uc.start()
     page = await browser.get('https://uniteapi.dev/meta')
 
     await page.wait(5)
 
-    game_info = await page.query_selector('#__next > div.sc-bd5970f2-0.krVYZr > div.sc-eaff77bf-0.bvmFlh > h3')
+    game_info = await page.query_selector('#__next > div.m_89ab340.mantine-AppShell-root > main > div > div.sc-eaff77bf-0.bvmFlh > h3')
 
     # 日付の抽出
     date_match = re.search(r"(\w+\s\d{1,2})", game_info.text_all)
@@ -40,10 +44,12 @@ async def main():
 
     # 勝率を取得
     win_rates = {}
-    win_rate_selector = '#__next > div.sc-bd5970f2-0.krVYZr > div.sc-eaff77bf-0.bvmFlh > div.sc-eaff77bf-0.fJbBUh > div:nth-child(1) > div > div'
+    win_rate_selector = '#__next > div.m_89ab340.mantine-AppShell-root > main > div > div.sc-eaff77bf-0.bvmFlh > div.sc-eaff77bf-0.fJbBUh > div:nth-child(1) > div > div'
+    
     win_rate_html = await page.query_selector(win_rate_selector)
+ 
     if win_rate_html:
-        pokemon_elements = await win_rate_html.query_selector_all('#__next > div.sc-bd5970f2-0.krVYZr > div.sc-eaff77bf-0.bvmFlh > div.sc-eaff77bf-0.fJbBUh > div:nth-child(1) > div > div > div')
+        pokemon_elements = await win_rate_html.query_selector_all('#__next > div.m_89ab340.mantine-AppShell-root > main > div > div.sc-eaff77bf-0.bvmFlh > div.sc-eaff77bf-0.fJbBUh > div:nth-child(1) > div > div > div')
         for pokemon_element in pokemon_elements:
 
             img_element = await pokemon_element.query_selector('img')
@@ -59,6 +65,7 @@ async def main():
             else:
                 pokemon_name = filename.split("_")[-1].split(".")[0]
             win_rate_element = await pokemon_element.query_selector('.sc-71f8e1a4-1')
+            print(win_rate_element)
 
             if win_rate_element:
                 win_rate = win_rate_element.attrs.get('value')
@@ -66,10 +73,11 @@ async def main():
 
     # ピック率を取得
     pick_rates = {}
-    pick_rate_selector = '#__next > div.sc-bd5970f2-0.krVYZr > div.sc-eaff77bf-0.bvmFlh > div.sc-eaff77bf-0.fJbBUh > div:nth-child(2) > div > div'
+    pick_rate_selector = '#__next > div.m_89ab340.mantine-AppShell-root > main > div > div.sc-eaff77bf-0.bvmFlh > div.sc-eaff77bf-0.fJbBUh > div:nth-child(2) > div > div'
+    
     pick_rate_html = await page.query_selector(pick_rate_selector)
     if pick_rate_html:
-        pokemon_elements = await pick_rate_html.query_selector_all('#__next > div.sc-bd5970f2-0.krVYZr > div.sc-eaff77bf-0.bvmFlh > div.sc-eaff77bf-0.fJbBUh > div:nth-child(2) > div > div > div')
+        pokemon_elements = await pick_rate_html.query_selector_all('#__next > div.m_89ab340.mantine-AppShell-root > main > div > div.sc-eaff77bf-0.bvmFlh > div.sc-eaff77bf-0.fJbBUh > div:nth-child(2) > div > div > div')
         for pokemon_element in pokemon_elements:
 
             img_element = await pokemon_element.query_selector('img')
@@ -92,10 +100,10 @@ async def main():
 
     # バン率を取得
     ban_rates = {}
-    ban_rate_selector = '#__next > div.sc-bd5970f2-0.krVYZr > div.sc-eaff77bf-0.bvmFlh > div.sc-eaff77bf-0.fJbBUh > div:nth-child(3) > div > div'
+    ban_rate_selector = '#__next > div.m_89ab340.mantine-AppShell-root > main > div > div.sc-eaff77bf-0.bvmFlh > div.sc-eaff77bf-0.fJbBUh > div:nth-child(3) > div > div'
     ban_rate_html = await page.query_selector(ban_rate_selector)
     if ban_rate_html:
-        pokemon_elements = await ban_rate_html.query_selector_all('#__next > div.sc-bd5970f2-0.krVYZr > div.sc-eaff77bf-0.bvmFlh > div.sc-eaff77bf-0.fJbBUh > div:nth-child(3) > div > div > div')
+        pokemon_elements = await ban_rate_html.query_selector_all('#__next > div.m_89ab340.mantine-AppShell-root > main > div > div.sc-eaff77bf-0.bvmFlh > div.sc-eaff77bf-0.fJbBUh > div:nth-child(3) > div > div > div')
         for pokemon_element in pokemon_elements:
 
             img_element = await pokemon_element.query_selector('img')

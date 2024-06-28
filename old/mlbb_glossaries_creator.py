@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import requests
 
-from fetch_moba_database import get_hero_data
+from components.fetch_moba_database import get_hero_data
 
 
 url = 'https://api-free.deepl.com/v2/glossaries'
