@@ -22,30 +22,24 @@ service = Service(ChromeDriverManager().install())
 driver = webdriver.Chrome(service=service)
 driver.implicitly_wait(WAIT_TIME)
 
-# ブラウザを最大化
+# ブラウザを最大化して表示
 driver.maximize_window()
-
 driver.get(DISPLAY_URL)
-
 time.sleep(5)
 
-# 指定されたセレクターの要素をクリック
-xpath = '//*[@id="root"]/div/div[2]/div/div[1]/div[1]/div[1]/div[2]/div[2]'
+# 過去7日間のデータを表示するように設定
+xpath = '//*[@id="root"]/div/div[3]/div/div[1]/div[1]/div[1]/div[2]/div[2]'
 element = driver.find_element(By.XPATH, xpath)
 element.click()
-
 time.sleep(5)
-
-# 新しいXpathの要素をクリック
-new_xpath = '//*[@id="root"]/div/div[2]/div/div[1]/div[1]/div[1]/div[1]/div/div[3]'
+new_xpath = '//*[@id="root"]/div/div[3]/div/div[1]/div[1]/div[1]/div[1]/div/div[3]'
 new_element = driver.find_element(By.XPATH, new_xpath)
 new_element.click()
-
 time.sleep(5)
 
 # 対象の要素が表示されるまで待機
 target_element = WebDriverWait(driver, 10).until(
-    EC.presence_of_element_located((By.CSS_SELECTOR, '#root > div > div.mt-2673591.mt-empty > div > div.mt-2684927.mt-empty > div.mt-2684827.mt-empty > div'))
+    EC.presence_of_element_located((By.CSS_SELECTOR, '#root > div > div.mt-2673591.mt-empty > div > div.mt-2729690.mt-empty > div > div.mt-2684827.mt-empty > div'))
 )
 
 # 対象の要素までスクロール
@@ -64,7 +58,8 @@ while True:
 
 time.sleep(5)
 
-rateList = BeautifulSoup(driver.page_source, 'html.parser').select("#root > div > div.mt-2673591.mt-empty > div > div.mt-2684927.mt-empty > div.mt-2684827.mt-empty > div > div")
+rateList = BeautifulSoup(driver.page_source, 'html.parser').select("#root > div > div.mt-2673591.mt-empty > div > div.mt-2729690.mt-empty > div > div.mt-2684827.mt-empty > div > div")
+
 
 hero_meta_data = []
 for heroRate in rateList:
