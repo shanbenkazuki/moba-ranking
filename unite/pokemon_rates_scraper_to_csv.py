@@ -5,6 +5,8 @@ import csv
 import os
 import sys
 
+from datetime import datetime
+
 # プロジェクトのルートディレクトリをパスに追加します
 project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(project_root)
@@ -17,30 +19,47 @@ async def main():
     browser = await uc.start()
     page = await browser.get('https://uniteapi.dev/meta')
 
-    await page.wait(5)
+    await page.wait(20)
 
-    game_info = await page.query_selector('#__next > div.m_89ab340.mantine-AppShell-root > main > div > div.sc-eaff77bf-0.bvmFlh > h3')
+    # game_info = await page.query_selector('#__next > div.m_89ab340.mantine-AppShell-root > main > div > div.sc-eaff77bf-0.bvmFlh > h3')
+
+    game_info = await page.query_selector('#__next > div.m_89ab340.mantine-AppShell-root > main > div > div.sc-eaff77bf-0.bvmFlh > div.m_4081bf90.mantine-Group-root > div:nth-child(1) > p.mantine-focus-auto.simpleStat_count__dG_xB.m_b6d8b162.mantine-Text-root')
+
+    date_string = game_info.text_all
+
+    # date_string = "July 7"
+    year = "2024"
+
+# 日付文字列をdatetimeオブジェクトに変換
+    date_object = datetime.strptime(f"{date_string} {year}", "%B %d %Y")
+
+    # 新しい形式で日付を出力
+    stats_date = date_object.strftime("%Y-%m-%d")
+
+    game_info = await page.query_selector('#__next > div.m_89ab340.mantine-AppShell-root > main > div > div.sc-eaff77bf-0.bvmFlh > div.m_4081bf90.mantine-Group-root > div:nth-child(2) > p.mantine-focus-auto.simpleStat_count__dG_xB.m_b6d8b162.mantine-Text-root')
+
+    game_count = int(game_info.text_all)
 
     # 日付の抽出
-    date_match = re.search(r"(\w+\s\d{1,2})", game_info.text_all)
-    if date_match:
-        english_date = date_match.group(1)
-        # 英語の日付を日本語の形式に変換
-        stats_date = english_date.split()
-        month_dict = {
-            "January": "01", "February": "02", "March": "03", "April": "04", "May": "05", "June": "06",
-            "July": "07", "August": "08", "September": "09", "October": "10", "November": "11", "December": "12"
-        }
-        stats_date = f"2024-{month_dict[stats_date[0]]}-{stats_date[1].zfill(2)}"
-    else:
-        stats_date = None
+    # date_match = re.search(r"(\w+\s\d{1,2})", game_info.text_all)
+    # if date_match:
+    #     english_date = date_match.group(1)
+    #     # 英語の日付を日本語の形式に変換
+    #     stats_date = english_date.split()
+    #     month_dict = {
+    #         "January": "01", "February": "02", "March": "03", "April": "04", "May": "05", "June": "06",
+    #         "July": "07", "August": "08", "September": "09", "October": "10", "November": "11", "December": "12"
+    #     }
+    #     stats_date = f"2024-{month_dict[stats_date[0]]}-{stats_date[1].zfill(2)}"
+    # else:
+    #     stats_date = None
 
-    # ゲーム数の抽出
-    game_count_match = re.search(r"(\d+)\s*games", game_info.text_all)
-    if game_count_match:
-        game_count = int(game_count_match.group(1))
-    else:
-        game_count = None
+    # # ゲーム数の抽出
+    # game_count_match = re.search(r"(\d+)\s*games", game_info.text_all)
+    # if game_count_match:
+    #     game_count = int(game_count_match.group(1))
+    # else:
+    #     game_count = None
 
     # 勝率を取得
     win_rates = {}
@@ -65,7 +84,6 @@ async def main():
             else:
                 pokemon_name = filename.split("_")[-1].split(".")[0]
             win_rate_element = await pokemon_element.query_selector('.sc-71f8e1a4-1')
-            print(win_rate_element)
 
             if win_rate_element:
                 win_rate = win_rate_element.attrs.get('value')
