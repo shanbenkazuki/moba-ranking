@@ -17,9 +17,9 @@ WAIT_TIME = 10
 chrome_options = Options()
 chrome_options.binary_location = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
 
-service = Service(ChromeDriverManager().install())
+# service = Service()
 
-driver = webdriver.Chrome(service=service)
+driver = webdriver.Chrome()
 driver.implicitly_wait(WAIT_TIME)
 
 # ブラウザを最大化して表示
