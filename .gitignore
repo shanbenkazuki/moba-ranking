@@ -8,3 +8,7 @@ copy_text.py
 /old/*
 
 moba-ranking-venv/
+
+sql/
+
+logs/
