@@ -20,6 +20,7 @@ from datetime import datetime
 # ChromeOptionsの設定
 chrome_options = Options()
 chrome_options.add_argument("--window-size=1920,1080")
+chrome_options.add_argument("--headless=new")
 
 # Chromeドライバーのセットアップ（ChromeOptionsを指定）
 driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
