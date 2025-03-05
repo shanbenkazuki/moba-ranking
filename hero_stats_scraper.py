@@ -219,6 +219,15 @@ def main():
                 cursor.execute("INSERT INTO heroes (english_name) VALUES (?)", (hero['hero'],))
                 logging.info(f"新規ヒーロー '{hero['hero']}' を heroes テーブルに挿入")
             
+            # hero_statsテーブルに既に同じヒーロー・参照日時のデータが存在するか確認
+            cursor.execute(
+                "SELECT 1 FROM hero_stats WHERE hero_name = ? AND reference_date = ? AND rank = ? AND patch_number = ?",
+                (hero['hero'], reference_date, "Mythic", latest_patch_number)
+            )
+            if cursor.fetchone():
+                logging.info(f"'{hero['hero']}' のデータはすでに存在するためスキップ")
+                continue
+
             # hero_statsテーブルへデータ挿入
             cursor.execute("""
                 INSERT INTO hero_stats 
