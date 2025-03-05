@@ -35,8 +35,16 @@ close_button.click()
 time.sleep(5)
 
 # 1. 期間範囲タブクリック
-period_tab_selector = "#root > div.mt-2669608.mt-uid-99999.mt-full-container > div.mt-2673591.mt-uid-99970.mt-empty > div > div.mt-2693420.mt-uid-99968.mt-empty > div.mt-2684825.mt-uid-99967.mt-empty > div.mt-2684829.mt-uid-99966.mt-dropdown > div.mt-2684835.mt-uid-99964.mt-empty"
-period_tab = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, period_tab_selector)))
+try:
+    # 最初のセレクタを使って要素を取得
+    period_tab = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR,
+        "#root > div.mt-2669608.mt-uid-99999.mt-full-container > div.mt-2673591.mt-uid-99970.mt-empty > div > div.mt-2693420.mt-uid-99968.mt-empty > div.mt-2684825.mt-uid-99967.mt-empty > div.mt-2684829.mt-uid-99966.mt-dropdown > div.mt-2684835.mt-uid-99964.mt-empty > div.mt-2684838.mt-uid-99962.mt-empty"
+    )))
+except Exception as e:
+    # 最初のセレクタが見つからなかった場合、代替のセレクタを試す
+    period_tab = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR,
+        "#root > div.mt-2669608.mt-uid-99999.mt-full-container > div.mt-2673591.mt-uid-99970.mt-empty > div > div.mt-2693420.mt-uid-99968.mt-empty > div.mt-2684825.mt-uid-99967.mt-empty > div.mt-2684880.mt-uid-99959.mt-dropdown > div.mt-2684885.mt-uid-99957.mt-empty > div.mt-2684887.mt-uid-99955.mt-empty"
+    )))
 period_tab.click()
 
 time.sleep(2)
