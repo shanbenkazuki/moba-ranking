@@ -139,6 +139,14 @@ reference_date = datetime.strptime(reference_date_str, '%d-%m-%Y %H:%M:%S').strf
 
 # hero_meta_dataの各ヒーローデータをhero_statsテーブルに挿入
 for hero in hero_meta_data:
+    # heroesテーブルに対象の名前があるかをチェック
+    cursor.execute("SELECT english_name FROM heroes WHERE english_name = ?", (hero['hero'],))
+    result = cursor.fetchone()
+    # なければ新規に挿入
+    if result is None:
+        cursor.execute("INSERT INTO heroes (english_name) VALUES (?)", (hero['hero'],))
+    
+    # hero_statsテーブルにデータを挿入（hero_nameは外部キーとしてheroes.english_nameを参照）
     cursor.execute("""
         INSERT INTO hero_stats 
         (hero_name, win_rate, pick_rate, ban_rate, reference_date, rank, patch_number)
