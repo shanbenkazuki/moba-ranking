@@ -54,6 +54,13 @@ cursor.execute("SELECT english_name, japanese_name FROM heroes")
 hero_map_rows = cursor.fetchall()
 hero_name_map = {r[0]: r[1] for r in hero_map_rows}
 
+# ----------------------------
+# 追加: patchesテーブルから最新のパッチ情報を取得
+# ----------------------------
+cursor.execute("SELECT patch_number FROM patches ORDER BY release_date DESC LIMIT 1")
+patch_row = cursor.fetchone()
+patch_number = patch_row[0] if patch_row else "N/A"
+
 conn.close()
 
 # ----------------------------
@@ -244,7 +251,12 @@ client = tweepy.Client(
     access_token_secret=ACCESS_TOKEN_SECRET
 )
 
-tweet_text = "MLBB Hero Tier List - 最新のヒーローデータをチェック！"
+# tweet_textの変更：patchesテーブルから取得したパッチ情報を使用
+tweet_text = f"""今週のモバイル・レジェンドのTier表を公開します。
+
+バージョン：{patch_number}
+
+#モバイル・レジェンド #モバレ #モバレジェ"""
 
 # 画像をアップロードして、media_idを取得（v1.1のAPIを使用）
 media = api_v1.media_upload(screenshot_path)
