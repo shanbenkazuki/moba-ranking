@@ -1,3 +1,5 @@
+import os
+import logging
 import sqlite3
 import pandas as pd
 from scipy.stats import zscore
@@ -6,12 +8,32 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 import time
+import tweepy
 
-# ============================
+# ----------------------------
+# 基本ディレクトリの設定
+# ----------------------------
+base_dir = "/Users/yamamotokazuki/develop/moba-ranking"
+
+# ----------------------------
+# ログ設定（絶対パス）
+# ----------------------------
+log_dir = os.path.join(base_dir, "logs")
+if not os.path.exists(log_dir):
+    os.makedirs(log_dir)
+log_file = os.path.join(log_dir, "app.log")
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(message)s",
+    handlers=[logging.FileHandler(log_file, encoding="utf-8")]
+)
+logger = logging.getLogger(__name__)
+
+# ----------------------------
 # 1. SQLiteから最新データを取得
-# ============================
-db_path = '/Users/yamamotokazuki/develop/moba-ranking/mlbb.db'  # DBパス
-
+# ----------------------------
+db_path = os.path.join(base_dir, "mlbb.db")  # 絶対パスに変更
 conn = sqlite3.connect(db_path)
 cursor = conn.cursor()
 
@@ -23,20 +45,20 @@ rows = cursor.fetchall()
 
 column_names = [description[0] for description in cursor.description]
 df = pd.DataFrame(rows, columns=column_names)
-print(f"最新の reference_date: {latest_date} のデータ件数: {len(rows)}")
+logger.info(f"最新の reference_date: {latest_date} のデータ件数: {len(rows)}")
 
-# ============================
+# ----------------------------
 # 2. heroesテーブルから英名→日本語名のマッピングを取得
-# ============================
+# ----------------------------
 cursor.execute("SELECT english_name, japanese_name FROM heroes")
 hero_map_rows = cursor.fetchall()
 hero_name_map = {r[0]: r[1] for r in hero_map_rows}
 
 conn.close()
 
-# ============================
+# ----------------------------
 # 3. Zスコア・5段階評価の付与
-# ============================
+# ----------------------------
 df['win_rate_z'] = zscore(df['win_rate'])
 df['pick_rate_z'] = zscore(df['pick_rate'])
 df['ban_rate_z'] = zscore(df['ban_rate'])
@@ -66,10 +88,9 @@ def assign_grade(z):
 df['grade'] = df['strength_score'].apply(assign_grade)
 df_sorted = df.sort_values(by='strength_score', ascending=False)
 
-# ============================
+# ----------------------------
 # 4. HTML生成と出力 (description省略)
-# ============================
-# 各ティアのタイトルのみの情報
+# ----------------------------
 grades_info = {
     'S': {'title': 'S Tier'},
     'A': {'title': 'A Tier'},
@@ -140,6 +161,8 @@ html_tail = """
 """
 
 html_body = ""
+# hero_imagesの絶対パス
+hero_images_dir = os.path.join(base_dir, "hero_images")
 for grade in ['S', 'A', 'B', 'C', 'D']:
     subset = df_sorted[df_sorted['grade'] == grade]
     if len(subset) == 0:
@@ -153,7 +176,9 @@ for grade in ['S', 'A', 'B', 'C', 'D']:
     for _, row in subset.iterrows():
         english_name = row['hero_name']
         japanese_name = hero_name_map.get(english_name, english_name)
-        hero_img_path = f"hero_images/{english_name}.webp"
+        # 絶対パスにして file:// プレフィックスを追加
+        hero_img_abs = os.path.join(hero_images_dir, f"{english_name}.webp")
+        hero_img_path = "file://" + hero_img_abs
 
         html_body += f'    <div class="hero">\n'
         html_body += f'      <img src="{hero_img_path}" alt="{japanese_name}">\n'
@@ -164,28 +189,67 @@ for grade in ['S', 'A', 'B', 'C', 'D']:
 
 final_html = html_head + html_body + html_tail
 
-html_file = 'output/hero_tier_list.html'
+# HTML出力先の絶対パス
+output_dir = os.path.join(base_dir, "output")
+if not os.path.exists(output_dir):
+    os.makedirs(output_dir)
+html_file = os.path.join(output_dir, "hero_tier_list.html")
 with open(html_file, 'w', encoding='utf-8') as f:
     f.write(final_html)
 
-print(f"HTMLファイル '{html_file}' を出力しました。")
+logger.info(f"HTMLファイル '{html_file}' を出力しました。")
 
-# ============================
-# 5. SeleniumでHTMLを開いてスクリーンショットを撮る (ChromeDriverManager利用)
-# ============================
+# ----------------------------
+# 5. SeleniumでHTMLを開いてスクリーンショットを撮る
+# ----------------------------
 chrome_options = Options()
 chrome_options.add_argument("--window-size=1080,2220")
 chrome_options.add_argument("--headless=new")
 
 driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
 
-html_file_url = "file:///Users/yamamotokazuki/develop/moba-ranking/hero_tier_list.html"
+# HTMLファイルの絶対パスを file:// プレフィックス付きで指定
+html_file_url = "file://" + html_file
 driver.get(html_file_url)
 
 time.sleep(2)
 
-screenshot_path = "output/hero_tier_list_screenshot.png"
+screenshot_path = os.path.join(output_dir, "hero_tier_list_screenshot.png")
 driver.save_screenshot(screenshot_path)
-print(f"スクリーンショット '{screenshot_path}' を保存しました。")
+logger.info(f"スクリーンショット '{screenshot_path}' を保存しました。")
 
 driver.quit()
+
+# ----------------------------
+# 6. Tweepyでスクリーンショットを添付してXに投稿
+# ----------------------------
+# Twitter APIの認証情報を環境変数から取得
+API_KEY = os.getenv('API_KEY')
+API_SECRET_KEY = os.getenv('API_SECRET_KEY')
+ACCESS_TOKEN = os.getenv('ACCESS_TOKEN')
+ACCESS_TOKEN_SECRET = os.getenv('ACCESS_TOKEN_SECRET')
+BEARER_TOKEN = os.getenv('BEARER_TOKEN')  # v2用のトークン
+
+# OAuth1認証を設定（v1.1用のAPIでメディアアップロードを実施）
+auth = tweepy.OAuthHandler(API_KEY, API_SECRET_KEY)
+auth.set_access_token(ACCESS_TOKEN, ACCESS_TOKEN_SECRET)
+api_v1 = tweepy.API(auth)
+
+# Tweepy v2クライアントの作成
+client = tweepy.Client(
+    bearer_token=BEARER_TOKEN,
+    consumer_key=API_KEY,
+    consumer_secret=API_SECRET_KEY,
+    access_token=ACCESS_TOKEN,
+    access_token_secret=ACCESS_TOKEN_SECRET
+)
+
+tweet_text = "MLBB Hero Tier List - 最新のヒーローデータをチェック！"
+
+# 画像をアップロードして、media_idを取得（v1.1のAPIを使用）
+media = api_v1.media_upload(screenshot_path)
+
+# ツイートを投稿（v2のAPIを使用）
+client.create_tweet(text=tweet_text, media_ids=[media.media_id_string])
+
+logger.info("ツイートが投稿されました。")
