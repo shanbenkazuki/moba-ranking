@@ -164,7 +164,7 @@ for grade in ['S', 'A', 'B', 'C', 'D']:
 
 final_html = html_head + html_body + html_tail
 
-html_file = 'hero_tier_list.html'
+html_file = 'output/hero_tier_list.html'
 with open(html_file, 'w', encoding='utf-8') as f:
     f.write(final_html)
 
@@ -184,7 +184,7 @@ driver.get(html_file_url)
 
 time.sleep(2)
 
-screenshot_path = "hero_tier_list_screenshot.png"
+screenshot_path = "output/hero_tier_list_screenshot.png"
 driver.save_screenshot(screenshot_path)
 print(f"スクリーンショット '{screenshot_path}' を保存しました。")
 
