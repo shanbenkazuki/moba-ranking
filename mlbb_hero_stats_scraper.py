@@ -60,43 +60,40 @@ def main():
 
     # 1. 期間範囲タブクリック
     try:
-        period_tab = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR,
-            "#root > div.mt-2669608.mt-uid-99999.mt-full-container > div.mt-2673591.mt-uid-99970.mt-empty > div > div.mt-2693420.mt-uid-99968.mt-empty > div.mt-2684825.mt-uid-99967.mt-empty > div.mt-2684829.mt-uid-99966.mt-dropdown > div.mt-2684835.mt-uid-99964.mt-empty > div.mt-2684838.mt-uid-99962.mt-empty"
+        period_tab = wait.until(EC.element_to_be_clickable((By.XPATH,
+            '//*[@id="root"]/div[1]/div[5]/div/div[1]/div[1]/div[1]/div[2]'
         )))
-        logging.info("期間範囲タブを取得（第一セレクタ）")
+        logging.info("期間範囲タブを取得（Xpath）")
     except Exception:
-        logging.warning("第一セレクタで期間範囲タブが取得できなかったため、代替セレクタを試行")
-        try:
-            period_tab = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR,
-                "#root > div.mt-2669608.mt-uid-99999.mt-full-container > div.mt-2673591.mt-uid-99970.mt-empty > div > div.mt-2693420.mt-uid-99968.mt-empty > div.mt-2684825.mt-uid-99967.mt-empty > div.mt-2684880.mt-uid-99959.mt-dropdown > div.mt-2684885.mt-uid-99957.mt-empty > div.mt-2684887.mt-uid-99955.mt-empty"
-            )))
-            logging.info("期間範囲タブを取得（代替セレクタ）")
-        except Exception:
-            logging.exception("期間範囲タブの取得に失敗")
-            driver.quit()
-            return
+        logging.exception("Xpathで期間範囲タブの取得に失敗")
+        driver.quit()
+        return
+
     period_tab.click()
     logging.info("期間範囲タブをクリック")
     time.sleep(2)
 
     # 2. Past 7 days選択
     try:
-        past7_selector = "#root > div.mt-2669608.mt-uid-99999.mt-full-container > div.mt-2673591.mt-uid-99970.mt-empty > div > div.mt-2693420.mt-uid-99968.mt-empty > div.mt-2684825.mt-uid-99967.mt-empty > div.mt-2684829.mt-uid-99966.mt-dropdown > div.mt-dropdown-list.visible > div > div.mt-2684831.mt-uid-99880.mt-empty.mt-list-item"
-        past7_option = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, past7_selector)))
+        past7_option = wait.until(EC.element_to_be_clickable((By.XPATH,
+            '//*[@id="root"]/div[1]/div[5]/div/div[1]/div[1]/div[1]/div[1]/div/div[3]'
+        )))
         past7_option.click()
-        logging.info("『Past 7 days』オプションを選択")
+        logging.info("『Past 7 days』オプションを選択（Xpath）")
     except Exception:
         logging.exception("『Past 7 days』オプションの選択に失敗")
         driver.quit()
         return
     time.sleep(2)
 
+
     # 3. ランク選択タブクリック
     try:
-        rank_tab_selector = "#root > div.mt-2669608.mt-uid-99999.mt-full-container > div.mt-2673591.mt-uid-99970.mt-empty > div > div.mt-2693420.mt-uid-99968.mt-empty > div.mt-2684825.mt-uid-99967.mt-empty > div.mt-2684880.mt-uid-99959.mt-dropdown > div.mt-2684885.mt-uid-99957.mt-empty > div.mt-2684887.mt-uid-99955.mt-empty"
-        rank_tab = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, rank_tab_selector)))
+        rank_tab = wait.until(EC.element_to_be_clickable((By.XPATH,
+            '//*[@id="root"]/div[1]/div[5]/div/div[1]/div[1]/div[2]/div[2]'
+        )))
         rank_tab.click()
-        logging.info("ランク選択タブをクリック")
+        logging.info("ランク選択タブをクリック（Xpath）")
     except Exception:
         logging.exception("ランク選択タブのクリックに失敗")
         driver.quit()
@@ -105,15 +102,17 @@ def main():
 
     # 4. Mythic選択
     try:
-        mythic_selector = "#root > div.mt-2669608.mt-uid-99999.mt-full-container > div.mt-2673591.mt-uid-99970.mt-empty > div > div.mt-2693420.mt-uid-99968.mt-empty > div.mt-2684825.mt-uid-99967.mt-empty > div.mt-2684880.mt-uid-99959.mt-dropdown > div.mt-dropdown-list.visible > div > div.mt-2684882.mt-uid-99849.mt-empty.mt-list-item"
-        mythic_option = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, mythic_selector)))
+        mythic_option = wait.until(EC.element_to_be_clickable((By.XPATH,
+            '//*[@id="root"]/div[1]/div[5]/div/div[1]/div[1]/div[2]/div[1]/div/div[4]'
+        )))
         mythic_option.click()
-        logging.info("『Mythic』ランクを選択")
+        logging.info("『Mythic』ランクを選択（Xpath）")
     except Exception:
         logging.exception("『Mythic』ランクの選択に失敗")
         driver.quit()
         return
     time.sleep(5)
+
 
     # 5. データ読み込み対象要素のスクロール
     try:
