@@ -1,7 +1,7 @@
 import sqlite3
 
 from datetime import datetime
-from moba_insert_data import get_mlbb_equipments
+from old.moba_insert_data import get_mlbb_equipments
 
 # SQLiteデータベースに接続
 conn = sqlite3.connect('moba_database.sqlite3')

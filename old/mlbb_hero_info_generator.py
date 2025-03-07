@@ -2,7 +2,7 @@ import sqlite3
 
 from bs4 import BeautifulSoup
 
-from copy_text import get_aside_hero_html_fandom
+from old.copy_text import get_aside_hero_html_fandom
 from datetime import datetime
 
 html = get_aside_hero_html_fandom()

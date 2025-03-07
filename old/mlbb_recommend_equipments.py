@@ -1,6 +1,6 @@
 import sqlite3
 
-from copy_text import get_equipment_list_1, get_equipment_list_2, get_equipment_list_3
+from old.copy_text import get_equipment_list_1, get_equipment_list_2, get_equipment_list_3
 
 def get_image_urls(equipment_list, cursor):
     image_urls = []
