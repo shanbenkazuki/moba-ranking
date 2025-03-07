@@ -67,14 +67,15 @@ df['grade'] = df['strength_score'].apply(assign_grade)
 df_sorted = df.sort_values(by='strength_score', ascending=False)
 
 # ============================
-# 4. HTML生成と出力
+# 4. HTML生成と出力 (description省略)
 # ============================
+# 各ティアのタイトルのみの情報
 grades_info = {
-    'S': {'title': 'S Tier', 'description': 'Top-tier picks that dominate the meta'},
-    'A': {'title': 'A Tier', 'description': 'Strong heroes that consistently perform well'},
-    'B': {'title': 'B Tier', 'description': 'Balanced heroes with situational strengths'},
-    'C': {'title': 'C Tier', 'description': 'Viable picks that may need team coordination'},
-    'D': {'title': 'D Tier', 'description': 'Underperforming or niche picks'}
+    'S': {'title': 'S Tier'},
+    'A': {'title': 'A Tier'},
+    'B': {'title': 'B Tier'},
+    'C': {'title': 'C Tier'},
+    'D': {'title': 'D Tier'}
 }
 
 html_head = """
@@ -104,11 +105,6 @@ h1 {
   font-size: 1.5em;
   margin-bottom: 5px;
   color: #ffd700;
-}
-.tier-description {
-  font-size: 0.9em;
-  margin-bottom: 15px;
-  color: #ccc;
 }
 .hero-list {
   display: flex;
@@ -152,7 +148,6 @@ for grade in ['S', 'A', 'B', 'C', 'D']:
     info = grades_info[grade]
     html_body += f'<div class="tier-section">\n'
     html_body += f'  <div class="tier-title">{info["title"]}</div>\n'
-    html_body += f'  <div class="tier-description">{info["description"]}</div>\n'
     html_body += f'  <div class="hero-list">\n'
 
     for _, row in subset.iterrows():
@@ -179,16 +174,14 @@ print(f"HTMLファイル '{html_file}' を出力しました。")
 # 5. SeleniumでHTMLを開いてスクリーンショットを撮る (ChromeDriverManager利用)
 # ============================
 chrome_options = Options()
-chrome_options.add_argument("--window-size=1080,2420")
+chrome_options.add_argument("--window-size=1080,2220")
 chrome_options.add_argument("--headless=new")
 
 driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
 
-# ローカルHTMLファイルを開く (file:// URL形式)
 html_file_url = "file:///Users/yamamotokazuki/develop/moba-ranking/hero_tier_list.html"
 driver.get(html_file_url)
 
-# ページの読み込み待ち（必要に応じて調整）
 time.sleep(2)
 
 screenshot_path = "hero_tier_list_screenshot.png"
