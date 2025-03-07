@@ -1,190 +1,277 @@
-import time
 import pandas as pd
 import components.swell_tag_component as tag
-import json
+import sqlite3
+import time
 
 from selenium import webdriver
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.common.by import By
 from bs4 import BeautifulSoup
 from components.fetch_moba_database import get_hero_data
-from sklearn.preprocessing import MinMaxScaler
-from components.fetch_moba_database import save_to_hero_meta_data
-from moba_version_generator import get_mlbb_version
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 
+def get_rank_from_score(score):
+  if score >= 1.0:
+    return 'S+'
+  elif score >= 0.5:
+    return 'S'
+  elif score >= 0:
+    return 'A+'
+  elif score >= -0.5:
+    return 'A'
+  elif score >= -1.0:
+    return 'B'
+  else:
+    return 'C'
+  
 DISPLAY_URL = "https://m.mobilelegends.com/en/rank"
 WAIT_TIME = 10
 
 chrome_options = Options()
 chrome_options.binary_location = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
 
-
-
-def switch_to_mystic(driver):
-  time.sleep(2)
-  #driver.find_element(by=By.XPATH, value="//*[@id='rank']/div[1]/div[2]/ul/li[3]").click()
-  # レジェンド表示に切り替え（ミシックがまだ集計されてない場合）
-  driver.find_element(by=By.XPATH, value="//*[@id='rank']/div[1]/div[2]/ul/li[2]").click()
-  time.sleep(3)
-
-def assign_rank(score):
-  if score >= 0.65:
-    return 'S+'
-  elif score >= 0.45:
-    return 'S'
-  elif score >= 0.35:
-    return 'A+'
-  elif score >= 0.20:
-    return 'A'
-  elif score >= 0.10:
-    return 'B'
-  else:
-    return 'C'
-
-def get_hero_meta_data(rateList):
-  hero_meta_data = {}
-  for heroRate in rateList:
-    heroEn = heroRate.span.string
-    winRatePoint = heroRate.contents[2].string.split("%")[0]
-    popRatePoint = heroRate.contents[4].string.split("%")[0]
-    banRatePoint = heroRate.contents[6].string.split("%")[0]
-    hero_meta_data[heroEn] = {
-      'win_rate': winRatePoint,
-      'pick_rate': popRatePoint,
-      'ban_rate': banRatePoint
-    }
-  return hero_meta_data
-
-def normalize_data(hero_meta_data):
-  df = pd.DataFrame(hero_meta_data).T.astype(float)
-  scaler = MinMaxScaler()
-  df_scaled = pd.DataFrame(scaler.fit_transform(df), columns=df.columns, index=df.index)
-  df_scaled['Ranking'] = df_scaled.mean(axis=1)
-  return df_scaled
-
-def add_ranking_to_hero_data(hero_meta_data, df_scaled):
-  for character in hero_meta_data:
-    score = df_scaled.loc[character, 'Ranking']
-    rank = assign_rank(score)
-    hero_meta_data[character]['Score'] = score
-    hero_meta_data[character]['Rank'] = rank
-  return hero_meta_data
-
-def group_heroes_by_lane_and_rank(hero_meta_data, hero_data):
-  role_rank_dict = {
-    'Fighter': {'S+': [], 'S': [], 'A+': [], 'A': [], 'B': [], 'C': []},
-    'Mage': {'S+': [], 'S': [], 'A+': [], 'A': [], 'B': [], 'C': []},
-    'Tank': {'S+': [], 'S': [], 'A+': [], 'A': [], 'B': [], 'C': []},
-    'Assassin': {'S+': [], 'S': [], 'A+': [], 'A': [], 'B': [], 'C': []},
-    'Marksman': {'S+': [], 'S': [], 'A+': [], 'A': [], 'B': [], 'C': []},
-    'Support': {'S+': [], 'S': [], 'A+': [], 'A': [], 'B': [], 'C': []}
-  }
-  for hero, info in hero_meta_data.items():
-    rank = info['Rank']
-    role = hero_data[hero]['role']
-    role_rank_dict[role][rank].append(hero)
-  return role_rank_dict
-
-def generate_tier_tags(lane_rank_dict, hero_data):
-  tier_tags = {}
-  for role, rank_dict in lane_rank_dict.items():
-    tier_tags[role] = {}
-    for rank, hero_list in rank_dict.items():
-      tier_tags[role][rank] = ''
-      for hero in hero_list:
-        hero_image_url = hero_data[hero]['image_url']
-        hero_article_url = hero_data[hero]['article_url']
-        hero_a_tag = tag.createHeroATag(hero_image_url, hero_article_url)
-        tier_tags[role][rank] += hero_a_tag
-  return tier_tags
-
 service = Service(ChromeDriverManager().install())
+# service = Service('/usr/local/bin/chromedriver')
 
-driver = webdriver.Chrome(service=service, options=chrome_options)
+driver = webdriver.Chrome(service=service)
 driver.implicitly_wait(WAIT_TIME)
 driver.get(DISPLAY_URL)
 
-time.sleep(10)
+# プライバシーポリシーを閉じる
+WebDriverWait(driver, WAIT_TIME).until(EC.element_to_be_clickable((By.XPATH, "//*[@id='mt-cb-policy']/div/div[2]"))).click()
 
-# 画面遷移とデータ取得の処理を関数化
-switch_to_mystic(driver)
+# Mythic+のタブに切り替える
+WebDriverWait(driver, WAIT_TIME).until(EC.element_to_be_clickable((By.XPATH, "//*[@id='rank']/div[1]/div[2]/ul/li[2]"))).click()
+rank_level = 'Mythic+'
+
+# Mythic Glory+のタブに切り替える
+# WebDriverWait(driver, WAIT_TIME).until(EC.element_to_be_clickable((By.XPATH, "//*[@id='rank']/div[1]/div[2]/ul/li[3]"))).click()
+# rank_level = 'Mythic Glory+'
+
+# 画面が表示されるまで待つ
+WebDriverWait(driver, WAIT_TIME).until(
+  EC.presence_of_element_located((By.CSS_SELECTOR, ".slotwrapper > ul > li > a"))
+)
+
+time.sleep(1)
+
+# データをスクレイピングして整形する
 rateList = BeautifulSoup(driver.page_source, 'html.parser').select(".slotwrapper > ul > li > a")
+hero_meta_data = {}
+for heroRate in rateList:
+  heroEn = heroRate.span.string
+  print(heroEn)
+  # x.borgはx-borgに変換する
+  # if heroEn == 'X.Borg':
+  #   heroEn = 'X-Borg'
+  winRatePoint = heroRate.contents[2].string.split("%")[0]
+  popRatePoint = heroRate.contents[4].string.split("%")[0]
+  banRatePoint = heroRate.contents[6].string.split("%")[0]
+  hero_meta_data[heroEn] = {
+    'win_rate': winRatePoint,
+    'pick_rate': popRatePoint,
+    'ban_rate': banRatePoint
+  }
 
-# heroデータ取得
-hero_data = get_hero_data()
-
-# ヒーローメタデータの生成と正規化
-hero_meta_data = get_hero_meta_data(rateList)
-
-# print(hero_meta_data)
-
-# print(json.dumps(hero_meta_data))
-
-df_scaled = normalize_data(hero_meta_data)
-
-print(df_scaled)
-
-# ランキング値の追加
-hero_meta_data = add_ranking_to_hero_data(hero_meta_data, df_scaled)
-
-# 参照日を取得
+# データをdbに保存する
 reference_date = BeautifulSoup(driver.page_source, 'html.parser').select_one("#rank > div.header > div:nth-child(1) > ul > li").text
+conn = sqlite3.connect('moba_database.sqlite3')
+c = conn.cursor()
 
-# バージョン情報を取得
-version = get_mlbb_version()
+insert_query = '''
+INSERT INTO hero_meta_data (name, win_rate, pick_rate, ban_rate, reference_date, rank_level)
+VALUES (?, ?, ?, ?, ?, ?)
+'''
 
-# データベースに保存
-save_to_hero_meta_data(hero_meta_data, reference_date, version)
+for hero, data_dict in hero_meta_data.items():
+  try:
+    c.execute(insert_query, (hero, data_dict['win_rate'], data_dict['pick_rate'], data_dict['ban_rate'], reference_date, rank_level))
+  except sqlite3.IntegrityError:
+    error_message = f"Duplicate entry found for {hero} on {reference_date}"
+    print(error_message)
 
-# レーンとランクでヒーローをグループ化
-lane_rank_dict = group_heroes_by_lane_and_rank(hero_meta_data, hero_data)
+conn.commit()
+conn.close()
 
-# タグ生成
-tier_tags = generate_tier_tags(lane_rank_dict, hero_data)
+# スクレイピングしたデータからz-socreを計算する
+pd.set_option('display.max_rows', None)
+df = pd.DataFrame(hero_meta_data).T
+df = df.astype({'win_rate': 'float', 'pick_rate': 'float', 'ban_rate': 'float'})
+df['win_rate_z'] = (df['win_rate'] - df['win_rate'].mean()) / df['win_rate'].std()
+df['pick_rate_z'] = (df['pick_rate'] - df['pick_rate'].mean()) / df['pick_rate'].std()
+df['ban_rate_z'] = (df['ban_rate'] - df['ban_rate'].mean()) / df['ban_rate'].std()
+df['interaction'] = df['win_rate_z'] * df['pick_rate_z']
+df['tier_score_z'] = 0.6 * df['win_rate_z'] + 0.25 * df['pick_rate_z'] + 0.15 * df['ban_rate_z'] - 0.2 * df['interaction']
 
-splusFighterHero = tier_tags['Fighter']['S+']
-sFighterHero = tier_tags['Fighter']['S']
-aplusFighterHero = tier_tags['Fighter']['A+']
-aFighterHero = tier_tags['Fighter']['A']
-bFighterHero = tier_tags['Fighter']['B']
-cFighterHero = tier_tags['Fighter']['C']
+# df.to_csv('hero_meta_data.csv', index=True)
 
-splusMageHero = tier_tags['Mage']['S+']
-sMageHero = tier_tags['Mage']['S']
-aplusMageHero = tier_tags['Mage']['A+']
-aMageHero = tier_tags['Mage']['A']
-bMageHero = tier_tags['Mage']['B']
-cMageHero = tier_tags['Mage']['C']
+# hero_dictにzscoreを保存する
+hero_dict = {}
+for hero, data in get_hero_data().items():
+  hero_dict[hero] = {
+    'role': data['role'],
+    'image_url': data['image_url'],
+    'z_score': df.loc[hero, 'tier_score_z'] if hero in df.index else None
+  }
 
-splusTankHero = tier_tags['Tank']['S+']
-sTankHero = tier_tags['Tank']['S']
-aplusTankHero = tier_tags['Tank']['A+']
-aTankHero = tier_tags['Tank']['A']
-bTankHero = tier_tags['Tank']['B']
-cTankHero = tier_tags['Tank']['C']
+## hero_dictをroleごとに分ける
+tank_hero_dict = {}
+fighter_hero_dict = {}
+support_hero_dict = {}
+assassin_hero_dict = {}
+marksman_hero_dict = {}
+mage_hero_dict = {}
 
-splusAssassinHero = tier_tags['Assassin']['S+']
-sAssassinHero = tier_tags['Assassin']['S']
-aplusAssassinHero = tier_tags['Assassin']['A+']
-aAssassinHero = tier_tags['Assassin']['A']
-bAssassinHero = tier_tags['Assassin']['B']
-cAssassinHero = tier_tags['Assassin']['C']
+for role, data in hero_dict.items():
+  if data['role'] == 'Tank':
+    tank_hero_dict[role] = data
+  elif data['role'] == 'Fighter':
+    fighter_hero_dict[role] = data
+  elif data['role'] == 'Support':
+    support_hero_dict[role] = data
+  elif data['role'] == 'Assassin':
+    assassin_hero_dict[role] = data
+  elif data['role'] == 'Marksman':
+    marksman_hero_dict[role] = data
+  elif data['role'] == 'Mage':
+    mage_hero_dict[role] = data
 
-splusMarksmanHero = tier_tags['Marksman']['S+']
-sMarksmanHero = tier_tags['Marksman']['S']
-aplusMarksmanHero = tier_tags['Marksman']['A+']
-aMarksmanHero = tier_tags['Marksman']['A']
-bMarksmanHero = tier_tags['Marksman']['B']
-cMarksmanHero = tier_tags['Marksman']['C']
+# zscoreをもとにtierを作成する
+splusFighterHero = ''
+sFighterHero = ''
+aplusFighterHero = ''
+aFighterHero = ''
+bFighterHero = ''
+cFighterHero = ''
 
-splusSupportHero = tier_tags['Support']['S+']
-sSupportHero = tier_tags['Support']['S']
-aplusSupportHero = tier_tags['Support']['A+']
-aSupportHero = tier_tags['Support']['A']
-bSupportHero = tier_tags['Support']['B']
-cSupportHero = tier_tags['Support']['C']
+splusTankHero = ''
+sTankHero = ''
+aplusTankHero = ''
+aTankHero = ''
+bTankHero = ''
+cTankHero = ''
+
+splusSupportHero = ''
+sSupportHero = ''
+aplusSupportHero = ''
+aSupportHero = ''
+bSupportHero = ''
+cSupportHero = ''
+
+splusAssassinHero = ''
+sAssassinHero = ''
+aplusAssassinHero = ''
+aAssassinHero = ''
+bAssassinHero = ''
+cAssassinHero = ''
+
+splusMarksmanHero = ''
+sMarksmanHero = ''
+aplusMarksmanHero = ''
+aMarksmanHero = ''
+bMarksmanHero = ''
+cMarksmanHero = ''
+
+splusMageHero = ''
+sMageHero = ''
+aplusMageHero = ''
+aMageHero = ''
+bMageHero = ''
+cMageHero = ''
+
+for hero, data in tank_hero_dict.items():
+  tier_hero_img_tag = tag.createHeroImgTag(data['image_url'])
+  if get_rank_from_score(data['z_score']) == 'S+':
+    splusTankHero += tier_hero_img_tag
+  elif get_rank_from_score(data['z_score']) == 'S':
+    sTankHero += tier_hero_img_tag
+  elif get_rank_from_score(data['z_score']) == 'A+':
+    aplusTankHero += tier_hero_img_tag
+  elif get_rank_from_score(data['z_score']) == 'A':
+    aTankHero += tier_hero_img_tag
+  elif get_rank_from_score(data['z_score']) == 'B':
+    bTankHero += tier_hero_img_tag
+  elif get_rank_from_score(data['z_score']) == 'C':
+    cTankHero += tier_hero_img_tag
+
+
+for hero,data in fighter_hero_dict.items():
+  tier_hero_img_tag = tag.createHeroImgTag(data['image_url'])
+  if get_rank_from_score(data['z_score']) == 'S+':
+    splusFighterHero += tier_hero_img_tag
+  elif get_rank_from_score(data['z_score']) == 'S':
+    sFighterHero += tier_hero_img_tag
+  elif get_rank_from_score(data['z_score']) == 'A+':
+    aplusFighterHero += tier_hero_img_tag
+  elif get_rank_from_score(data['z_score']) == 'A':
+    aFighterHero += tier_hero_img_tag
+  elif get_rank_from_score(data['z_score']) == 'B':
+    bFighterHero += tier_hero_img_tag
+  elif get_rank_from_score(data['z_score']) == 'C':
+    cFighterHero += tier_hero_img_tag
+
+for hero,data in support_hero_dict.items():
+  tier_hero_img_tag = tag.createHeroImgTag(data['image_url'])
+  if get_rank_from_score(data['z_score']) == 'S+':
+    splusSupportHero += tier_hero_img_tag
+  elif get_rank_from_score(data['z_score']) == 'S':
+    sSupportHero += tier_hero_img_tag
+  elif get_rank_from_score(data['z_score']) == 'A+':
+    aplusSupportHero += tier_hero_img_tag
+  elif get_rank_from_score(data['z_score']) == 'A':
+    aSupportHero += tier_hero_img_tag
+  elif get_rank_from_score(data['z_score']) == 'B':
+    bSupportHero += tier_hero_img_tag
+  elif get_rank_from_score(data['z_score']) == 'C':
+    cSupportHero += tier_hero_img_tag
+
+for hero,data in assassin_hero_dict.items():
+  tier_hero_img_tag = tag.createHeroImgTag(data['image_url'])
+  if get_rank_from_score(data['z_score']) == 'S+':
+    splusAssassinHero += tier_hero_img_tag
+  elif get_rank_from_score(data['z_score']) == 'S':
+    sAssassinHero += tier_hero_img_tag
+  elif get_rank_from_score(data['z_score']) == 'A+':
+    aplusAssassinHero += tier_hero_img_tag
+  elif get_rank_from_score(data['z_score']) == 'A':
+    aAssassinHero += tier_hero_img_tag
+  elif get_rank_from_score(data['z_score']) == 'B':
+    bAssassinHero += tier_hero_img_tag
+  elif get_rank_from_score(data['z_score']) == 'C':
+    cAssassinHero += tier_hero_img_tag
+
+for hero,data in marksman_hero_dict.items():
+  tier_hero_img_tag = tag.createHeroImgTag(data['image_url'])
+  if get_rank_from_score(data['z_score']) == 'S+':
+    splusMarksmanHero += tier_hero_img_tag
+  elif get_rank_from_score(data['z_score']) == 'S':
+    sMarksmanHero += tier_hero_img_tag
+  elif get_rank_from_score(data['z_score']) == 'A+':
+    aplusMarksmanHero += tier_hero_img_tag
+  elif get_rank_from_score(data['z_score']) == 'A':
+    aMarksmanHero += tier_hero_img_tag
+  elif get_rank_from_score(data['z_score']) == 'B':
+    bMarksmanHero += tier_hero_img_tag
+  elif get_rank_from_score(data['z_score']) == 'C':
+    cMarksmanHero += tier_hero_img_tag
+
+for hero,data in mage_hero_dict.items():
+  tier_hero_img_tag = tag.createHeroImgTag(data['image_url'])
+  if get_rank_from_score(data['z_score']) == 'S+':
+    splusMageHero += tier_hero_img_tag
+  elif get_rank_from_score(data['z_score']) == 'S':
+    sMageHero += tier_hero_img_tag
+  elif get_rank_from_score(data['z_score']) == 'A+':
+    aplusMageHero += tier_hero_img_tag
+  elif get_rank_from_score(data['z_score']) == 'A':
+    aMageHero += tier_hero_img_tag
+  elif get_rank_from_score(data['z_score']) == 'B':
+    bMageHero += tier_hero_img_tag
+  elif get_rank_from_score(data['z_score']) == 'C':
+    cMageHero += tier_hero_img_tag
 
 # タブ始まり
 print('<!-- wp:loos/tab {"tabId":"55c27d22","tabWidthPC":"flex-50","tabHeaders":["ファイター","メイジ","タンク","アサシン","ハンター","サポート"],"className":"is-style-balloon"} -->')
