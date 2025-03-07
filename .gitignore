@@ -12,3 +12,9 @@ moba-ranking-venv/
 sql/
 
 logs/
+
+hero_images/
+
+.env
+
+output/
