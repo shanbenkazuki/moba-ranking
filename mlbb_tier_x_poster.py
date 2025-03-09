@@ -107,60 +107,71 @@ grades_info = {
     'D': {'title': 'D Tier'}
 }
 
-html_head = """
+html_head = f"""
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <title>Hero Tier List</title>
 <style>
-body {
+body {{
   background-color: #2b2b2b;
   color: #ffffff;
   font-family: Arial, sans-serif;
   margin: 20px;
-}
-h1 {
+}}
+h1 {{
   color: #ffd700;
-}
-.tier-section {
+}}
+.version-info {{
+  font-size: 1.2em;
+  font-weight: bold;
+  color: #ffffff;
+  background-color: #444;
+  padding: 10px;
+  border-radius: 5px;
+  text-align: center;
+  margin-bottom: 20px;
+}}
+.tier-section {{
   margin-bottom: 40px;
   padding: 20px;
   border: 1px solid #444;
   border-radius: 8px;
   background-color: #333;
-}
-.tier-title {
+}}
+.tier-title {{
   font-size: 1.5em;
   margin-bottom: 5px;
   color: #ffd700;
-}
-.hero-list {
+}}
+.hero-list {{
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
-}
-.hero {
+}}
+.hero {{
   width: 80px;
   text-align: center;
-}
-.hero img {
+}}
+.hero img {{
   width: 64px;
   height: 64px;
   border-radius: 8px;
   border: 1px solid #555;
   object-fit: cover;
   margin-bottom: 5px;
-}
-.hero-name {
+}}
+.hero-name {{
   font-size: 0.8em;
   color: #fff;
   white-space: nowrap;
-}
+}}
 </style>
 </head>
 <body>
 <h1>MLBB Hero Tier List</h1>
+<p class="version-info">Patch {patch_number}</p>
 """
 
 html_tail = """
@@ -236,37 +247,37 @@ driver.quit()
 # 6. Tweepyでスクリーンショットを添付してXに投稿
 # ----------------------------
 # Twitter APIの認証情報を環境変数から取得
-API_KEY = os.getenv('API_KEY')
-API_SECRET_KEY = os.getenv('API_SECRET_KEY')
-ACCESS_TOKEN = os.getenv('ACCESS_TOKEN')
-ACCESS_TOKEN_SECRET = os.getenv('ACCESS_TOKEN_SECRET')
-BEARER_TOKEN = os.getenv('BEARER_TOKEN')  # v2用のトークン
+# API_KEY = os.getenv('API_KEY')
+# API_SECRET_KEY = os.getenv('API_SECRET_KEY')
+# ACCESS_TOKEN = os.getenv('ACCESS_TOKEN')
+# ACCESS_TOKEN_SECRET = os.getenv('ACCESS_TOKEN_SECRET')
+# BEARER_TOKEN = os.getenv('BEARER_TOKEN')  # v2用のトークン
 
-# OAuth1認証を設定（v1.1用のAPIでメディアアップロードを実施）
-auth = tweepy.OAuthHandler(API_KEY, API_SECRET_KEY)
-auth.set_access_token(ACCESS_TOKEN, ACCESS_TOKEN_SECRET)
-api_v1 = tweepy.API(auth)
+# # OAuth1認証を設定（v1.1用のAPIでメディアアップロードを実施）
+# auth = tweepy.OAuthHandler(API_KEY, API_SECRET_KEY)
+# auth.set_access_token(ACCESS_TOKEN, ACCESS_TOKEN_SECRET)
+# api_v1 = tweepy.API(auth)
 
-# Tweepy v2クライアントの作成
-client = tweepy.Client(
-    bearer_token=BEARER_TOKEN,
-    consumer_key=API_KEY,
-    consumer_secret=API_SECRET_KEY,
-    access_token=ACCESS_TOKEN,
-    access_token_secret=ACCESS_TOKEN_SECRET
-)
+# # Tweepy v2クライアントの作成
+# client = tweepy.Client(
+#     bearer_token=BEARER_TOKEN,
+#     consumer_key=API_KEY,
+#     consumer_secret=API_SECRET_KEY,
+#     access_token=ACCESS_TOKEN,
+#     access_token_secret=ACCESS_TOKEN_SECRET
+# )
 
-# tweet_textの変更：patchesテーブルから取得したパッチ情報を使用
-tweet_text = f"""今週のモバイル・レジェンドのTier表を公開します。
+# # tweet_textの変更：patchesテーブルから取得したパッチ情報を使用
+# tweet_text = f"""今週のモバイル・レジェンドのTier表を公開します。
 
-バージョン：{patch_number}
+# バージョン：{patch_number}
 
-#モバイル・レジェンド #モバレ #モバレジェ"""
+# #モバイル・レジェンド #モバレ #モバレジェ"""
 
-# 画像をアップロードして、media_idを取得（v1.1のAPIを使用）
-media = api_v1.media_upload(screenshot_path)
+# # 画像をアップロードして、media_idを取得（v1.1のAPIを使用）
+# media = api_v1.media_upload(screenshot_path)
 
-# ツイートを投稿（v2のAPIを使用）
-client.create_tweet(text=tweet_text, media_ids=[media.media_id_string])
+# # ツイートを投稿（v2のAPIを使用）
+# client.create_tweet(text=tweet_text, media_ids=[media.media_id_string])
 
-logger.info("ツイートが投稿されました。")
+# logger.info("ツイートが投稿されました。")
