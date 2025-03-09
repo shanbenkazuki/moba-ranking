@@ -42,32 +42,32 @@ function runQuery(db, sql, params = []) {
     if (!fs.existsSync(outputDir)) {
       fs.mkdirSync(outputDir, { recursive: true });
     }
-    const heroImagesDir = path.join(baseDir, "hero_images");
+    const pokemonImagesDir = path.join(baseDir, "pokemon_images");
 
     // ----------------------------
     // 2. SQLiteからデータ取得
     // ----------------------------
-    const dbPath = path.join(baseDir, "mlbb.db");
+    const dbPath = path.join(baseDir, "unite.db");
     const db = new sqlite3.Database(dbPath, sqlite3.OPEN_READONLY, (err) => {
-      if(err) console.error("DBオープンエラー:", err);
+      if (err) console.error("DBオープンエラー:", err);
     });
 
     // 最新の reference_date を取得
-    const latestDateRows = await runQuery(db, "SELECT MAX(reference_date) as latest_date FROM hero_stats");
+    const latestDateRows = await runQuery(db, "SELECT MAX(reference_date) as latest_date FROM pokemon_stats");
     const latestDate = latestDateRows[0].latest_date;
 
-    // 最新日付の hero_stats を取得
-    const heroStats = await runQuery(db, "SELECT * FROM hero_stats WHERE reference_date = ?", [latestDate]);
-    console.log(`最新の reference_date (${latestDate}) のデータ件数: ${heroStats.length}`);
+    // 最新日付の pokemon_stats を取得
+    const pokemonStats = await runQuery(db, "SELECT * FROM pokemon_stats WHERE reference_date = ?", [latestDate]);
+    console.log(`最新の reference_date (${latestDate}) のデータ件数: ${pokemonStats.length}`);
 
     // 英名→日本語名のマッピング取得
-    const heroMapRows = await runQuery(db, "SELECT english_name, japanese_name FROM heroes");
-    const heroNameMap = {};
-    heroMapRows.forEach(row => {
-      heroNameMap[row.english_name] = row.japanese_name;
+    const pokemonMapRows = await runQuery(db, "SELECT english_name, japanese_name FROM pokemons");
+    const pokemonNameMap = {};
+    pokemonMapRows.forEach(row => {
+      pokemonNameMap[row.english_name] = row.japanese_name;
     });
 
-    // 最新パッチ情報の取得
+    // 最新パッチ情報（バージョン）の取得
     const patchRows = await runQuery(db, "SELECT patch_number FROM patches ORDER BY release_date DESC LIMIT 1");
     const patchNumber = (patchRows.length > 0) ? patchRows[0].patch_number : "N/A";
 
@@ -76,9 +76,9 @@ function runQuery(db, sql, params = []) {
     // ----------------------------
     // 3. Zスコア・強さスコア算出
     // ----------------------------
-    const winRates = heroStats.map(row => row.win_rate);
-    const pickRates = heroStats.map(row => row.pick_rate);
-    const banRates = heroStats.map(row => row.ban_rate);
+    const winRates = pokemonStats.map(row => row.win_rate);
+    const pickRates = pokemonStats.map(row => row.pick_rate);
+    const banRates = pokemonStats.map(row => row.ban_rate);
 
     const winMean = mean(winRates);
     const winStd = stdDev(winRates, winMean);
@@ -87,7 +87,7 @@ function runQuery(db, sql, params = []) {
     const banMean = mean(banRates);
     const banStd = stdDev(banRates, banMean);
 
-    heroStats.forEach(row => {
+    pokemonStats.forEach(row => {
       row.win_rate_z = (row.win_rate - winMean) / winStd;
       row.pick_rate_z = (row.pick_rate - pickMean) / pickStd;
       row.ban_rate_z = (row.ban_rate - banMean) / banStd;
@@ -96,7 +96,7 @@ function runQuery(db, sql, params = []) {
       row.grade = assignGrade(row.strength_score);
     });
     // strength_score の降順にソート
-    heroStats.sort((a, b) => b.strength_score - a.strength_score);
+    pokemonStats.sort((a, b) => b.strength_score - a.strength_score);
 
     // ----------------------------
     // 4. HTML出力用文字列生成
@@ -104,17 +104,17 @@ function runQuery(db, sql, params = []) {
     const tierDescriptions = {
       'S': 'Meta Definers',
       'A': 'Top Picks',
-      'B': 'Balanced Heroes',
+      'B': 'Balanced Picks',
       'C': 'Situational Picks',
       'D': 'Needs Buff'
     };
 
     const htmlHead = `<!DOCTYPE html>
-<html lang="en">
+<html lang="ja">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MLBB Hero Tier List</title>
+  <title>ポケモンユナイト TIER LIST</title>
   <style>
     :root {
       --primary-color: #fb4f3a;
@@ -330,15 +330,15 @@ function runQuery(db, sql, params = []) {
 </head>
 <body>
   <div class="header">
-    <h1>MLBB <span>TIER LIST</span></h1>
-    <div class="version-info">Patch ${patchNumber}</div>
+    <h1>ポケモンユナイト <span>TIER LIST</span></h1>
+    <div class="version-info">バージョン ${patchNumber}</div>
   </div>
   <div class="container">
 `;
 
     const htmlTail = `
     <div class="footer">
-      MLBB Tier List ${latestDate} • Patch ${patchNumber}
+      ポケモンユナイト Tier List ${latestDate} • バージョン ${patchNumber}
     </div>
   </div>
 </body>
@@ -348,7 +348,7 @@ function runQuery(db, sql, params = []) {
     let htmlBody = "";
     const grades = ['S', 'A', 'B', 'C', 'D'];
     grades.forEach(grade => {
-      const filtered = heroStats.filter(row => row.grade === grade);
+      const filtered = pokemonStats.filter(row => row.grade === grade);
       if (filtered.length === 0) return;
       const description = tierDescriptions[grade] || "";
       htmlBody += `    <!-- ${grade} Tier -->\n`;
@@ -357,14 +357,14 @@ function runQuery(db, sql, params = []) {
       htmlBody += `      <div class="tier-title">${grade} Tier - ${description}</div>\n`;
       htmlBody += `      <div class="hero-list">\n`;
       filtered.forEach(row => {
-        const englishName = row.hero_name;
-        const japaneseName = heroNameMap[englishName] || englishName;
+        const englishName = row.pokemon_name; // カラム名に合わせる
+        const japaneseName = pokemonNameMap[englishName] || englishName;
         const winRate = row.win_rate;
-        const heroImgPath = "file://" + path.join(heroImagesDir, `${englishName}.webp`);
+        const pokemonImgPath = "file://" + path.join(pokemonImagesDir, `${englishName}.webp`);
         htmlBody += `        <div class="hero">\n`;
         htmlBody += `          <div class="hero-card">\n`;
         htmlBody += `            <div class="hero-img-container">\n`;
-        htmlBody += `              <img src="${heroImgPath}" alt="${japaneseName}">\n`;
+        htmlBody += `              <img src="${pokemonImgPath}" alt="${japaneseName}">\n`;
         htmlBody += `              <div class="stats-overlay">WR: ${winRate.toFixed(1)}%</div>\n`;
         htmlBody += `            </div>\n`;
         htmlBody += `            <div class="hero-name">${japaneseName}</div>\n`;
@@ -376,7 +376,7 @@ function runQuery(db, sql, params = []) {
     });
 
     const finalHtml = htmlHead + htmlBody + htmlTail;
-    const htmlFilePath = path.join(outputDir, "hero_tier_list.html");
+    const htmlFilePath = path.join(outputDir, "pokemon_tier_list.html");
     fs.writeFileSync(htmlFilePath, finalHtml, "utf-8");
     console.log(`HTMLファイルが ${htmlFilePath} に出力されました。`);
 
@@ -390,27 +390,22 @@ function runQuery(db, sql, params = []) {
     const page = await browser.newPage();
     const fileUrl = "file://" + htmlFilePath;
     await page.goto(fileUrl, { waitUntil: 'networkidle0' });
-    // ヘッダーとコンテナが確実に読み込まれるのを待つ
     await page.waitForSelector('.header');
     await page.waitForSelector('.container');
 
-    // ヘッダーとコンテナのそれぞれの位置と大きさを取得
     const headerElement = await page.$('.header');
     const containerElement = await page.$('.container');
     const headerBox = await headerElement.boundingBox();
     const containerBox = await containerElement.boundingBox();
 
-    // ヘッダーとコンテナの領域を包括する矩形を計算
     const unionX = Math.min(headerBox.x, containerBox.x);
     const unionY = Math.min(headerBox.y, containerBox.y);
     const unionWidth = Math.max(headerBox.x + headerBox.width, containerBox.x + containerBox.width) - unionX;
-    const unionHeight = (containerBox.y + containerBox.height) - unionY; // ヘッダーが上部の場合
+    const unionHeight = (containerBox.y + containerBox.height) - unionY;
 
-    // タイムスタンプを用いて一意なファイル名を作成
     const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-    const screenshotPath = path.join(outputDir, `hero_tier_list_${timestamp}.png`);
+    const screenshotPath = path.join(outputDir, `pokemon_tier_list_${timestamp}.png`);
 
-    // ヘッダーとコンテナを含む領域のスクリーンショットを取得
     await page.screenshot({
       path: screenshotPath,
       clip: { x: unionX, y: unionY, width: unionWidth, height: unionHeight }
@@ -422,40 +417,35 @@ function runQuery(db, sql, params = []) {
     // ----------------------------
     // 6. twitter-api-v2でスクリーンショットを添付してXに投稿
     // ----------------------------
-    // Twitter APIの認証情報を環境変数から取得
-    const apiKey = process.env.API_KEY;
-    const apiSecretKey = process.env.API_SECRET_KEY;
-    const accessToken = process.env.ACCESS_TOKEN;
-    const accessTokenSecret = process.env.ACCESS_TOKEN_SECRET;
-    const bearerToken = process.env.BEARER_TOKEN;
+//     const apiKey = process.env.API_KEY;
+//     const apiSecretKey = process.env.API_SECRET_KEY;
+//     const accessToken = process.env.ACCESS_TOKEN;
+//     const accessTokenSecret = process.env.ACCESS_TOKEN_SECRET;
+//     const bearerToken = process.env.BEARER_TOKEN;
 
-    // Twitterクライアントの初期化（v1.1とv2のエンドポイントに対応）
-    const twitterClient = new TwitterApi({
-      appKey: apiKey,
-      appSecret: apiSecretKey,
-      accessToken: accessToken,
-      accessSecret: accessTokenSecret,
-    });
-    const rwClient = twitterClient.readWrite;
+//     const twitterClient = new TwitterApi({
+//       appKey: apiKey,
+//       appSecret: apiSecretKey,
+//       accessToken: accessToken,
+//       accessSecret: accessTokenSecret,
+//     });
+//     const rwClient = twitterClient.readWrite;
 
-    // ツイートテキスト（patchNumber変数を利用）
-    const tweetText = `今週のモバイル・レジェンドのTier表を公開します。
+//     const tweetText = `今週のポケモンユナイトのTier表を公開します。
 
-バージョン：${patchNumber}
+// バージョン：${patchNumber}
 
-#モバイル・レジェンド #モバレ #モバレジェ`;
+// #ポケモンユナイト #PokemonUnite`;
 
-    try {
-      // メディアをアップロード（v1.1のエンドポイントを使用）
-      const mediaId = await rwClient.v1.uploadMedia(screenshotPath);
-      // ツイートを投稿（v2のエンドポイントを使用）
-      await rwClient.v2.tweet(tweetText, {
-        media: { media_ids: [mediaId] },
-      });
-      console.log("ツイートが投稿されました。");
-    } catch (error) {
-      console.error("ツイート投稿中にエラーが発生しました:", error);
-    }
+//     try {
+//       const mediaId = await rwClient.v1.uploadMedia(screenshotPath);
+//       await rwClient.v2.tweet(tweetText, {
+//         media: { media_ids: [mediaId] },
+//       });
+//       console.log("ツイートが投稿されました。");
+//     } catch (error) {
+//       console.error("ツイート投稿中にエラーが発生しました:", error);
+//     }
   } catch (err) {
     console.error("エラー:", err);
   }
