@@ -18,3 +18,5 @@ hero_images/
 .env
 
 output/
+
+node_modules/
