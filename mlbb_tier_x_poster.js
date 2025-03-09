@@ -3,6 +3,7 @@ const path = require('path');
 const fs = require('fs');
 const sqlite3 = require('sqlite3').verbose();
 const { TwitterApi } = require('twitter-api-v2');
+require('dotenv').config();
 
 // --- ヘルパー関数 --- //
 function mean(arr) {
