@@ -12,12 +12,13 @@ const logFile = path.join(logDir, `mlbb_scraping_${today}.log`);
 
 // ロギング関数
 function log(level, message) {
-  const timestamp = new Date().toISOString();
-  const logMessage = `${timestamp} - ${level} - ${message}`;
-  
-  console.log(logMessage);
-  fs.appendFileSync(logFile, logMessage + '\n', { encoding: 'utf8' });
-}
+    // 日本のタイムゾーンでのローカル日付文字列を取得
+    const timestamp = new Date().toLocaleString('ja-JP', { timeZone: 'Asia/Tokyo' });
+    const logMessage = `${timestamp} - ${level} - ${message}`;
+    
+    console.log(logMessage);
+    fs.appendFileSync(logFile, logMessage + '\n', { encoding: 'utf8' });
+  }
 
 // メイン処理
 async function main() {
