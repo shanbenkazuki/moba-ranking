@@ -2,6 +2,7 @@ const puppeteer = require('puppeteer');
 const path = require('path');
 const fs = require('fs');
 const sqlite3 = require('sqlite3').verbose();
+const { TwitterApi } = require('twitter-api-v2');
 
 // --- ヘルパー関数 --- //
 function mean(arr) {
@@ -416,6 +417,44 @@ function runQuery(db, sql, params = []) {
     console.log(`スクリーンショットが ${screenshotPath} に保存されました。`);
 
     await browser.close();
+
+    // ----------------------------
+    // 6. twitter-api-v2でスクリーンショットを添付してXに投稿
+    // ----------------------------
+    // Twitter APIの認証情報を環境変数から取得
+    const apiKey = process.env.API_KEY;
+    const apiSecretKey = process.env.API_SECRET_KEY;
+    const accessToken = process.env.ACCESS_TOKEN;
+    const accessTokenSecret = process.env.ACCESS_TOKEN_SECRET;
+    const bearerToken = process.env.BEARER_TOKEN;
+
+    // Twitterクライアントの初期化（v1.1とv2のエンドポイントに対応）
+    const twitterClient = new TwitterApi({
+      appKey: apiKey,
+      appSecret: apiSecretKey,
+      accessToken: accessToken,
+      accessSecret: accessTokenSecret,
+    });
+    const rwClient = twitterClient.readWrite;
+
+    // ツイートテキスト（patchNumber変数を利用）
+    const tweetText = `今週のモバイル・レジェンドのTier表を公開します。
+
+バージョン：${patchNumber}
+
+#モバイル・レジェンド #モバレ #モバレジェ`;
+
+    try {
+      // メディアをアップロード（v1.1のエンドポイントを使用）
+      const mediaId = await rwClient.v1.uploadMedia(screenshotPath);
+      // ツイートを投稿（v2のエンドポイントを使用）
+      await rwClient.v2.tweet(tweetText, {
+        media: { media_ids: [mediaId] },
+      });
+      console.log("ツイートが投稿されました。");
+    } catch (error) {
+      console.error("ツイート投稿中にエラーが発生しました:", error);
+    }
   } catch (err) {
     console.error("エラー:", err);
   }
