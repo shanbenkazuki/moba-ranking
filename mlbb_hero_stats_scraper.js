@@ -2,7 +2,7 @@ const puppeteer = require('puppeteer');
 const fs = require('fs');
 const path = require('path');
 const sqlite3 = require('sqlite3').verbose();
-// const { open } = require('sqlite');
+const { open } = require('sqlite');
 
 // --- ログ設定 ---
 const logDir = path.join(__dirname, 'logs');
@@ -146,7 +146,7 @@ async function main() {
     log('INFO', 'Puppeteerブラウザを正常に終了');
     
     // SQLiteデータベース操作
-    const dbPath = path.join(__dirname, 'mlbb.db');
+    const dbPath = '/Users/yamamotokazuki/develop/moba-ranking/mlbb.db';
     const db = await open({
       filename: dbPath,
       driver: sqlite3.Database
