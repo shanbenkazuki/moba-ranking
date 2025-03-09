@@ -116,8 +116,8 @@ def main():
 
     # 5. データ読み込み対象要素のスクロール
     try:
-        target_selector = "#root > div.mt-2669608.mt-uid-99999.mt-full-container > div.mt-2673591.mt-uid-99970.mt-empty > div > div.mt-2729690.mt-uid-99949.mt-empty > div > div.mt-2684827.mt-uid-99942.mt-empty > div"
-        target_element = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, target_selector)))
+        target_xpath = '//*[@id="root"]/div[1]/div[5]/div/div[2]/div/div[2]/div'
+        target_element = wait.until(EC.presence_of_element_located((By.XPATH, target_xpath)))
         logging.info("スクロール対象の要素を取得")
         
         last_height = driver.execute_script("return arguments[0].scrollHeight", target_element)
