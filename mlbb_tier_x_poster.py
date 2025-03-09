@@ -9,6 +9,7 @@ from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 import time
 import tweepy
+import datetime
 
 # ----------------------------
 # 基本ディレクトリの設定
@@ -221,7 +222,11 @@ driver.get(html_file_url)
 
 time.sleep(2)
 
-screenshot_path = os.path.join(output_dir, "hero_tier_list_screenshot.png")
+# 現在時刻のタイムスタンプを作成（例: 20250309_153045）
+timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+# タイムスタンプをファイル名に組み込む
+screenshot_filename = f"hero_tier_list_screenshot_{timestamp}.png"
+screenshot_path = os.path.join(output_dir, screenshot_filename)
 driver.save_screenshot(screenshot_path)
 logger.info(f"スクリーンショット '{screenshot_path}' を保存しました。")
 
