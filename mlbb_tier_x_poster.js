@@ -388,10 +388,31 @@ function runQuery(db, sql, params = []) {
     const page = await browser.newPage();
     const fileUrl = "file://" + htmlFilePath;
     await page.goto(fileUrl, { waitUntil: 'networkidle0' });
+    // ヘッダーとコンテナが確実に読み込まれるのを待つ
+    await page.waitForSelector('.header');
     await page.waitForSelector('.container');
-    const container = await page.$('.container');
-    const screenshotPath = path.join(outputDir, "hero_tier_list_screenshot.png");
-    await container.screenshot({ path: screenshotPath });
+
+    // ヘッダーとコンテナのそれぞれの位置と大きさを取得
+    const headerElement = await page.$('.header');
+    const containerElement = await page.$('.container');
+    const headerBox = await headerElement.boundingBox();
+    const containerBox = await containerElement.boundingBox();
+
+    // ヘッダーとコンテナの領域を包括する矩形を計算
+    const unionX = Math.min(headerBox.x, containerBox.x);
+    const unionY = Math.min(headerBox.y, containerBox.y);
+    const unionWidth = Math.max(headerBox.x + headerBox.width, containerBox.x + containerBox.width) - unionX;
+    const unionHeight = (containerBox.y + containerBox.height) - unionY; // ヘッダーが上部の場合
+
+    // タイムスタンプを用いて一意なファイル名を作成
+    const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+    const screenshotPath = path.join(outputDir, `hero_tier_list_${timestamp}.png`);
+
+    // ヘッダーとコンテナを含む領域のスクリーンショットを取得
+    await page.screenshot({
+      path: screenshotPath,
+      clip: { x: unionX, y: unionY, width: unionWidth, height: unionHeight }
+    });
     console.log(`スクリーンショットが ${screenshotPath} に保存されました。`);
 
     await browser.close();
