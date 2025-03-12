@@ -120,7 +120,7 @@ function runQuery(db, sql, params = []) {
     // 追加：各championのscoreをログ出力
     // ----------------------------
     championStats.forEach(row => {
-      const key = row.champion_name; // champion_statsの名前は中国語表記と仮定
+      const key = row.champion_name; // champion_stats の名前は中国語表記と仮定
       const mapping = championMap[key];
       const englishName = mapping ? mapping.english : key;
       console.log(`${englishName} の score: ${row.strength_score.toFixed(3)}`);
@@ -133,7 +133,7 @@ function runQuery(db, sql, params = []) {
     const grades = ['S', 'A', 'B', 'C', 'D'];
 
     // CSSグリッドの設定：
-    // 1列目は行ラベル用(grade)、残りの列が lane
+    // 1列目は行ラベル（grade）、残りの列が lane
     let htmlHead = `<!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -145,48 +145,99 @@ function runQuery(db, sql, params = []) {
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
   <style>
     body {
-      background-color: #FAFAFA;
+      background-color: #0A1428; /* ワイルドリフトのダークブルー背景色 */
       font-family: 'Noto Sans JP', sans-serif;
       padding: 20px;
+      color: #E8E6E3; /* 明るいテキスト色 */
+    }
+    .title-container {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .main-title {
+      font-size: 2.5em;
+      font-weight: 900;
+      color: #C89B3C; /* ゴールドカラー */
+      margin-bottom: 5px;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
     }
     .composite-grid {
       display: grid;
-      /* 1列目は grade ラベル、以降は lane なので列数は lanes.length + 1 */
-      grid-template-columns: 150px repeat(${lanes.length}, 1fr);
-      gap: 10px;
+      grid-template-columns: 80px repeat(${lanes.length}, 1fr);
+      gap: 8px;
       margin: 0 auto;
-      max-width: 1920px;
+      max-width: 1400px;
     }
-    .grid-header, .grid-grade-label {
-      background: #eee;
+    .grid-header {
+      background: linear-gradient(to bottom, #0AC8B9, #0A8F85); /* ティールグラデーション */
       text-align: center;
-      padding: 10px;
+      padding: 10px 5px;
       font-weight: bold;
-      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 18px;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
     }
+    .grid-grade-label {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+      font-weight: 900;
+      font-size: 30px;
+      border-radius: 8px;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    }
+    /* グレード別の色設定 */
+    .grade-S { 
+      background: linear-gradient(135deg, #FFD700, #FFA500); 
+      color: #fff; 
+    }
+    .grade-A { 
+      background: linear-gradient(135deg, #E0E0E0, #A0AEC0); 
+      color: #fff; 
+    }
+    .grade-B { 
+      background: linear-gradient(135deg, #CD7F32, #A0522D); 
+      color: #fff; 
+    }
+    .grade-C { 
+      background: linear-gradient(135deg, #718096, #4A5568); 
+      color: #fff; 
+    }
+    .grade-D { 
+      background: linear-gradient(135deg, #2D3748, #1A202C); 
+      color: #fff; 
+    }
+    
     .grid-cell {
-      border: 1px solid #ccc;
-      padding: 10px;
-      min-height: 150px;
+      background-color: rgba(16, 32, 56, 0.9); /* セミトランスペアレント背景 */
+      border-radius: 8px;
+      padding: 8px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 6px;
+      justify-items: center;
+      align-content: start;
+      min-height: 110px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
     }
     .hero {
       text-align: center;
-      margin-bottom: 10px;
-    }
-    .hero-card {
-      border-radius: 10px;
-      overflow: hidden;
-      box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+      margin-bottom: 5px;
     }
     .hero-img-container {
-      width: 80px;
-      height: 80px;
-      margin: 0 auto;
-      border-radius: 50%;
+      width: 60px;
+      height: 60px;
       overflow: hidden;
-      border: 2px solid #fff;
-      box-shadow: 0 3px 6px rgba(0,0,0,0.1);
-      background: #f5f7fa;
+      border-radius: 50%;
+      border: 2px solid #C89B3C; /* ゴールドのボーダー */
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
+      margin: 0 auto;
     }
     .hero-img-container img {
       width: 100%;
@@ -195,44 +246,55 @@ function runQuery(db, sql, params = []) {
     }
     .hero-name {
       margin-top: 5px;
-      font-size: 0.9em;
+      font-size: 12px;
       font-weight: 700;
-      color: #333;
+      color: #E8E6E3;
+      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
     }
     .version-info {
       text-align: center;
       margin-bottom: 20px;
-      font-size: 1.3em;
-      font-weight: 700;
+      font-size: 1.1em;
+      font-weight: bold;
+      color: #C89B3C;
     }
-    .footer {
-      text-align: center;
-      margin-top: 20px;
-      font-size: 0.9em;
-      color: #666;
-    }
+    /* フッターとウォーターマークのスタイルを削除 */
   </style>
 </head>
 <body>
-  <div class="version-info">バージョン ${patchNumber} ・ ${latestDate}</div>
+  <div class="title-container">
+    <div class="main-title">ワイルドリフト ティアリスト</div>
+  </div>
+  <div class="version-info">バージョン ${patchNumber} | ${latestDate}</div>
   <div class="composite-grid">
-    <!-- ヘッダー行：1列目は空、以降が lane のラベル -->
+    <!-- ヘッダー行：1列目は空、以降が lane ラベル -->
     <div class="grid-header"></div>`;
     
-    // 横軸に lane ラベルを追加
+    // 中国語レーン名を日本語に変換する辞書（変更後）
+    const laneTranslation = {
+      '上单': 'バロン',
+      '打野': 'ジャングル',
+      '中路': 'ミッド',
+      '下路': 'ドラゴン',
+      '辅助': 'サポート'
+    };
+    
     lanes.forEach(lane => {
-      htmlHead += `<div class="grid-header">${lane}</div>`;
+      htmlHead += `<div class="grid-header">${laneTranslation[lane]}</div>`;
     });
-
+    
     let htmlBody = "";
-    // 縦軸に grade ごとの行を作成
+    // 各行は grade ごとに作成（縦軸）
     grades.forEach(grade => {
       // 先頭セルに grade ラベル
-      htmlBody += `<div class="grid-grade-label">${grade} Tier</div>`;
-      // 各 lane に対応するセル
+      htmlBody += `<div class="grid-grade-label grade-${grade}">${grade}</div>`;
       lanes.forEach(lane => {
         // lane と grade でフィルタ
         const filtered = championStats.filter(row => row.lane === lane && row.grade === grade);
+        
+        // 降順で強さスコアでソート
+        filtered.sort((a, b) => b.strength_score - a.strength_score);
+        
         htmlBody += `<div class="grid-cell">`;
         filtered.forEach(row => {
           const key = row.champion_name; // champion_stats の名前は中国語表記と仮定
@@ -240,13 +302,12 @@ function runQuery(db, sql, params = []) {
           const japaneseName = mapping.japanese || key;
           const englishName = mapping.english || key;
           const championImgPath = "file://" + path.join(championImagesDir, `${englishName}.webp`);
+          
           htmlBody += `<div class="hero">
-              <div class="hero-card">
-                <div class="hero-img-container">
-                  <img src="${championImgPath}" alt="${japaneseName}">
-                </div>
-                <div class="hero-name">${japaneseName}</div>
+              <div class="hero-img-container">
+                <img src="${championImgPath}" alt="${japaneseName}">
               </div>
+              <div class="hero-name">${japaneseName}</div>
             </div>`;
         });
         htmlBody += `</div>`;
@@ -255,13 +316,9 @@ function runQuery(db, sql, params = []) {
     
     const htmlTail = `
   </div>
-  <div class="footer">
-    <p>ワイルドリフト ティアリスト ・ ${latestDate} ・ バージョン ${patchNumber}</p>
-    <p>※勝率・ピック率・BAN率から算出</p>
-  </div>
 </body>
 </html>`;
-
+    
     const finalHtml = htmlHead + htmlBody + htmlTail;
     const htmlFilePath = path.join(outputDir, "champion_tier_list.html");
     fs.writeFileSync(htmlFilePath, finalHtml, "utf-8");
@@ -272,26 +329,27 @@ function runQuery(db, sql, params = []) {
     // ----------------------------
     const browser = await puppeteer.launch({
       headless: true,
-      defaultViewport: { width: 1920, height: 1080 }
+      defaultViewport: { width: 1400, height: 1080 } // SNS向けに幅を調整、サポートレーンが見切れないよう拡大
     });
     const page = await browser.newPage();
     const fileUrl = "file://" + htmlFilePath;
     await page.goto(fileUrl, { waitUntil: 'networkidle0' });
     await page.waitForSelector('.composite-grid');
 
-    const containerElement = await page.$('.composite-grid');
-    const containerBox = await containerElement.boundingBox();
+    // ページ全体のスクリーンショット（フッターを含む）
+    const bodyElement = await page.$('body');
+    const bodyBox = await bodyElement.boundingBox();
 
     const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-    const screenshotPath = path.join(outputDir, `champion_tier_list_${timestamp}.png`);
+    const screenshotPath = path.join(outputDir, `wild_rift_tier_${timestamp}.png`);
 
     await page.screenshot({
       path: screenshotPath,
       clip: {
-        x: containerBox.x,
-        y: containerBox.y,
-        width: containerBox.width,
-        height: containerBox.height
+        x: bodyBox.x,
+        y: bodyBox.y,
+        width: bodyBox.width,
+        height: bodyBox.height
       },
       fullPage: false
     });
@@ -323,11 +381,9 @@ function runQuery(db, sql, params = []) {
 #ワイルドリフト #WildRift`;
 
     try {
-      // const mediaId = await rwClient.v1.uploadMedia(screenshotPath);
-      // await rwClient.v2.tweet(tweetText, {
-      //   media: { media_ids: [mediaId] },
-      // });
-      // console.log("ツイートが投稿されました。");
+      const mediaId = await rwClient.v1.uploadMedia(screenshotPath);
+      await rwClient.v2.tweet(tweetText, { media: { media_ids: [mediaId] } });
+      console.log("ツイートが投稿されました。");
     } catch (error) {
       console.error("ツイート投稿中にエラーが発生しました:", error);
     }
