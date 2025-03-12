@@ -72,14 +72,14 @@ function insertChampionStats(championStats, patch_number) {
     `);
     
     // championStatsオブジェクトの構造は以下のようになっています。
-// {
-//   "参照日": referenceDate,
-//   "上单": [...],
-//   "打野": [...],
-//   "中路": [...],
-//   "下路": [...],
-//   "辅助": [...]
-// }
+    // {
+    //   "参照日": referenceDate,
+    //   "上单": [...],
+    //   "打野": [...],
+    //   "中路": [...],
+    //   "下路": [...],
+    //   "辅助": [...]
+    // }
     const reference_date = championStats["参照日"];
     const lanes = ["上单", "打野", "中路", "下路", "辅助"];
     
@@ -111,6 +111,27 @@ function insertChampionStats(championStats, patch_number) {
       }
       resolve();
     });
+  });
+}
+
+// scraper_statusテーブルへスクレイピング結果を保存する関数
+function insertScraperStatus(status, errorMessage) {
+  return new Promise((resolve, reject) => {
+    const db = new sqlite3.Database("/Users/yamamotokazuki/develop/moba-ranking/moba.db", (err) => {
+      if (err) return reject(err);
+    });
+    // 日本時間のタイムスタンプを取得（例："2025/3/12 15:30:00"）
+    const jstDate = new Date().toLocaleString('ja-JP', { timeZone: 'Asia/Tokyo' });
+    db.run(
+      `INSERT INTO scraper_status (scraper_status, game_title, error_message, scraper_date)
+       VALUES (?, ?, ?, ?)`,
+      [status, 'wildrift', errorMessage, jstDate],
+      function(err) {
+        db.close();
+        if (err) return reject(err);
+        resolve();
+      }
+    );
   });
 }
 
@@ -195,8 +216,20 @@ function insertChampionStats(championStats, patch_number) {
     await insertChampionStats(champion_stats, patch_number);
     logWithJST("champion_statsテーブルへデータ保存完了");
 
+    // --- スクレイピング結果をscraper_statusテーブルへ保存（成功の場合） ---
+    logWithJST("scraper_statusテーブルへ成功ステータスを保存中");
+    await insertScraperStatus(0, null);
+    logWithJST("scraper_statusテーブルへデータ保存完了");
+
   } catch (error) {
     logWithJST(`エラー発生: ${error}`);
+    // --- エラー発生時、scraper_statusテーブルへ失敗情報を保存 ---
+    try {
+      await insertScraperStatus(1, error.toString());
+      logWithJST("scraper_statusテーブルへエラーステータスを保存完了");
+    } catch (err) {
+      logWithJST(`scraper_status保存中に更にエラー発生: ${err}`);
+    }
     process.exit(1);
   }
 })();
