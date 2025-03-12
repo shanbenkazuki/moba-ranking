@@ -12,20 +12,20 @@ const logFile = path.join(logDir, `mlbb_scraping_${today}.log`);
 
 // ロギング関数
 function log(level, message) {
-    // 日本のタイムゾーンでのローカル日付文字列を取得
     const timestamp = new Date().toLocaleString('ja-JP', { timeZone: 'Asia/Tokyo' });
     const logMessage = `${timestamp} - ${level} - ${message}`;
-    
     console.log(logMessage);
     fs.appendFileSync(logFile, logMessage + '\n', { encoding: 'utf8' });
-  }
+}
 
-// メイン処理
 async function main() {
-  log('INFO', 'Mobile Legends ランクスクレイピング処理を開始');
-  
+  let scrapingFailed = false;
+  let scrapingErrorMsg = '';
   let browser;
+  
   try {
+    log('INFO', 'Mobile Legends ランクスクレイピング処理を開始');
+    
     // Puppeteerの起動
     browser = await puppeteer.launch({
       headless: false,
@@ -74,7 +74,6 @@ async function main() {
     await page.waitForSelector(scrollTargetSelector);
     log('INFO', 'スクロール対象の要素を取得');
     
-    // スクロール処理の実装
     await page.evaluate(async (selector) => {
       const scrollElement = document.querySelector(selector);
       let lastHeight = scrollElement.scrollHeight;
@@ -96,7 +95,6 @@ async function main() {
     // HTMLの取得とデータの抽出
     const heroMetaData = await page.evaluate(() => {
       const rateList = document.querySelectorAll("div.mt-2684827.mt-uid-99942.mt-empty > div > div");
-      
       const data = [];
       for (const heroRate of rateList) {
         const hero_name = heroRate.querySelector("div.mt-2693555 > div.mt-2693412 > span").textContent;
@@ -111,7 +109,6 @@ async function main() {
           ban_rate: ban_rate
         });
       }
-      
       return data;
     });
     
@@ -124,57 +121,47 @@ async function main() {
     });
     
     if (!referenceDateStr) {
-      log('ERROR', '参照日時の要素が見つかりません');
-      await browser.close();
-      return;
+      throw new Error('参照日時の要素が見つかりません');
     }
     
     log('INFO', `参照日時文字列を取得: ${referenceDateStr}`);
     
-    // 日付形式の変換 (DD-MM-YYYY HH:MM:SS -> YYYY-MM-DD)
     const [datePart, timePart] = referenceDateStr.split(' ');
     const [day, month, year] = datePart.split('-');
     const referenceDate = `${year}-${month}-${day}`;
     
     log('INFO', `整形済み参照日時: ${referenceDate}`);
+    
     await browser.close();
     log('INFO', 'Puppeteerブラウザを正常に終了');
     
-    // SQLiteデータベース操作
+    // SQLite (mlbb.db)への接続とデータ保存処理
     const dbPath = '/Users/yamamotokazuki/develop/moba-ranking/mlbb.db';
     const db = await open({
       filename: dbPath,
       driver: sqlite3.Database
     });
-    
     await db.run('PRAGMA foreign_keys = ON;');
-    log('INFO', 'SQLiteデータベースに接続成功');
+    log('INFO', 'SQLite (mlbb.db) に接続成功');
     
-    // 最新のパッチ番号を取得
     const patchResult = await db.get('SELECT patch_number FROM patches ORDER BY release_date DESC LIMIT 1');
-    let latestPatchNumber = null;
+    let latestPatchNumber = patchResult ? patchResult.patch_number : null;
     
-    if (patchResult) {
-      latestPatchNumber = patchResult.patch_number;
+    if (latestPatchNumber) {
       log('INFO', `最新のpatch_number: ${latestPatchNumber}`);
     } else {
       log('WARNING', 'patchesテーブルにデータがありません');
     }
     
-    // トランザクション開始
     await db.run('BEGIN TRANSACTION');
-    
     try {
       for (const hero of heroMetaData) {
-        // heroesテーブルにヒーローが存在するかチェック
         const heroExists = await db.get('SELECT english_name FROM heroes WHERE english_name = ?', hero.hero);
-        
         if (!heroExists) {
           await db.run('INSERT INTO heroes (english_name) VALUES (?)', hero.hero);
           log('INFO', `新規ヒーロー '${hero.hero}' を heroes テーブルに挿入`);
         }
         
-        // 既存データの確認
         const statsExists = await db.get(
           'SELECT 1 FROM hero_stats WHERE hero_name = ? AND reference_date = ? AND rank = ? AND patch_number = ?',
           [hero.hero, referenceDate, 'Mythic', latestPatchNumber]
@@ -185,7 +172,6 @@ async function main() {
           continue;
         }
         
-        // hero_statsテーブルへデータ挿入
         await db.run(`
           INSERT INTO hero_stats 
           (hero_name, win_rate, pick_rate, ban_rate, reference_date, rank, patch_number)
@@ -199,30 +185,46 @@ async function main() {
           'Mythic',
           latestPatchNumber
         ]);
-        
         log('INFO', `hero_stats テーブルに '${hero.hero}' のデータを挿入`);
       }
-      
-      // コミット
       await db.run('COMMIT');
-      log('INFO', 'SQLiteデータベースへのコミットに成功');
-    } catch (error) {
-      // エラー時ロールバック
+      log('INFO', 'SQLite (mlbb.db) へのコミットに成功');
+    } catch (dbInsertError) {
       await db.run('ROLLBACK');
-      log('ERROR', `SQLiteデータの挿入に失敗: ${error.message}`);
-      throw error;
+      throw dbInsertError;
     } finally {
       await db.close();
+      log('INFO', 'SQLite (mlbb.db) 接続を正常にクローズ');
     }
     
-    log('INFO', 'SQLite接続を正常にクローズ');
     log('INFO', 'スクレイピングおよびデータ保存処理を正常に完了');
     
   } catch (error) {
+    scrapingFailed = true;
+    scrapingErrorMsg = error.message;
     log('ERROR', `処理中にエラーが発生: ${error.message}`);
     if (browser) {
       await browser.close();
     }
+  }
+  
+  // ----- スクレイピング結果を moba.db の scraper_status テーブルへ記録 -----
+  try {
+    const statusDbPath = '/Users/yamamotokazuki/develop/moba-ranking/moba.db';
+    const statusDb = await open({
+      filename: statusDbPath,
+      driver: sqlite3.Database
+    });
+    const currentDate = new Date().toISOString(); // ISO形式の日付
+    await statusDb.run(
+      `INSERT INTO scraper_status (scraper_status, game_title, error_message, scraper_date)
+       VALUES (?, ?, ?, ?)`,
+      [scrapingFailed ? 1 : 0, 'mlbb', scrapingFailed ? scrapingErrorMsg : null, currentDate]
+    );
+    await statusDb.close();
+    log('INFO', 'scraper_status テーブルへの記録に成功');
+  } catch (statusError) {
+    log('ERROR', `scraper_status テーブルへの記録に失敗: ${statusError.message}`);
   }
 }
 
