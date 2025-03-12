@@ -292,9 +292,22 @@ function normalizeRates(rates) {
       const element = document.querySelector('div.m_4081bf90.mantine-Group-root > div:nth-child(1) > p.mantine-focus-auto.simpleStat_count__dG_xB.m_b6d8b162.mantine-Text-root');
       return element ? element.innerText : null;
     });
+    log('INFO', `取得した参照日: ${rawReferenceDate}`);
+    
     const currentYear = new Date().getFullYear();
-    const referenceDate = new Date(`${rawReferenceDate} ${currentYear}`).toISOString().split('T')[0];
-    log('INFO', `整形済み参照日: ${referenceDate}`);
+    
+    // "March 9" を "March" と "9" に分解し、月のインデックスを取得
+    const [monthName, dayStr] = rawReferenceDate.split(' ');
+    const day = parseInt(dayStr, 10);
+    const monthIndex = new Date(`${monthName} 1, 2000`).getMonth(); // 月のインデックス (0～11) を取得
+    
+    // 年、月、日からローカルな Date オブジェクトを生成
+    const dateObj = new Date(currentYear, monthIndex, day);
+    
+    // YYYY-MM-DD 形式にフォーマット（ローカル日時のまま）
+    const formattedDate = `${dateObj.getFullYear()}-${('0' + (dateObj.getMonth() + 1)).slice(-2)}-${('0' + dateObj.getDate()).slice(-2)}`;
+    log('INFO', `整形済み参照日: ${formattedDate}`);
+    
 
     // 総試合数の取得
     await page.waitForSelector('div.m_4081bf90.mantine-Group-root > div:nth-child(2) > p.mantine-focus-auto.simpleStat_count__dG_xB.m_b6d8b162.mantine-Text-root', { timeout: 5000 });
