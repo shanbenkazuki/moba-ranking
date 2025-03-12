@@ -17,16 +17,19 @@ async function extractChampionData(page) {
     return lis.map(li => {
       const nameEl = li.querySelector('p.hero-name');
       const name = nameEl ? nameEl.innerText.trim() : '';
-  
+
       const winRateEl = li.querySelector('div:nth-child(4)');
-      const winRate = winRateEl ? winRateEl.innerText.trim() : '';
-  
+      let winRate = winRateEl ? winRateEl.innerText.trim() : '';
+      winRate = winRate.replace('%', '');
+
       const pickRateEl = li.querySelector('div:nth-child(5)');
-      const pickRate = pickRateEl ? pickRateEl.innerText.trim() : '';
-  
+      let pickRate = pickRateEl ? pickRateEl.innerText.trim() : '';
+      pickRate = pickRate.replace('%', '');
+
       const banRateEl = li.querySelector('div:nth-child(6)');
-      const banRate = banRateEl ? banRateEl.innerText.trim() : '';
-  
+      let banRate = banRateEl ? banRateEl.innerText.trim() : '';
+      banRate = banRate.replace('%', '');
+
       return { name, 胜率: winRate, 登场率: pickRate, BAN率: banRate };
     }).filter(item => item.name !== '');
   });
