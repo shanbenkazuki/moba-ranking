@@ -145,41 +145,50 @@ function runQuery(db, sql, params = []) {
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
   <style>
     body {
-      background-color: #0A1428; /* ワイルドリフトのダークブルー背景色 */
+      background-color: #010A13; /* より暗いダークブルー背景色 */
       font-family: 'Noto Sans JP', sans-serif;
       padding: 20px;
-      color: #E8E6E3; /* 明るいテキスト色 */
+      color: #C8AA6E; /* ゴールドアクセントテキスト色 */
+      background-image: url('file:///Users/yamamotokazuki/develop/moba-ranking/background.jpg');
+      background-size: cover;
+      background-position: center;
+      background-blend-mode: multiply;
     }
     .title-container {
       text-align: center;
       margin-bottom: 20px;
     }
     .main-title {
-      font-size: 2.5em;
+      font-size: 3em;
       font-weight: 900;
-      color: #C89B3C; /* ゴールドカラー */
-      margin-bottom: 5px;
-      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+      color: #F0E6D2; /* LOLのゴールドカラー */
+      margin-bottom: 15px;
+      text-shadow: 0 0 10px #785A28, 0 0 20px #785A28; /* ゴールド系の光彩効果 */
+      text-transform: uppercase;
+      letter-spacing: 2px;
     }
     .composite-grid {
       display: grid;
       grid-template-columns: 80px repeat(${lanes.length}, 1fr);
-      gap: 8px;
+      gap: 12px;
       margin: 0 auto;
       max-width: 1400px;
     }
     .grid-header {
-      background: linear-gradient(to bottom, #0AC8B9, #0A8F85); /* ティールグラデーション */
+      background: linear-gradient(to bottom, #091428, #0A1428); /* よりダークなグラデーション */
       text-align: center;
-      padding: 10px 5px;
+      padding: 15px 5px;
       font-weight: bold;
-      border-radius: 8px;
+      border-radius: 4px;
       font-size: 18px;
-      color: white;
+      color: #C8AA6E; /* ゴールドテキスト */
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5), inset 0 0 3px #C8AA6E; /* 光彩効果付きシャドウ */
+      border: 1px solid #785A28; /* 細いゴールドボーダー */
+      text-transform: uppercase;
+      letter-spacing: 1px;
     }
     .grid-grade-label {
       display: flex;
@@ -187,36 +196,42 @@ function runQuery(db, sql, params = []) {
       justify-content: center;
       padding: 0;
       font-weight: 900;
-      font-size: 30px;
-      border-radius: 8px;
-      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+      font-size: 34px;
+      border-radius: 4px;
+      text-shadow: 0 0 10px rgba(0, 0, 0, 0.7);
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+      letter-spacing: 2px;
     }
-    /* グレード別の色設定 */
+    /* グレード別の色設定 - より強烈なコントラスト */
     .grade-S { 
-      background: linear-gradient(135deg, #FFD700, #FFA500); 
-      color: #fff; 
+      background: linear-gradient(135deg, #DCB14A, #A17622); 
+      color: #fff;
+      border: 1px solid #FFC659; 
     }
     .grade-A { 
-      background: linear-gradient(135deg, #E0E0E0, #A0AEC0); 
+      background: linear-gradient(135deg, #CECECE, #737373); 
       color: #fff; 
+      border: 1px solid #E5E5E5;
     }
     .grade-B { 
-      background: linear-gradient(135deg, #CD7F32, #A0522D); 
+      background: linear-gradient(135deg, #AD8A56, #5C4A2E); 
       color: #fff; 
+      border: 1px solid #C8AA6E;
     }
     .grade-C { 
-      background: linear-gradient(135deg, #718096, #4A5568); 
+      background: linear-gradient(135deg, #2C5677, #1A3245); 
       color: #fff; 
+      border: 1px solid #3A81AD;
     }
     .grade-D { 
-      background: linear-gradient(135deg, #2D3748, #1A202C); 
-      color: #fff; 
+      background: linear-gradient(135deg, #252525, #000000); 
+      color: #B7B7B7; 
+      border: 1px solid #444444;
     }
     
     .grid-cell {
-      background-color: rgba(16, 32, 56, 0.9); /* セミトランスペアレント背景 */
-      border-radius: 8px;
+      background-color: rgba(10, 20, 40, 0.85); /* セミトランスペアレント背景 */
+      border-radius: 4px;
       padding: 8px;
       display: grid;
       grid-template-columns: repeat(3, 1fr);
@@ -224,7 +239,8 @@ function runQuery(db, sql, params = []) {
       justify-items: center;
       align-content: start;
       min-height: 110px;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5), inset 0 0 2px rgba(200, 170, 110, 0.3); /* 内側に薄いゴールド光彩 */
+      border: 1px solid rgba(120, 90, 40, 0.3); /* 薄いゴールドボーダー */
     }
     .hero {
       text-align: center;
@@ -235,8 +251,8 @@ function runQuery(db, sql, params = []) {
       height: 60px;
       overflow: hidden;
       border-radius: 50%;
-      border: 2px solid #C89B3C; /* ゴールドのボーダー */
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
+      border: 2px solid #785A28; /* LOLのゴールドボーダー */
+      box-shadow: 0 0 8px rgba(201, 170, 113, 0.6); /* ゴールド光彩 */
       margin: 0 auto;
     }
     .hero-img-container img {
@@ -245,25 +261,27 @@ function runQuery(db, sql, params = []) {
       object-fit: cover;
     }
     .hero-name {
-      margin-top: 5px;
+      margin-top: 6px;
       font-size: 12px;
       font-weight: 700;
-      color: #E8E6E3;
+      color: #C8AA6E; /* ゴールド色のテキスト */
       text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
     }
     .version-info {
       text-align: center;
-      margin-bottom: 20px;
+      margin-bottom: 25px;
       font-size: 1.1em;
       font-weight: bold;
-      color: #C89B3C;
+      color: #3A81AD; /* ブルーアクセント */
+      text-shadow: 0 0 5px rgba(10, 200, 185, 0.3);
+      letter-spacing: 1px;
     }
     /* フッターとウォーターマークのスタイルを削除 */
   </style>
 </head>
 <body>
   <div class="title-container">
-    <div class="main-title">ワイルドリフト ティアリスト</div>
+    <div class="main-title">WILD RIFT TIER LIST</div>
   </div>
   <div class="version-info">バージョン ${patchNumber} | ${latestDate}</div>
   <div class="composite-grid">
