@@ -1,8 +1,9 @@
 const puppeteer = require('puppeteer');
 const fs = require('fs');
 const path = require('path');
+const sqlite3 = require('sqlite3').verbose();
 
-// ログ出力用の関数（日本時間でタイムスタンプ付き）
+// ログ出力用関数（日本時間のタイムスタンプ付き）
 function logWithJST(message) {
   const now = new Date().toLocaleString('ja-JP', { timeZone: 'Asia/Tokyo' });
   const logMessage = `[${now}] ${message}\n`;
@@ -32,11 +33,89 @@ async function extractChampionData(page) {
   return data;
 }
 
+// 最新のpatch_number（patchesテーブルの最新release_date順でのpatch_numberカラムの値）を取得する関数
+function getLatestPatchNumber() {
+  return new Promise((resolve, reject) => {
+    const db = new sqlite3.Database("/Users/yamamotokazuki/develop/moba-ranking/wildrift.db", (err) => {
+      if (err) return reject(err);
+    });
+    // release_dateで並び替えて最新のpatch_numberを取得
+    db.get("SELECT patch_number FROM patches ORDER BY release_date DESC LIMIT 1", (err, row) => {
+      if (err) {
+        db.close();
+        return reject(err);
+      }
+      db.close();
+      if (row) {
+        resolve(row.patch_number);
+      } else {
+        resolve(null);
+      }
+    });
+  });
+}
+
+// champion_statsテーブルへデータを挿入する関数
+function insertChampionStats(championStats, patch_number) {
+  return new Promise((resolve, reject) => {
+    const db = new sqlite3.Database("/Users/yamamotokazuki/develop/moba-ranking/wildrift.db", (err) => {
+      if (err) return reject(err);
+    });
+    
+    const stmt = db.prepare(`
+      INSERT INTO champion_stats 
+      (lane, champion_name, win_rate, pick_rate, ban_rate, reference_date, patch_number)
+      VALUES (?, ?, ?, ?, ?, ?, ?)
+    `);
+    
+    // championStatsオブジェクトの構造は以下のようになっています。
+// {
+//   "参照日": referenceDate,
+//   "上单": [...],
+//   "打野": [...],
+//   "中路": [...],
+//   "下路": [...],
+//   "辅助": [...]
+// }
+    const reference_date = championStats["参照日"];
+    const lanes = ["上单", "打野", "中路", "下路", "辅助"];
+    
+    lanes.forEach(lane => {
+      if (championStats[lane] && Array.isArray(championStats[lane])) {
+        championStats[lane].forEach(champion => {
+          stmt.run(
+            lane,
+            champion.name,
+            champion.胜率,
+            champion.登场率,
+            champion.BAN率,
+            reference_date,
+            patch_number,
+            (err) => {
+              if (err) {
+                console.error(`Insert error for lane ${lane}:`, err);
+              }
+            }
+          );
+        });
+      }
+    });
+    
+    stmt.finalize(err => {
+      db.close();
+      if (err) {
+        return reject(err);
+      }
+      resolve();
+    });
+  });
+}
+
 (async () => {
   try {
     logWithJST("スクリプト開始");
 
-    // headlessモードでブラウザを起動
+    // headlessモードでブラウザ起動
     const browser = await puppeteer.launch({ headless: true });
     const page = await browser.newPage();
 
@@ -95,16 +174,24 @@ async function extractChampionData(page) {
     champion_stats["辅助"] = supData;
     logWithJST("辅助データを取得完了");
 
-    // JSON形式に整形
+    // ログファイルへスクレイピング結果を出力（JSON形式）
     const jsonOutput = JSON.stringify(champion_stats, null, 2);
-
-    // ログファイルへ出力
     const outputFilePath = path.join("/Users/yamamotokazuki/develop/moba-ranking/logs", "wildrift_champion_stats_scraper.log");
     fs.appendFileSync(outputFilePath, `取得データ:\n${jsonOutput}\n`);
     logWithJST("全データをログファイルに出力完了");
 
     await browser.close();
-    logWithJST("ブラウザを閉じました。スクリプト終了");
+    logWithJST("ブラウザを閉じました。スクレイピング終了");
+
+    // --- SQLiteへの保存処理 ---
+    logWithJST("patchesテーブルから最新のpatch_numberを取得中");
+    const patch_number = await getLatestPatchNumber();
+    logWithJST(`最新patch_numberを取得: ${patch_number}`);
+
+    logWithJST("champion_statsテーブルへデータを保存中");
+    await insertChampionStats(champion_stats, patch_number);
+    logWithJST("champion_statsテーブルへデータ保存完了");
+
   } catch (error) {
     logWithJST(`エラー発生: ${error}`);
     process.exit(1);
