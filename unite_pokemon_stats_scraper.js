@@ -106,7 +106,7 @@ function insertPokemonStatsIfNotExists(db, stats) {
               stats.win_rate,
               stats.pick_rate,
               stats.ban_rate,
-              stats.reference_date,
+              stats.reference_date, // 修正済み：formattedDateを使用
               stats.patch_number,
               stats.total_game_count
             ],
@@ -143,9 +143,19 @@ function normalizeRates(rates) {
   return normalized;
 }
 
+// 日本時間（YYYY-MM-DD形式）の文字列を取得する関数
+function getJSTFormattedDate() {
+  const options = { timeZone: 'Asia/Tokyo', year: 'numeric', month: '2-digit', day: '2-digit' };
+  // 例: "2025/03/12" を "2025-03-12" に変換
+  return new Date().toLocaleDateString('ja-JP', options).replace(/\//g, '-');
+}
+
 (async () => {
   let browser;
   let db;
+  let scrapingFailed = false;
+  let scrapingError = null;
+
   try {
     // Puppeteerの起動
     browser = await puppeteer.launch({
@@ -174,7 +184,7 @@ function normalizeRates(rates) {
     );
     log('INFO', `取得したpタグの中身: ${JSON.stringify(pTexts)}`);
 
-    // SQLiteデータベースに接続
+    // SQLiteデータベースに接続 (unite.db)
     db = new sqlite3.Database('/Users/yamamotokazuki/develop/moba-ranking/unite.db', (err) => {
       if (err) {
         log('ERROR', `DB接続エラー: ${err.message}`);
@@ -295,20 +305,13 @@ function normalizeRates(rates) {
     log('INFO', `取得した参照日: ${rawReferenceDate}`);
     
     const currentYear = new Date().getFullYear();
-    
-    // "March 9" を "March" と "9" に分解し、月のインデックスを取得
     const [monthName, dayStr] = rawReferenceDate.split(' ');
     const day = parseInt(dayStr, 10);
-    const monthIndex = new Date(`${monthName} 1, 2000`).getMonth(); // 月のインデックス (0～11) を取得
-    
-    // 年、月、日からローカルな Date オブジェクトを生成
+    const monthIndex = new Date(`${monthName} 1, 2000`).getMonth();
     const dateObj = new Date(currentYear, monthIndex, day);
-    
-    // YYYY-MM-DD 形式にフォーマット（ローカル日時のまま）
     const formattedDate = `${dateObj.getFullYear()}-${('0' + (dateObj.getMonth() + 1)).slice(-2)}-${('0' + dateObj.getDate()).slice(-2)}`;
     log('INFO', `整形済み参照日: ${formattedDate}`);
     
-
     // 総試合数の取得
     await page.waitForSelector('div.m_4081bf90.mantine-Group-root > div:nth-child(2) > p.mantine-focus-auto.simpleStat_count__dG_xB.m_b6d8b162.mantine-Text-root', { timeout: 5000 });
     const totalGameCountText = await page.evaluate(() => {
@@ -326,7 +329,6 @@ function normalizeRates(rates) {
     // pokemonsテーブルから全ポケモンの英語名を取得
     const pokemons = await getAllPokemons(db);
     for (const { english_name } of pokemons) {
-      // 各ポケモンごとに勝率・ピック率・バン率を取得（取得できなければnull）
       const win_rate = normalizedWinRates[english_name] || null;
       const pick_rate = normalizedPickRates[english_name] || null;
       const ban_rate = normalizedBanRates[english_name] || null;
@@ -336,7 +338,7 @@ function normalizeRates(rates) {
         win_rate: win_rate,
         pick_rate: pick_rate,
         ban_rate: ban_rate,
-        reference_date: referenceDate,
+        reference_date: formattedDate,  // 修正済み：formattedDateを利用
         patch_number: patchNumber,
         total_game_count: parseInt(totalGameCountText, 10) || null
       };
@@ -348,6 +350,8 @@ function normalizeRates(rates) {
       }
     }
   } catch (error) {
+    scrapingFailed = true;
+    scrapingError = error;
     log('ERROR', error);
   } finally {
     if (browser) {
@@ -357,11 +361,45 @@ function normalizeRates(rates) {
     if (db) {
       db.close((err) => {
         if (err) {
-          log('ERROR', `DBクローズエラー: ${err.message}`);
+          log('ERROR', `SQLite DBクローズエラー: ${err.message}`);
         } else {
           log('INFO', 'SQLite DBを閉じました');
         }
       });
     }
+
+    // --------------------
+    // ★ scraper_statusテーブルへの結果保存 (moba.db)
+    // --------------------
+    const mobaDb = new sqlite3.Database('/Users/yamamotokazuki/develop/moba-ranking/moba.db', (err) => {
+      if (err) {
+        log('ERROR', `Moba DB接続エラー: ${err.message}`);
+      } else {
+        log('INFO', 'Moba DBに接続しました');
+      }
+    });
+
+    const jstDate = getJSTFormattedDate();
+    const statusValue = scrapingFailed ? 1 : 0;
+    const errorMsg = scrapingFailed ? scrapingError.toString() : null;
+
+    mobaDb.run(
+      `INSERT INTO scraper_status (scraper_status, game_title, error_message, scraper_date) VALUES (?, 'unite', ?, ?)`,
+      [statusValue, errorMsg, jstDate],
+      function (err) {
+        if (err) {
+          log('ERROR', `scraper_status INSERTエラー: ${err.message}`);
+        } else {
+          log('INFO', 'scraper_status INSERT成功');
+        }
+        mobaDb.close((err) => {
+          if (err) {
+            log('ERROR', `Moba DBクローズエラー: ${err.message}`);
+          } else {
+            log('INFO', 'Moba DBを閉じました');
+          }
+        });
+      }
+    );
   }
 })();
