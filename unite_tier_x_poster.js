@@ -102,11 +102,11 @@ function runQuery(db, sql, params = []) {
     // 4. HTML出力用文字列生成
     // ----------------------------
     const tierDescriptions = {
-      'S': 'Meta Definers',
-      'A': 'Top Picks',
-      'B': 'Balanced Picks',
-      'C': 'Situational Picks',
-      'D': 'Needs Buff'
+      'S': 'チャンピオンクラス',
+      'A': 'エースクラス',
+      'B': 'バランスクラス',
+      'C': '状況限定クラス',
+      'D': '強化必要クラス'
     };
 
     const htmlHead = `<!DOCTYPE html>
@@ -114,233 +114,321 @@ function runQuery(db, sql, params = []) {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ポケモンユナイト TIER LIST</title>
+  <title>ポケモンユナイト ティアリスト</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
   <style>
+    /* アニメーション削除 */
+    
     :root {
-      --primary-color: #fb4f3a;
-      --secondary-color: #222831;
-      --accent-color: #ffd700;
-      --bg-dark: #1a1a1a;
-      --bg-card: #252a34;
-      --text-light: #f0f0f0;
-      --text-secondary: #aaa;
-      --s-tier: linear-gradient(135deg, #ff7b00, #ff0050);
-      --a-tier: linear-gradient(135deg, #9c27b0, #3f51b5);
-      --b-tier: linear-gradient(135deg, #2196f3, #00bcd4);
-      --c-tier: linear-gradient(135deg, #4caf50, #8bc34a);
-      --d-tier: linear-gradient(135deg, #9e9e9e, #607d8b);
+      /* カラフルでポップなカラーパレット */
+      --primary-color: #FF5F6D;
+      --secondary-color: #3e4edd;
+      --bg-color: #FAFAFA;
+      --accent-color: #FFD700;
+      --text-color: #333;
+      --text-light: #666;
+      --s-tier: linear-gradient(135deg, #FF9100, #F9455D);
+      --a-tier: linear-gradient(135deg, #FDA7DF, #9C27B0);
+      --b-tier: linear-gradient(135deg, #5EFCE8, #736EFE);
+      --c-tier: linear-gradient(135deg, #A8FF78, #78FFD6);
+      --d-tier: linear-gradient(135deg, #BDBBBE, #9D9EA3);
     }
+    
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      font-family: 'Noto Sans JP', sans-serif;
     }
+    
     body {
-      background-color: var(--bg-dark);
-      color: var(--text-light);
-      padding: 0;
-      margin: 0;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      background-image: 
+        radial-gradient(circle at 10% 20%, rgba(255, 200, 200, 0.2) 0%, transparent 20%),
+        radial-gradient(circle at 90% 30%, rgba(200, 200, 255, 0.2) 0%, transparent 25%),
+        radial-gradient(circle at 50% 60%, rgba(255, 255, 200, 0.2) 0%, transparent 30%);
+      background-attachment: fixed;
     }
+    
     .container {
       max-width: 1920px;
       margin: 0 auto;
       padding: 20px;
     }
+    
     .header {
       text-align: center;
       padding: 40px 20px;
-      background: linear-gradient(to right, #1a1a1a, #252a34, #1a1a1a);
-      border-bottom: 3px solid var(--primary-color);
       margin-bottom: 30px;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+      position: relative;
+      overflow: hidden;
+      border-radius: 20px;
+      background: white;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
     }
+    
+    .header::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 10px;
+      background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+    }
+    
     .header h1 {
-      font-size: 3.5em;
-      font-weight: 800;
-      margin-bottom: 10px;
-      color: var(--text-light);
-      text-transform: uppercase;
+      font-size: 3.8em;
+      font-weight: 900;
+      margin-bottom: 15px;
+      color: var(--text-color);
       letter-spacing: 2px;
-      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+      position: relative;
+      display: inline-block;
     }
+    
+    .header h1::after {
+      content: '';
+      position: absolute;
+      bottom: -5px;
+      left: 0;
+      width: 100%;
+      height: 5px;
+      background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+      border-radius: 5px;
+    }
+    
     .header h1 span {
       color: var(--primary-color);
+      position: relative;
     }
+    
+    .header h1 span::before {
+      content: '★';
+      position: absolute;
+      top: -20px;
+      right: -15px;
+      font-size: 0.5em;
+      color: var(--accent-color);
+    }
+    
     .version-info {
       display: inline-block;
-      font-size: 1.2em;
-      font-weight: 600;
-      color: var(--text-light);
-      background-color: var(--primary-color);
-      padding: 8px 20px;
-      border-radius: 30px;
+      font-size: 1.3em;
+      font-weight: 700;
+      color: white;
+      background: linear-gradient(90deg, var(--secondary-color), var(--primary-color));
+      padding: 10px 30px;
+      border-radius: 50px;
       margin-top: 15px;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-      text-transform: uppercase;
-      letter-spacing: 1px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+      position: relative;
+      z-index: 1;
+      overflow: hidden;
     }
+    
+    .version-info::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, transparent 60%);
+      z-index: -1;
+      transform: rotate(30deg);
+    }
+    
     .tier-section {
       margin-bottom: 40px;
-      padding: 25px;
-      border-radius: 15px;
-      background-color: var(--bg-card);
-      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+      padding: 30px;
+      border-radius: 20px;
+      background-color: white;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
       position: relative;
       overflow: hidden;
     }
-    .tier-section::before {
+    
+    /* 装飾要素削除 */
+    
+    .tier-section.s-tier { border-top: 10px solid transparent; border-image: var(--s-tier) 1; }
+    .tier-section.a-tier { border-top: 10px solid transparent; border-image: var(--a-tier) 1; }
+    .tier-section.b-tier { border-top: 10px solid transparent; border-image: var(--b-tier) 1; }
+    .tier-section.c-tier { border-top: 10px solid transparent; border-image: var(--c-tier) 1; }
+    .tier-section.d-tier { border-top: 10px solid transparent; border-image: var(--d-tier) 1; }
+    
+    .tier-badge {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.2em;
+      font-weight: 900;
+      color: white;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+      z-index: 2;
+    }
+    
+    .tier-badge::after {
+      content: '';
+      position: absolute;
+      top: -3px;
+      left: -3px;
+      right: -3px;
+      bottom: -3px;
+      border-radius: 50%;
+      background: white;
+      z-index: -1;
+    }
+    
+    .s-tier .tier-badge { background: var(--s-tier); }
+    .a-tier .tier-badge { background: var(--a-tier); }
+    .b-tier .tier-badge { background: var(--b-tier); }
+    .c-tier .tier-badge { background: var(--c-tier); }
+    .d-tier .tier-badge { background: var(--d-tier); }
+    
+    .tier-title {
+      font-size: 2.2em;
+      margin-bottom: 25px;
+      color: var(--text-color);
+      font-weight: 900;
+      display: flex;
+      align-items: center;
+      position: relative;
+      padding-left: 20px;
+      padding-bottom: 10px;
+    }
+    
+    .tier-title::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      width: 100%;
+      height: 2px;
+      background: rgba(0, 0, 0, 0.1);
+    }
+    
+    .s-tier .tier-title::before { background: var(--s-tier); opacity: 0.3; }
+    .a-tier .tier-title::before { background: var(--a-tier); opacity: 0.3; }
+    .b-tier .tier-title::before { background: var(--b-tier); opacity: 0.3; }
+    .c-tier .tier-title::before { background: var(--c-tier); opacity: 0.3; }
+    .d-tier .tier-title::before { background: var(--d-tier); opacity: 0.3; }
+    
+    .hero-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 25px;
+      justify-content: flex-start;
+    }
+    
+    .hero {
+      width: 120px; /* 幅を広げて名前表示領域確保 */
+      text-align: center;
+      position: relative;
+    }
+    
+    .hero-card {
+      background: white;
+      border-radius: 18px;
+      padding: 10px;
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
+    }
+    
+    .hero-img-container {
+      position: relative;
+      width: 90px;
+      height: 90px;
+      margin: 0 auto;
+      border-radius: 50%;
+      overflow: hidden;
+      border: 4px solid rgba(255, 255, 255, 0.7);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+      background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
+    }
+    
+    .s-tier .hero-img-container { border-color: rgba(255, 145, 0, 0.7); box-shadow: 0 5px 15px rgba(255, 145, 0, 0.3); }
+    .a-tier .hero-img-container { border-color: rgba(253, 167, 223, 0.7); box-shadow: 0 5px 15px rgba(253, 167, 223, 0.3); }
+    .b-tier .hero-img-container { border-color: rgba(94, 252, 232, 0.7); box-shadow: 0 5px 15px rgba(94, 252, 232, 0.3); }
+    .c-tier .hero-img-container { border-color: rgba(168, 255, 120, 0.7); box-shadow: 0 5px 15px rgba(168, 255, 120, 0.3); }
+    .d-tier .hero-img-container { border-color: rgba(189, 187, 190, 0.7); box-shadow: 0 5px 15px rgba(189, 187, 190, 0.3); }
+    
+    .hero img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    
+    .hero-name {
+      margin-top: 12px;
+      font-size: 0.9em;
+      color: var(--text-color);
+      font-weight: 700;
+      padding: 0 5px;
+      line-height: 1.3;
+      min-height: 2.6em; /* 長い名前用に高さ確保 */
+    }
+    
+    /* 勝率オーバーレイ削除 */
+    
+    .footer {
+      text-align: center;
+      margin-top: 50px;
+      padding: 30px;
+      color: var(--text-light);
+      font-size: 1em;
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .footer::before {
       content: '';
       position: absolute;
       top: 0;
       left: 0;
       width: 100%;
       height: 5px;
+      background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
     }
-    .tier-section.s-tier::before {
-      background: var(--s-tier);
-    }
-    .tier-section.a-tier::before {
-      background: var(--a-tier);
-    }
-    .tier-section.b-tier::before {
-      background: var(--b-tier);
-    }
-    .tier-section.c-tier::before {
-      background: var(--c-tier);
-    }
-    .tier-section.d-tier::before {
-      background: var(--d-tier);
-    }
-    .tier-badge {
-      position: absolute;
-      top: 15px;
-      right: 15px;
-      width: 50px;
-      height: 50px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.8em;
-      font-weight: 800;
-      color: white;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-    }
-    .s-tier .tier-badge { background: var(--s-tier); }
-    .a-tier .tier-badge { background: var(--a-tier); }
-    .b-tier .tier-badge { background: var(--b-tier); }
-    .c-tier .tier-badge { background: var(--c-tier); }
-    .d-tier .tier-badge { background: var(--d-tier); }
-    .tier-title {
-      font-size: 2em;
-      margin-bottom: 20px;
-      color: var(--text-light);
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      display: flex;
-      align-items: center;
-    }
-    .tier-title::after {
-      content: '';
-      flex-grow: 1;
-      height: 1px;
-      margin-left: 15px;
-      background: rgba(255, 255, 255, 0.2);
-    }
-    .hero-list {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 20px;
-      justify-content: flex-start;
-    }
-    .hero {
-      width: 100px;
-      text-align: center;
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
-      position: relative;
-    }
-    .hero:hover { transform: translateY(-10px); }
-    .hero-card {
-      background: rgba(0, 0, 0, 0.3);
-      border-radius: 12px;
-      padding: 8px;
-      transition: all 0.3s ease;
-      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-    }
-    .hero:hover .hero-card { box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5); }
-    .hero-img-container {
-      position: relative;
-      width: 84px;
-      height: 84px;
-      margin: 0 auto;
-      border-radius: 12px;
-      overflow: hidden;
-      border: 2px solid rgba(255, 255, 255, 0.1);
-    }
-    .s-tier .hero:hover .hero-img-container { border-color: rgba(255, 123, 0, 0.6); }
-    .a-tier .hero:hover .hero-img-container { border-color: rgba(156, 39, 176, 0.6); }
-    .b-tier .hero:hover .hero-img-container { border-color: rgba(33, 150, 243, 0.6); }
-    .c-tier .hero:hover .hero-img-container { border-color: rgba(76, 175, 80, 0.6); }
-    .d-tier .hero:hover .hero-img-container { border-color: rgba(158, 158, 158, 0.6); }
-    .hero img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      transition: transform 0.3s ease;
-    }
-    .hero:hover img { transform: scale(1.1); }
-    .hero-name {
-      margin-top: 8px;
-      font-size: 0.9em;
-      color: var(--text-light);
-      font-weight: 500;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-    .stats-overlay {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      background: rgba(0, 0, 0, 0.8);
-      color: white;
-      font-size: 0.75em;
-      padding: 2px 0;
-      opacity: 0;
-      transition: opacity 0.3s;
-    }
-    .hero:hover .stats-overlay { opacity: 1; }
-    .footer {
-      text-align: center;
-      margin-top: 50px;
-      padding: 20px;
-      color: var(--text-secondary);
-      font-size: 0.9em;
-      border-top: 1px solid rgba(255, 255, 255, 0.1);
-    }
+    
+    /* ポケモンボール装飾削除 */
+    
     @media (max-width: 768px) {
       .header h1 { font-size: 2.5em; }
       .hero-list { justify-content: center; }
       .tier-section { padding: 20px 15px; }
+      .tier-badge { width: 50px; height: 50px; font-size: 1.8em; }
+      .tier-title { font-size: 1.8em; }
     }
   </style>
 </head>
 <body>
-  <div class="header">
-    <h1>ポケモンユナイト <span>TIER LIST</span></h1>
-    <div class="version-info">バージョン ${patchNumber}</div>
-  </div>
   <div class="container">
+    <div class="header">
+      <h1>ポケモンユナイト <span>ティアリスト</span></h1>
+      <div class="version-info">バージョン ${patchNumber}</div>
+    </div>
 `;
 
     const htmlTail = `
     <div class="footer">
-      ポケモンユナイト Tier List ${latestDate} • バージョン ${patchNumber}
+      <p>ポケモンユナイト ティアリスト ${latestDate} • バージョン ${patchNumber}</p>
+      <p style="margin-top: 10px; font-size: 0.9em;">※勝率・ピック率・BAN率から算出</p>
     </div>
   </div>
+  
+  <!-- スクリプト削除 -->
 </body>
 </html>
 `;
@@ -354,7 +442,7 @@ function runQuery(db, sql, params = []) {
       htmlBody += `    <!-- ${grade} Tier -->\n`;
       htmlBody += `    <div class="tier-section ${grade.toLowerCase()}-tier">\n`;
       htmlBody += `      <div class="tier-badge">${grade}</div>\n`;
-      htmlBody += `      <div class="tier-title">${grade} Tier - ${description}</div>\n`;
+      htmlBody += `      <div class="tier-title">${grade} Tier</div>\n`;
       htmlBody += `      <div class="hero-list">\n`;
       filtered.forEach(row => {
         const englishName = row.pokemon_name; // カラム名に合わせる
@@ -365,7 +453,7 @@ function runQuery(db, sql, params = []) {
         htmlBody += `          <div class="hero-card">\n`;
         htmlBody += `            <div class="hero-img-container">\n`;
         htmlBody += `              <img src="${pokemonImgPath}" alt="${japaneseName}">\n`;
-        htmlBody += `              <div class="stats-overlay">WR: ${winRate.toFixed(1)}%</div>\n`;
+        htmlBody += `              <div class="stats-overlay">勝率: ${winRate.toFixed(1)}%</div>\n`;
         htmlBody += `            </div>\n`;
         htmlBody += `            <div class="hero-name">${japaneseName}</div>\n`;
         htmlBody += `          </div>\n`;
@@ -393,22 +481,21 @@ function runQuery(db, sql, params = []) {
     await page.waitForSelector('.header');
     await page.waitForSelector('.container');
 
-    const headerElement = await page.$('.header');
     const containerElement = await page.$('.container');
-    const headerBox = await headerElement.boundingBox();
     const containerBox = await containerElement.boundingBox();
-
-    const unionX = Math.min(headerBox.x, containerBox.x);
-    const unionY = Math.min(headerBox.y, containerBox.y);
-    const unionWidth = Math.max(headerBox.x + headerBox.width, containerBox.x + containerBox.width) - unionX;
-    const unionHeight = (containerBox.y + containerBox.height) - unionY;
 
     const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
     const screenshotPath = path.join(outputDir, `pokemon_tier_list_${timestamp}.png`);
 
     await page.screenshot({
       path: screenshotPath,
-      clip: { x: unionX, y: unionY, width: unionWidth, height: unionHeight }
+      clip: {
+        x: containerBox.x,
+        y: containerBox.y,
+        width: containerBox.width,
+        height: containerBox.height
+      },
+      fullPage: false
     });
     console.log(`スクリーンショットが ${screenshotPath} に保存されました。`);
 
@@ -417,35 +504,35 @@ function runQuery(db, sql, params = []) {
     // ----------------------------
     // 6. twitter-api-v2でスクリーンショットを添付してXに投稿
     // ----------------------------
-//     const apiKey = process.env.API_KEY;
-//     const apiSecretKey = process.env.API_SECRET_KEY;
-//     const accessToken = process.env.ACCESS_TOKEN;
-//     const accessTokenSecret = process.env.ACCESS_TOKEN_SECRET;
-//     const bearerToken = process.env.BEARER_TOKEN;
+    const apiKey = process.env.API_KEY;
+    const apiSecretKey = process.env.API_SECRET_KEY;
+    const accessToken = process.env.ACCESS_TOKEN;
+    const accessTokenSecret = process.env.ACCESS_TOKEN_SECRET;
+    const bearerToken = process.env.BEARER_TOKEN;
 
-//     const twitterClient = new TwitterApi({
-//       appKey: apiKey,
-//       appSecret: apiSecretKey,
-//       accessToken: accessToken,
-//       accessSecret: accessTokenSecret,
-//     });
-//     const rwClient = twitterClient.readWrite;
+    const twitterClient = new TwitterApi({
+      appKey: apiKey,
+      appSecret: apiSecretKey,
+      accessToken: accessToken,
+      accessSecret: accessTokenSecret,
+    });
+    const rwClient = twitterClient.readWrite;
 
-//     const tweetText = `今週のポケモンユナイトのTier表を公開します。
+    const tweetText = `今週のポケモンユナイトのTier表を公開します。
 
-// バージョン：${patchNumber}
+バージョン：${patchNumber}
 
-// #ポケモンユナイト #PokemonUnite`;
+#ポケモンユナイト #PokemonUnite #ユナイト`;
 
-//     try {
-//       const mediaId = await rwClient.v1.uploadMedia(screenshotPath);
-//       await rwClient.v2.tweet(tweetText, {
-//         media: { media_ids: [mediaId] },
-//       });
-//       console.log("ツイートが投稿されました。");
-//     } catch (error) {
-//       console.error("ツイート投稿中にエラーが発生しました:", error);
-//     }
+    try {
+      const mediaId = await rwClient.v1.uploadMedia(screenshotPath);
+      await rwClient.v2.tweet(tweetText, {
+        media: { media_ids: [mediaId] },
+      });
+      console.log("ツイートが投稿されました。");
+    } catch (error) {
+      console.error("ツイート投稿中にエラーが発生しました:", error);
+    }
   } catch (err) {
     console.error("エラー:", err);
   }
