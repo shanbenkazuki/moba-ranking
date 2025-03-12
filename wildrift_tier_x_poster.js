@@ -32,6 +32,21 @@ function runQuery(db, sql, params = []) {
   });
 }
 
+// JSTのタイムスタンプを生成する関数
+function getJstTimestamp() {
+  const now = new Date();
+  // 現在のローカルタイムとの差を考慮してJST（UTC+9）に調整
+  const jst = new Date(now.getTime() + (9 * 60 + now.getTimezoneOffset()) * 60000);
+  const year = jst.getFullYear();
+  const month = String(jst.getMonth() + 1).padStart(2, '0');
+  const day = String(jst.getDate()).padStart(2, '0');
+  const hours = String(jst.getHours()).padStart(2, '0');
+  const minutes = String(jst.getMinutes()).padStart(2, '0');
+  const seconds = String(jst.getSeconds()).padStart(2, '0');
+  const milliseconds = String(jst.getMilliseconds()).padStart(3, '0');
+  return `${year}-${month}-${day}T${hours}-${minutes}-${seconds}-${milliseconds}`;
+}
+
 (async () => {
   try {
     // ----------------------------
@@ -358,7 +373,7 @@ function runQuery(db, sql, params = []) {
     const bodyElement = await page.$('body');
     const bodyBox = await bodyElement.boundingBox();
 
-    const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+    const timestamp = getJstTimestamp();
     const screenshotPath = path.join(outputDir, `wild_rift_tier_${timestamp}.png`);
 
     await page.screenshot({
