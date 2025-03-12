@@ -44,35 +44,30 @@ async function main() {
     await page.waitForSelector('div.mt-cb-policy-close');
     await page.click('#mt-cb-policy > div > div.mt-cb-policy-close');
     log('INFO', 'プライバシーポリシーのポップアップをクローズ');
-    // await page.waitForTimeout(5000);
     
     // 1. 期間範囲タブクリック
     const periodTabSelector = 'div.mt-2684835.mt-uid-99964.mt-empty';
     await page.waitForSelector(periodTabSelector);
     await page.click(periodTabSelector);
     log('INFO', '期間範囲タブをクリック');
-    // await page.waitForTimeout(2000);
     
     // 2. Past 7 days選択
     const pastDaysSelector = 'div.mt-2684831.mt-uid-99880.mt-empty.mt-list-item';
     await page.waitForSelector(pastDaysSelector);
     await page.click(pastDaysSelector);
     log('INFO', '『Past 7 days』オプションを選択');
-    // await page.waitForTimeout(2000);
     
     // 3. ランク選択タブクリック
     const rankTabSelector = 'div.mt-2684885.mt-uid-99957.mt-empty';
     await page.waitForSelector(rankTabSelector);
     await page.click(rankTabSelector);
     log('INFO', 'ランク選択タブをクリック');
-    // await page.waitForTimeout(2000);
     
     // 4. Mythic選択
     const mythicSelector = 'div.mt-2684882.mt-uid-99849.mt-empty.mt-list-item';
     await page.waitForSelector(mythicSelector);
     await page.click(mythicSelector);
     log('INFO', '『Mythic』ランクを選択');
-    // await page.waitForTimeout(5000);
     
     // 5. スクロール処理
     const scrollTargetSelector = 'div.mt-2684827.mt-uid-99942.mt-empty > div';
@@ -97,7 +92,6 @@ async function main() {
     }, scrollTargetSelector);
     
     log('INFO', 'データの読み込み完了（スクロール処理終了）');
-    // await page.waitForTimeout(5000);
     
     // HTMLの取得とデータの抽出
     const heroMetaData = await page.evaluate(() => {
