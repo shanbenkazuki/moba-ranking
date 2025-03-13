@@ -7,8 +7,10 @@ const { open } = require('sqlite');
 // --- ログ設定 ---
 const logDir = path.join(__dirname, 'logs');
 fs.mkdirSync(logDir, { recursive: true });
-const today = new Date().toISOString().split('T')[0];
-const logFile = path.join(logDir, `mlbb_scraping_${today}.log`);
+const today = new Date()
+  .toLocaleDateString('ja-JP', { timeZone: 'Asia/Tokyo' })
+  .replace(/\//g, '-');
+const logFile = path.join(logDir, `logs/mlbb_scraping_${today}.log`);
 
 // ロギング関数
 function log(level, message) {
