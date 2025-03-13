@@ -6,7 +6,7 @@ cd /Users/yamamotokazuki/develop/moba-ranking/ || exit 1
 yesterday=$(date -v-1d +"%Y-%m-%d")
 
 # 各DBファイルをgit管理下に追加
-git add mlbb.db unite.db wildrift.db
+git add mlbb.db unite.db wildrift.db moba.db
 
 # コミット（メッセージに前日の日付を使用）
 git commit -m "~$yesterday"
