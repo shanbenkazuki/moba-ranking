@@ -32,6 +32,16 @@ function runQuery(db, sql, params = []) {
   });
 }
 
+// クエリ実行用ヘルパー関数（INSERT/UPDATEなど）
+function runExecute(db, sql, params = []) {
+  return new Promise((resolve, reject) => {
+    db.run(sql, params, function(err) {
+      if (err) reject(err);
+      else resolve();
+    });
+  });
+}
+
 (async () => {
   try {
     // ----------------------------
@@ -45,7 +55,7 @@ function runQuery(db, sql, params = []) {
     const pokemonImagesDir = path.join(baseDir, "pokemon_images");
 
     // ----------------------------
-    // 2. SQLiteからデータ取得
+    // 2. SQLiteからデータ取得 (unite.db)
     // ----------------------------
     const dbPath = path.join(baseDir, "unite.db");
     const db = new sqlite3.Database(dbPath, sqlite3.OPEN_READONLY, (err) => {
@@ -331,7 +341,7 @@ function runQuery(db, sql, params = []) {
     }
     
     .hero {
-      width: 120px; /* 幅を広げて名前表示領域確保 */
+      width: 120px;
       text-align: center;
       position: relative;
     }
@@ -374,10 +384,8 @@ function runQuery(db, sql, params = []) {
       font-weight: 700;
       padding: 0 5px;
       line-height: 1.3;
-      min-height: 2.6em; /* 長い名前用に高さ確保 */
+      min-height: 2.6em;
     }
-    
-    /* 勝率オーバーレイ削除 */
     
     .footer {
       text-align: center;
@@ -401,8 +409,6 @@ function runQuery(db, sql, params = []) {
       height: 5px;
       background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
     }
-    
-    /* ポケモンボール装飾削除 */
     
     @media (max-width: 768px) {
       .header h1 { font-size: 2.5em; }
@@ -445,7 +451,7 @@ function runQuery(db, sql, params = []) {
       htmlBody += `      <div class="tier-title">${grade} Tier</div>\n`;
       htmlBody += `      <div class="hero-list">\n`;
       filtered.forEach(row => {
-        const englishName = row.pokemon_name; // カラム名に合わせる
+        const englishName = row.pokemon_name;
         const japaneseName = pokemonNameMap[englishName] || englishName;
         const winRate = row.win_rate;
         const pokemonImgPath = "file://" + path.join(pokemonImagesDir, `${englishName}.webp`);
@@ -524,15 +530,38 @@ function runQuery(db, sql, params = []) {
 
 #ポケモンユナイト #PokemonUnite #ユナイト`;
 
+    let tweetSuccess = false;
+    let tweetError = "";
     try {
       const mediaId = await rwClient.v1.uploadMedia(screenshotPath);
       await rwClient.v2.tweet(tweetText, {
         media: { media_ids: [mediaId] },
       });
       console.log("ツイートが投稿されました。");
+      tweetSuccess = true;
     } catch (error) {
       console.error("ツイート投稿中にエラーが発生しました:", error);
+      tweetError = error.toString();
     }
+
+    // ----------------------------
+    // 7. ツイート投稿の結果を moba.db の x_post_status に保存
+    // ----------------------------
+    const mobaDbPath = path.join(baseDir, "moba.db");
+    const mobaDb = new sqlite3.Database(mobaDbPath, sqlite3.OPEN_READWRITE, (err) => {
+      if (err) console.error("moba.dbオープンエラー:", err);
+    });
+    // 日本時間に基づく YYYY-MM-DD 形式のpost_dateを生成（例："2025-03-13"）
+    const now = new Date();
+    const postDate = now.toLocaleDateString('sv-SE', { timeZone: 'Asia/Tokyo' });
+    await runExecute(mobaDb, "INSERT INTO x_post_status (post_status, game_title, error_message, post_date) VALUES (?, ?, ?, ?)", [
+      tweetSuccess ? 0 : 1,
+      "unite",
+      tweetSuccess ? "" : tweetError,
+      postDate
+    ]);
+    mobaDb.close();
+
   } catch (err) {
     console.error("エラー:", err);
   }

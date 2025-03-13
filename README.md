@@ -135,3 +135,40 @@ python mlbb_tier_poster.py
 - CSS セレクタは Mobile Legends のページ構造に依存しているため、サイトの変更時は適宜修正が必要です。
 - Twitter への投稿処理において、API 認証情報が正しく設定されているか確認してください。
 - 実行環境に合わせたパスの設定（例: `base_dir` や `db_path`）を適宜変更してください。
+
+
+
+~/Library/LaunchAgents/com.moba_ranking.mlbb_hero_stats_scraper.plist
+毎日1時に実行 
+
+
+launchctl start com.moba_ranking.mlbb_hero_stats_scraper
+
+node mlbb_tier_x_poster.js
+
+launchctl start com.moba_ranking.mlbb_tier_x_poster
+
+
+launchctl load ~/Library/LaunchAgents/com.moba_ranking.mlbb_tier_x_poster.plist
+launchctl unload ~/Library/LaunchAgents/com.moba_ranking.mlbb_tier_x_poster.plist
+毎週木曜日の1時10分に実行
+
+
+launchctl load ~/Library/LaunchAgents/com.moba_ranking.unite_pokemon_stats_scraper.plist
+launchctl unload ~/Library/LaunchAgents/com.moba_ranking.unite_pokemon_stats_scraper.plist
+毎日1時30分に実行
+
+launchctl load ~/Library/LaunchAgents/com.moba_ranking.unite_tier_x_poster.plist
+毎週月曜日の1時40分に実行
+
+launchctl load ~/Library/LaunchAgents/com.moba_ranking.wildrift_champion_stats_scraper.plist
+毎日1時50分に実行
+
+launchctl load ~/Library/LaunchAgents/com.moba_ranking.wildrift_tier_x_poster.plist
+毎週火曜日の2時00分に実行
+
+node mlbb_hero_stats_scraper.js
+
+launchctl load ~/Library/LaunchAgents/com.moba_ranking.commitdb.plist
+
+launchctl load ~/Library/LaunchAgents/com.moba_ranking.mlbb_tier_x_poster.plist
