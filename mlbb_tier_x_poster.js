@@ -407,7 +407,7 @@ function runQuery(db, sql, params = []) {
     const unionHeight = (containerBox.y + containerBox.height) - unionY; // ヘッダーが上部の場合
 
     // タイムスタンプを用いて一意なファイル名を作成
-    const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+    const timestamp = new Date().toLocaleString('ja-JP', { timeZone: 'Asia/Tokyo', hour12: false }).replace(/[\/: ]/g, '-');
     const screenshotPath = path.join(outputDir, `hero_tier_list_${timestamp}.png`);
 
     // ヘッダーとコンテナを含む領域のスクリーンショットを取得
