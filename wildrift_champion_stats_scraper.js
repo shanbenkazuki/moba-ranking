@@ -120,8 +120,8 @@ function insertScraperStatus(status, errorMessage) {
     const db = new sqlite3.Database("/Users/yamamotokazuki/develop/moba-ranking/moba.db", (err) => {
       if (err) return reject(err);
     });
-    // 日本時間のタイムスタンプを取得（例："2025/3/12 15:30:00"）
-    const jstDate = new Date().toLocaleString('ja-JP', { timeZone: 'Asia/Tokyo' });
+    // 日本時間の日時を"YYYY-MM-DD"形式で取得
+    const jstDate = new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Tokyo' });
     db.run(
       `INSERT INTO scraper_status (scraper_status, game_title, error_message, scraper_date)
        VALUES (?, ?, ?, ?)`,
@@ -134,6 +134,7 @@ function insertScraperStatus(status, errorMessage) {
     );
   });
 }
+
 
 (async () => {
   try {
