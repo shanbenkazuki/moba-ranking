@@ -68,7 +68,6 @@ function runQuery(db, sql, params = []) {
     // ----------------------------
     // 1. 基本ディレクトリ設定
     // ----------------------------
-    // baseDir はすでに定義済み
     const outputDir = path.join(baseDir, "output");
     if (!fs.existsSync(outputDir)) {
       fs.mkdirSync(outputDir, { recursive: true });
@@ -80,7 +79,7 @@ function runQuery(db, sql, params = []) {
     // ----------------------------
     const dbPath = path.join(baseDir, "mlbb.db");
     const db = new sqlite3.Database(dbPath, sqlite3.OPEN_READONLY, (err) => {
-      if(err) logError("DBオープンエラー: " + err);
+      if (err) logError("DBオープンエラー: " + err);
     });
 
     // 最新の reference_date を取得
@@ -435,7 +434,7 @@ function runQuery(db, sql, params = []) {
     const unionX = Math.min(headerBox.x, containerBox.x);
     const unionY = Math.min(headerBox.y, containerBox.y);
     const unionWidth = Math.max(headerBox.x + headerBox.width, containerBox.x + containerBox.width) - unionX;
-    const unionHeight = (containerBox.y + containerBox.height) - unionY; // ヘッダーが上部の場合
+    const unionHeight = (containerBox.y + containerBox.height) - unionY;
 
     // タイムスタンプを用いて一意なファイル名を作成
     const timestamp = new Date().toLocaleString('ja-JP', { timeZone: 'Asia/Tokyo', hour12: false }).replace(/[\/: ]/g, '-');
@@ -476,6 +475,10 @@ function runQuery(db, sql, params = []) {
 
 #モバイル・レジェンド #モバレ #モバレジェ`;
 
+    // ツイート投稿の結果を保存するための変数
+    let tweetPostStatus = 0; // 0: 成功, 1: 失敗
+    let tweetErrorMessage = null;
+
     try {
       // メディアをアップロード（v1.1のエンドポイントを使用）
       const mediaId = await rwClient.v1.uploadMedia(screenshotPath);
@@ -485,8 +488,37 @@ function runQuery(db, sql, params = []) {
       });
       logMessage("ツイートが投稿されました。");
     } catch (error) {
-      logError("ツイート投稿中にエラーが発生しました: " + error);
+      tweetPostStatus = 1;
+      tweetErrorMessage = error.toString();
+      logError("ツイート投稿中にエラーが発生しました: " + tweetErrorMessage);
     }
+
+    // 日本時間の日付（YYYY-MM-DD形式）の取得
+    const postDate = new Date()
+      .toLocaleDateString('ja-JP', { timeZone: 'Asia/Tokyo', year: 'numeric', month: '2-digit', day: '2-digit' })
+      .replace(/\//g, '-');
+
+    // moba.db に x_post_status テーブルへ投稿結果を保存する
+    const mobaDbPath = path.join(baseDir, "moba.db");
+    const mobaDb = new sqlite3.Database(mobaDbPath, sqlite3.OPEN_READWRITE, (err) => {
+      if (err) {
+        logError("moba.db オープンエラー: " + err);
+      }
+    });
+
+    mobaDb.run(
+      "INSERT INTO x_post_status (post_status, game_title, error_message, post_date) VALUES (?, ?, ?, ?)",
+      [tweetPostStatus, "mlbb", tweetErrorMessage, postDate],
+      function(err) {
+        if (err) {
+          logError("x_post_status テーブルへの保存エラー: " + err);
+        } else {
+          logMessage("ツイート投稿の結果が x_post_status に保存されました。");
+        }
+      }
+    );
+
+    mobaDb.close();
   } catch (err) {
     logError("エラー: " + err);
   }
