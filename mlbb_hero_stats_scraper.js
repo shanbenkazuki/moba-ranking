@@ -215,7 +215,8 @@ async function main() {
       filename: statusDbPath,
       driver: sqlite3.Database
     });
-    const currentDate = new Date().toISOString(); // ISO形式の日付
+    // 日付を "YYYY-MM-DD" の形式に整形
+    const currentDate = new Date().toISOString().split('T')[0];
     await statusDb.run(
       `INSERT INTO scraper_status (scraper_status, game_title, error_message, scraper_date)
        VALUES (?, ?, ?, ?)`,
