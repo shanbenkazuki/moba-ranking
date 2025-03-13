@@ -5,6 +5,37 @@ const sqlite3 = require('sqlite3').verbose();
 const { TwitterApi } = require('twitter-api-v2');
 require('dotenv').config();
 
+// --- ログ設定 --- //
+const baseDir = "/Users/yamamotokazuki/develop/moba-ranking";
+
+// ログディレクトリ（/logs/mlbb）を作成
+const logDir = path.join(baseDir, "logs", "mlbb");
+if (!fs.existsSync(logDir)) {
+  fs.mkdirSync(logDir, { recursive: true });
+}
+
+// 日本時間のタイムスタンプ生成（例：2025-03-13-15-30-45）
+const timestampForLog = new Date().toLocaleString('ja-JP', {
+  timeZone: 'Asia/Tokyo',
+  hour12: false
+}).replace(/[\/: ]/g, '-');
+
+// ログファイルのパス
+const logFilePath = path.join(logDir, `mlbb_tier_x_poster_${timestampForLog}.log`);
+
+// ログ出力用のヘルパー関数
+function logMessage(message) {
+  console.log(message);
+  const timeStampedMsg = `[${new Date().toLocaleString('ja-JP', { timeZone: 'Asia/Tokyo', hour12: false })}] ${message}\n`;
+  fs.appendFileSync(logFilePath, timeStampedMsg);
+}
+
+function logError(errorMessage) {
+  console.error(errorMessage);
+  const timeStampedMsg = `[${new Date().toLocaleString('ja-JP', { timeZone: 'Asia/Tokyo', hour12: false })}] ERROR: ${errorMessage}\n`;
+  fs.appendFileSync(logFilePath, timeStampedMsg);
+}
+
 // --- ヘルパー関数 --- //
 function mean(arr) {
   return arr.reduce((sum, val) => sum + val, 0) / arr.length;
@@ -37,7 +68,7 @@ function runQuery(db, sql, params = []) {
     // ----------------------------
     // 1. 基本ディレクトリ設定
     // ----------------------------
-    const baseDir = "/Users/yamamotokazuki/develop/moba-ranking";
+    // baseDir はすでに定義済み
     const outputDir = path.join(baseDir, "output");
     if (!fs.existsSync(outputDir)) {
       fs.mkdirSync(outputDir, { recursive: true });
@@ -49,7 +80,7 @@ function runQuery(db, sql, params = []) {
     // ----------------------------
     const dbPath = path.join(baseDir, "mlbb.db");
     const db = new sqlite3.Database(dbPath, sqlite3.OPEN_READONLY, (err) => {
-      if(err) console.error("DBオープンエラー:", err);
+      if(err) logError("DBオープンエラー: " + err);
     });
 
     // 最新の reference_date を取得
@@ -58,7 +89,7 @@ function runQuery(db, sql, params = []) {
 
     // 最新日付の hero_stats を取得
     const heroStats = await runQuery(db, "SELECT * FROM hero_stats WHERE reference_date = ?", [latestDate]);
-    console.log(`最新の reference_date (${latestDate}) のデータ件数: ${heroStats.length}`);
+    logMessage(`最新の reference_date (${latestDate}) のデータ件数: ${heroStats.length}`);
 
     // 英名→日本語名のマッピング取得
     const heroMapRows = await runQuery(db, "SELECT english_name, japanese_name FROM heroes");
@@ -378,7 +409,7 @@ function runQuery(db, sql, params = []) {
     const finalHtml = htmlHead + htmlBody + htmlTail;
     const htmlFilePath = path.join(outputDir, "hero_tier_list.html");
     fs.writeFileSync(htmlFilePath, finalHtml, "utf-8");
-    console.log(`HTMLファイルが ${htmlFilePath} に出力されました。`);
+    logMessage(`HTMLファイルが ${htmlFilePath} に出力されました。`);
 
     // ----------------------------
     // 5. Puppeteerでスクリーンショット撮影
@@ -415,7 +446,7 @@ function runQuery(db, sql, params = []) {
       path: screenshotPath,
       clip: { x: unionX, y: unionY, width: unionWidth, height: unionHeight }
     });
-    console.log(`スクリーンショットが ${screenshotPath} に保存されました。`);
+    logMessage(`スクリーンショットが ${screenshotPath} に保存されました。`);
 
     await browser.close();
 
@@ -452,11 +483,11 @@ function runQuery(db, sql, params = []) {
       await rwClient.v2.tweet(tweetText, {
         media: { media_ids: [mediaId] },
       });
-      console.log("ツイートが投稿されました。");
+      logMessage("ツイートが投稿されました。");
     } catch (error) {
-      console.error("ツイート投稿中にエラーが発生しました:", error);
+      logError("ツイート投稿中にエラーが発生しました: " + error);
     }
   } catch (err) {
-    console.error("エラー:", err);
+    logError("エラー: " + err);
   }
 })();
