@@ -47,6 +47,16 @@ function getJstTimestamp() {
   return `${year}-${month}-${day}T${hours}-${minutes}-${seconds}-${milliseconds}`;
 }
 
+// JSTの日付（YYYY-MM-DD形式）を生成する関数
+function getJstDate() {
+  const now = new Date();
+  const jst = new Date(now.getTime() + (9 * 60 + now.getTimezoneOffset()) * 60000);
+  const year = jst.getFullYear();
+  const month = String(jst.getMonth() + 1).padStart(2, '0');
+  const day = String(jst.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
 (async () => {
   try {
     // ----------------------------
@@ -160,10 +170,10 @@ function getJstTimestamp() {
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
   <style>
     body {
-      background-color: #010A13; /* より暗いダークブルー背景色 */
+      background-color: #010A13;
       font-family: 'Noto Sans JP', sans-serif;
       padding: 20px;
-      color: #C8AA6E; /* ゴールドアクセントテキスト色 */
+      color: #C8AA6E;
       background-image: url('file:///Users/yamamotokazuki/develop/moba-ranking/background.jpg');
       background-size: cover;
       background-position: center;
@@ -176,9 +186,9 @@ function getJstTimestamp() {
     .main-title {
       font-size: 3em;
       font-weight: 900;
-      color: #F0E6D2; /* LOLのゴールドカラー */
+      color: #F0E6D2;
       margin-bottom: 15px;
-      text-shadow: 0 0 10px #785A28, 0 0 20px #785A28; /* ゴールド系の光彩効果 */
+      text-shadow: 0 0 10px #785A28, 0 0 20px #785A28;
       text-transform: uppercase;
       letter-spacing: 2px;
     }
@@ -190,18 +200,18 @@ function getJstTimestamp() {
       max-width: 1400px;
     }
     .grid-header {
-      background: linear-gradient(to bottom, #091428, #0A1428); /* よりダークなグラデーション */
+      background: linear-gradient(to bottom, #091428, #0A1428);
       text-align: center;
       padding: 15px 5px;
       font-weight: bold;
       border-radius: 4px;
       font-size: 18px;
-      color: #C8AA6E; /* ゴールドテキスト */
+      color: #C8AA6E;
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5), inset 0 0 3px #C8AA6E; /* 光彩効果付きシャドウ */
-      border: 1px solid #785A28; /* 細いゴールドボーダー */
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5), inset 0 0 3px #C8AA6E;
+      border: 1px solid #785A28;
       text-transform: uppercase;
       letter-spacing: 1px;
     }
@@ -217,7 +227,6 @@ function getJstTimestamp() {
       box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
       letter-spacing: 2px;
     }
-    /* グレード別の色設定 - より強烈なコントラスト */
     .grade-S { 
       background: linear-gradient(135deg, #DCB14A, #A17622); 
       color: #fff;
@@ -243,9 +252,8 @@ function getJstTimestamp() {
       color: #B7B7B7; 
       border: 1px solid #444444;
     }
-    
     .grid-cell {
-      background-color: rgba(10, 20, 40, 0.85); /* セミトランスペアレント背景 */
+      background-color: rgba(10, 20, 40, 0.85);
       border-radius: 4px;
       padding: 8px;
       display: grid;
@@ -254,8 +262,8 @@ function getJstTimestamp() {
       justify-items: center;
       align-content: start;
       min-height: 110px;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5), inset 0 0 2px rgba(200, 170, 110, 0.3); /* 内側に薄いゴールド光彩 */
-      border: 1px solid rgba(120, 90, 40, 0.3); /* 薄いゴールドボーダー */
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5), inset 0 0 2px rgba(200, 170, 110, 0.3);
+      border: 1px solid rgba(120, 90, 40, 0.3);
     }
     .hero {
       text-align: center;
@@ -266,8 +274,8 @@ function getJstTimestamp() {
       height: 60px;
       overflow: hidden;
       border-radius: 50%;
-      border: 2px solid #785A28; /* LOLのゴールドボーダー */
-      box-shadow: 0 0 8px rgba(201, 170, 113, 0.6); /* ゴールド光彩 */
+      border: 2px solid #785A28;
+      box-shadow: 0 0 8px rgba(201, 170, 113, 0.6);
       margin: 0 auto;
     }
     .hero-img-container img {
@@ -279,7 +287,7 @@ function getJstTimestamp() {
       margin-top: 6px;
       font-size: 12px;
       font-weight: 700;
-      color: #C8AA6E; /* ゴールド色のテキスト */
+      color: #C8AA6E;
       text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
     }
     .version-info {
@@ -287,11 +295,10 @@ function getJstTimestamp() {
       margin-bottom: 25px;
       font-size: 1.1em;
       font-weight: bold;
-      color: #3A81AD; /* ブルーアクセント */
+      color: #3A81AD;
       text-shadow: 0 0 5px rgba(10, 200, 185, 0.3);
       letter-spacing: 1px;
     }
-    /* フッターとウォーターマークのスタイルを削除 */
   </style>
 </head>
 <body>
@@ -362,7 +369,7 @@ function getJstTimestamp() {
     // ----------------------------
     const browser = await puppeteer.launch({
       headless: true,
-      defaultViewport: { width: 1400, height: 1080 } // SNS向けに幅を調整、サポートレーンが見切れないよう拡大
+      defaultViewport: { width: 1400, height: 1080 }
     });
     const page = await browser.newPage();
     const fileUrl = "file://" + htmlFilePath;
@@ -391,7 +398,7 @@ function getJstTimestamp() {
     await browser.close();
 
     // ----------------------------
-    // 6. twitter-api-v2でスクリーンショットを添付してXに投稿
+    // 6. twitter-api-v2でスクリーンショットを添付してXに投稿＆投稿結果をmoba.dbに記録
     // ----------------------------
     const apiKey = process.env.API_KEY;
     const apiSecretKey = process.env.API_SECRET_KEY;
@@ -413,13 +420,36 @@ function getJstTimestamp() {
 
 #ワイルドリフト #WildRift`;
 
+    // ツイート投稿の結果を記録するための変数
+    let postStatus, errorMessage;
     try {
       const mediaId = await rwClient.v1.uploadMedia(screenshotPath);
       await rwClient.v2.tweet(tweetText, { media: { media_ids: [mediaId] } });
       console.log("ツイートが投稿されました。");
+      postStatus = 0; // 成功の場合は0
+      errorMessage = null;
     } catch (error) {
       console.error("ツイート投稿中にエラーが発生しました:", error);
+      postStatus = 1; // 失敗の場合は1
+      errorMessage = error.message ? error.message : String(error);
     }
+
+    // moba.db の x_post_status テーブルに投稿結果を保存
+    const mobaDbPath = path.join(baseDir, "moba.db");
+    const mobaDb = new sqlite3.Database(mobaDbPath, sqlite3.OPEN_READWRITE, err => {
+      if (err) console.error("moba DB オープンエラー:", err);
+    });
+    
+    const postDate = getJstDate(); // "YYYY-MM-DD"形式のJST日付
+    const insertSQL = "INSERT INTO x_post_status (post_status, game_title, error_message, post_date) VALUES (?, ?, ?, ?)";
+    mobaDb.run(insertSQL, [postStatus, "wildrift", errorMessage, postDate], function(err) {
+      if (err) {
+         console.error("x_post_statusへの挿入エラー:", err);
+      } else {
+         console.log("x_post_statusにツイートの結果が保存されました。");
+      }
+      mobaDb.close();
+    });
   } catch (err) {
     console.error("エラー:", err);
   }
