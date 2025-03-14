@@ -65,8 +65,9 @@ function insertChampionStats(championStats, patch_number) {
       if (err) return reject(err);
     });
     
+    // INSERT OR IGNORE を使用することで、ユニーク制約違反の場合は挿入をスキップ
     const stmt = db.prepare(`
-      INSERT INTO champion_stats 
+      INSERT OR IGNORE INTO champion_stats 
       (lane, champion_name, win_rate, pick_rate, ban_rate, reference_date, patch_number)
       VALUES (?, ?, ?, ?, ?, ?, ?)
     `);
