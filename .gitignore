@@ -24,3 +24,5 @@ node_modules/
 pokemon_images/
 
 champion_images/
+
+*.db
