@@ -164,30 +164,31 @@ function runQuery(db, sql, params = []) {
   <title>MLBB Hero Tier List</title>
   <style>
     :root {
-      --primary-color: #fb4f3a;
-      --secondary-color: #222831;
-      --accent-color: #ffd700;
-      --bg-dark: #1a1a1a;
-      --bg-card: #252a34;
-      --text-light: #f0f0f0;
-      --text-secondary: #aaa;
-      --s-tier: linear-gradient(135deg, #ff7b00, #ff0050);
-      --a-tier: linear-gradient(135deg, #9c27b0, #3f51b5);
-      --b-tier: linear-gradient(135deg, #2196f3, #00bcd4);
-      --c-tier: linear-gradient(135deg, #4caf50, #8bc34a);
-      --d-tier: linear-gradient(135deg, #9e9e9e, #607d8b);
+      --primary-color: #ffffff;
+      --secondary-color: #000000;
+      --accent-color: #333333;
+      --bg-dark: #0a0a0a;
+      --bg-card: #1a1a1a;
+      --text-light: #ffffff;
+      --text-secondary: #888888;
+      --s-tier: #ffd700;
+      --a-tier: #c9b037;
+      --b-tier: #cd7f32;
+      --c-tier: #b87333;
+      --d-tier: #6c6c6c;
     }
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
     }
     body {
       background-color: var(--bg-dark);
       color: var(--text-light);
       padding: 0;
       margin: 0;
+      line-height: 1.6;
     }
     .container {
       max-width: 1920px;
@@ -196,45 +197,75 @@ function runQuery(db, sql, params = []) {
     }
     .header {
       text-align: center;
-      padding: 40px 20px;
-      background: linear-gradient(to right, #1a1a1a, #252a34, #1a1a1a);
-      border-bottom: 3px solid var(--primary-color);
-      margin-bottom: 30px;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+      padding: 60px 20px;
+      background: linear-gradient(180deg, #000000, #1a1a1a);
+      border-bottom: 1px solid #333333;
+      margin-bottom: 40px;
     }
     .header h1 {
-      font-size: 3.5em;
-      font-weight: 800;
-      margin-bottom: 10px;
+      font-size: 4em;
+      font-weight: 300;
+      margin-bottom: 20px;
       color: var(--text-light);
+      letter-spacing: 8px;
       text-transform: uppercase;
-      letter-spacing: 2px;
-      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
     }
     .header h1 span {
-      color: var(--primary-color);
+      font-weight: 700;
     }
     .version-info {
-      display: inline-block;
-      font-size: 1.2em;
-      font-weight: 600;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 30px;
+      font-size: 1.4em;
+      font-weight: 500;
       color: var(--text-light);
-      background-color: var(--primary-color);
-      padding: 8px 20px;
-      border-radius: 30px;
-      margin-top: 15px;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+      background: linear-gradient(135deg, #1a1a1a, #2a2a2a);
+      border: 2px solid #444444;
+      padding: 20px 40px;
+      border-radius: 0;
+      margin-top: 30px;
+      letter-spacing: 3px;
       text-transform: uppercase;
-      letter-spacing: 1px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6);
+    }
+    .patch-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .patch-label {
+      color: var(--text-secondary);
+      font-size: 0.9em;
+      font-weight: 300;
+    }
+    .patch-value {
+      color: var(--s-tier);
+      font-weight: 700;
+      font-size: 1.1em;
+    }
+    .update-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .update-label {
+      color: var(--text-secondary);
+      font-size: 0.9em;
+      font-weight: 300;
+    }
+    .update-value {
+      color: var(--text-light);
+      font-weight: 600;
     }
     .tier-section {
-      margin-bottom: 40px;
-      padding: 25px;
-      border-radius: 15px;
+      margin-bottom: 50px;
+      padding: 30px;
+      border-radius: 0;
       background-color: var(--bg-card);
-      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+      border: 1px solid #333333;
       position: relative;
-      overflow: hidden;
     }
     .tier-section::before {
       content: '';
@@ -242,7 +273,7 @@ function runQuery(db, sql, params = []) {
       top: 0;
       left: 0;
       width: 100%;
-      height: 5px;
+      height: 2px;
     }
     .tier-section.s-tier::before {
       background: var(--s-tier);
@@ -261,31 +292,46 @@ function runQuery(db, sql, params = []) {
     }
     .tier-badge {
       position: absolute;
-      top: 15px;
-      right: 15px;
-      width: 50px;
-      height: 50px;
-      border-radius: 50%;
+      top: 20px;
+      right: 20px;
+      width: 40px;
+      height: 40px;
+      border: 1px solid #333333;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.8em;
-      font-weight: 800;
-      color: white;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+      font-size: 1.4em;
+      font-weight: 600;
+      color: #000000;
     }
-    .s-tier .tier-badge { background: var(--s-tier); }
-    .a-tier .tier-badge { background: var(--a-tier); }
-    .b-tier .tier-badge { background: var(--b-tier); }
-    .c-tier .tier-badge { background: var(--c-tier); }
-    .d-tier .tier-badge { background: var(--d-tier); }
+    .s-tier .tier-badge { 
+      background: var(--s-tier);
+      border-color: var(--s-tier);
+    }
+    .a-tier .tier-badge { 
+      background: var(--a-tier);
+      border-color: var(--a-tier);
+    }
+    .b-tier .tier-badge { 
+      background: var(--b-tier);
+      border-color: var(--b-tier);
+    }
+    .c-tier .tier-badge { 
+      background: var(--c-tier);
+      border-color: var(--c-tier);
+    }
+    .d-tier .tier-badge { 
+      background: var(--d-tier);
+      border-color: var(--d-tier);
+      color: #ffffff;
+    }
     .tier-title {
-      font-size: 2em;
-      margin-bottom: 20px;
+      font-size: 1.8em;
+      margin-bottom: 30px;
       color: var(--text-light);
-      font-weight: 700;
+      font-weight: 300;
       text-transform: uppercase;
-      letter-spacing: 1px;
+      letter-spacing: 3px;
       display: flex;
       align-items: center;
     }
@@ -293,8 +339,8 @@ function runQuery(db, sql, params = []) {
       content: '';
       flex-grow: 1;
       height: 1px;
-      margin-left: 15px;
-      background: rgba(255, 255, 255, 0.2);
+      margin-left: 20px;
+      background: #333333;
     }
     .hero-list {
       display: flex;
@@ -305,88 +351,77 @@ function runQuery(db, sql, params = []) {
     .hero {
       width: 100px;
       text-align: center;
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
       position: relative;
     }
-    .hero:hover { transform: translateY(-10px); }
     .hero-card {
-      background: rgba(0, 0, 0, 0.3);
-      border-radius: 12px;
+      background: transparent;
+      border: 1px solid #333333;
+      border-radius: 0;
       padding: 8px;
-      transition: all 0.3s ease;
-      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
     }
-    .hero:hover .hero-card { box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5); }
     .hero-img-container {
       position: relative;
       width: 84px;
       height: 84px;
       margin: 0 auto;
-      border-radius: 12px;
+      border-radius: 0;
       overflow: hidden;
-      border: 2px solid rgba(255, 255, 255, 0.1);
+      border: 1px solid #333333;
     }
-    .s-tier .hero:hover .hero-img-container { border-color: rgba(255, 123, 0, 0.6); }
-    .a-tier .hero:hover .hero-img-container { border-color: rgba(156, 39, 176, 0.6); }
-    .b-tier .hero:hover .hero-img-container { border-color: rgba(33, 150, 243, 0.6); }
-    .c-tier .hero:hover .hero-img-container { border-color: rgba(76, 175, 80, 0.6); }
-    .d-tier .hero:hover .hero-img-container { border-color: rgba(158, 158, 158, 0.6); }
     .hero img {
       width: 100%;
       height: 100%;
       object-fit: cover;
-      transition: transform 0.3s ease;
     }
-    .hero:hover img { transform: scale(1.1); }
     .hero-name {
       margin-top: 8px;
-      font-size: 0.9em;
+      font-size: 0.85em;
       color: var(--text-light);
-      font-weight: 500;
+      font-weight: 300;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-    }
-    .stats-overlay {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      background: rgba(0, 0, 0, 0.8);
-      color: white;
-      font-size: 0.75em;
-      padding: 2px 0;
-      opacity: 0;
-      transition: opacity 0.3s;
-    }
-    .hero:hover .stats-overlay { opacity: 1; }
-    .footer {
-      text-align: center;
-      margin-top: 50px;
-      padding: 20px;
-      color: var(--text-secondary);
-      font-size: 0.9em;
-      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      letter-spacing: 1px;
     }
     @media (max-width: 768px) {
-      .header h1 { font-size: 2.5em; }
-      .hero-list { justify-content: center; }
-      .tier-section { padding: 20px 15px; }
+      .header h1 { 
+        font-size: 2.5em; 
+        letter-spacing: 4px;
+      }
+      .version-info {
+        flex-direction: column;
+        gap: 15px;
+        font-size: 1.2em;
+        padding: 15px 20px;
+        margin-top: 20px;
+      }
+      .hero-list { 
+        justify-content: center; 
+      }
+      .tier-section { 
+        padding: 20px 15px; 
+      }
     }
   </style>
 </head>
 <body>
   <div class="header">
-    <h1>MLBB <span>TIER LIST</span></h1>
-    <div class="version-info">Patch ${patchNumber}</div>
+    <h1>モバイル・レジェンド <span>TIER LIST</span></h1>
+    <div class="version-info">
+      <div class="patch-info">
+        <span class="patch-label">Patch:</span>
+        <span class="patch-value">${patchNumber}</span>
+      </div>
+      <div class="update-info">
+        <span class="update-label">更新日:</span>
+        <span class="update-value">${latestDate}</span>
+      </div>
+    </div>
   </div>
   <div class="container">
 `;
 
     const htmlTail = `
-    <div class="footer">
-      MLBB Tier List ${latestDate} • Patch ${patchNumber}
-    </div>
   </div>
 </body>
 </html>
@@ -412,7 +447,6 @@ function runQuery(db, sql, params = []) {
         htmlBody += `          <div class="hero-card">\n`;
         htmlBody += `            <div class="hero-img-container">\n`;
         htmlBody += `              <img src="${heroImgPath}" alt="${japaneseName}">\n`;
-        htmlBody += `              <div class="stats-overlay">WR: ${winRate.toFixed(1)}%</div>\n`;
         htmlBody += `            </div>\n`;
         htmlBody += `            <div class="hero-name">${japaneseName}</div>\n`;
         htmlBody += `          </div>\n`;
@@ -490,7 +524,7 @@ function runQuery(db, sql, params = []) {
 
 バージョン：${patchNumber}
 
-#モバイル・レジェンド #モバレ #モバレジェ`;
+#モバイル・レジェンド #モバレ #モバレジェ #MLBB`;
 
     // ツイート投稿の結果を保存するための変数
     let tweetPostStatus = 0; // 0: 成功, 1: 失敗
