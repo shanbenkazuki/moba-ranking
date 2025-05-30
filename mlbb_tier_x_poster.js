@@ -496,63 +496,63 @@ function runQuery(db, sql, params = []) {
     let tweetPostStatus = 0; // 0: 成功, 1: 失敗
     let tweetErrorMessage = null;
 
-    // try {
-    //   // メディアをアップロード（v1.1のエンドポイントを使用）
-    //   const mediaId = await rwClient.v1.uploadMedia(screenshotPath);
-    //   // ツイートを投稿（v2のエンドポイントを使用）
-    //   await rwClient.v2.tweet(tweetText, {
-    //     media: { media_ids: [mediaId] },
-    //   });
-    //   logMessage("ツイートが投稿されました。");
-    // } catch (error) {
-    //   tweetPostStatus = 1;
-    //   tweetErrorMessage = error.toString();
-    //   logError("ツイート投稿中にエラーが発生しました: " + tweetErrorMessage);
-    // }
+    try {
+      // メディアをアップロード（v1.1のエンドポイントを使用）
+      const mediaId = await rwClient.v1.uploadMedia(screenshotPath);
+      // ツイートを投稿（v2のエンドポイントを使用）
+      await rwClient.v2.tweet(tweetText, {
+        media: { media_ids: [mediaId] },
+      });
+      logMessage("ツイートが投稿されました。");
+    } catch (error) {
+      tweetPostStatus = 1;
+      tweetErrorMessage = error.toString();
+      logError("ツイート投稿中にエラーが発生しました: " + tweetErrorMessage);
+    }
 
-    // // 日本時間の日付（YYYY-MM-DD形式）の取得
-    // const postDate = new Date()
-    //   .toLocaleDateString('ja-JP', { timeZone: 'Asia/Tokyo', year: 'numeric', month: '2-digit', day: '2-digit' })
-    //   .replace(/\//g, '-');
+    // 日本時間の日付（YYYY-MM-DD形式）の取得
+    const postDate = new Date()
+      .toLocaleDateString('ja-JP', { timeZone: 'Asia/Tokyo', year: 'numeric', month: '2-digit', day: '2-digit' })
+      .replace(/\//g, '-');
 
-    // // data/moba_log.db に x_post_logs テーブルへ投稿結果を保存する
-    // const mobaDbPath = path.join(baseDir, "data", "moba_log.db");
-    // const mobaDb = new sqlite3.Database(mobaDbPath, sqlite3.OPEN_READWRITE, (err) => {
-    //   if (err) {
-    //     logError("moba_log.db オープンエラー: " + err);
-    //   }
-    // });
+    // data/moba_log.db に x_post_logs テーブルへ投稿結果を保存する
+    const mobaDbPath = path.join(baseDir, "data", "moba_log.db");
+    const mobaDb = new sqlite3.Database(mobaDbPath, sqlite3.OPEN_READWRITE, (err) => {
+      if (err) {
+        logError("moba_log.db オープンエラー: " + err);
+      }
+    });
 
-    // try {
-    //   // MLBBのgame_idを取得
-    //   const gameIdRows = await runQuery(mobaDb, "SELECT id FROM games WHERE game_code = 'mlbb'");
-    //   const gameId = gameIdRows.length > 0 ? gameIdRows[0].id : null;
+    try {
+      // MLBBのgame_idを取得
+      const gameIdRows = await runQuery(mobaDb, "SELECT id FROM games WHERE game_code = 'mlbb'");
+      const gameId = gameIdRows.length > 0 ? gameIdRows[0].id : null;
 
-    //   if (gameId) {
-    //     // 投稿結果を保存（Promiseでラップ）
-    //     await new Promise((resolve, reject) => {
-    //       mobaDb.run(
-    //         "INSERT INTO x_post_logs (game_id, post_status, error_message, post_date) VALUES (?, ?, ?, ?)",
-    //         [gameId, tweetPostStatus === 0, tweetErrorMessage, postDate],
-    //         function(err) {
-    //           if (err) {
-    //             logError("x_post_logs テーブルへの保存エラー: " + err);
-    //             reject(err);
-    //           } else {
-    //             logMessage("ツイート投稿の結果が x_post_logs に保存されました。");
-    //             resolve();
-    //           }
-    //         }
-    //       );
-    //     });
-    //   } else {
-    //     logError("MLBBのgame_idが見つかりませんでした。");
-    //   }
-    // } catch (error) {
-    //   logError("x_post_logs への保存中にエラーが発生しました: " + error);
-    // }
+      if (gameId) {
+        // 投稿結果を保存（Promiseでラップ）
+        await new Promise((resolve, reject) => {
+          mobaDb.run(
+            "INSERT INTO x_post_logs (game_id, post_status, error_message, post_date) VALUES (?, ?, ?, ?)",
+            [gameId, tweetPostStatus === 0, tweetErrorMessage, postDate],
+            function(err) {
+              if (err) {
+                logError("x_post_logs テーブルへの保存エラー: " + err);
+                reject(err);
+              } else {
+                logMessage("ツイート投稿の結果が x_post_logs に保存されました。");
+                resolve();
+              }
+            }
+          );
+        });
+      } else {
+        logError("MLBBのgame_idが見つかりませんでした。");
+      }
+    } catch (error) {
+      logError("x_post_logs への保存中にエラーが発生しました: " + error);
+    }
 
-    // mobaDb.close();
+    mobaDb.close();
   } catch (err) {
     logError("エラー: " + err);
   }
