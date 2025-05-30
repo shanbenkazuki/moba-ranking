@@ -2,6 +2,7 @@ import asyncio
 import aiosqlite
 import os
 import logging
+import aiohttp
 from datetime import datetime
 from playwright.async_api import async_playwright
 # 最新パッチ情報取得のためのインポート
@@ -143,23 +144,28 @@ class MLBBScraper:
                     const pickRateXpath = `//*[@id="root"]/div[1]/div[5]/div/div[2]/div/div[2]/div/div[${index}]/div[3]/span`;
                     const winRateXpath = `//*[@id="root"]/div[1]/div[5]/div/div[2]/div/div[2]/div/div[${index}]/div[4]/span`;
                     const banRateXpath = `//*[@id="root"]/div[1]/div[5]/div/div[2]/div/div[2]/div/div[${index}]/div[5]/span`;
+                    const iconImageXpath = `//*[@id="root"]/div[1]/div[5]/div/div[2]/div/div[2]/div/div[${index}]/div[2]/div[1]/img`;
+                                                    
                     
                     const heroNameElement = document.evaluate(heroNameXpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
                     const pickRateElement = document.evaluate(pickRateXpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
                     const winRateElement = document.evaluate(winRateXpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
                     const banRateElement = document.evaluate(banRateXpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+                    const iconImageElement = document.evaluate(iconImageXpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
                     
                     if (heroNameElement && pickRateElement && winRateElement && banRateElement) {
                         const hero_name = heroNameElement.textContent.trim();
                         const pick_rate = parseFloat(pickRateElement.textContent.replace("%", ""));
                         const win_rate = parseFloat(winRateElement.textContent.replace("%", ""));
                         const ban_rate = parseFloat(banRateElement.textContent.replace("%", ""));
+                        const icon_src = iconImageElement ? iconImageElement.src : null;
                         
                         data.push({
                             hero: hero_name,
                             win_rate: win_rate,
                             pick_rate: pick_rate,
-                            ban_rate: ban_rate
+                            ban_rate: ban_rate,
+                            icon_src: icon_src
                         });
                         
                         console.log(`ヒーロー ${index}: ${hero_name} - Pick: ${pick_rate}%, Win: ${win_rate}%, Ban: ${ban_rate}%`);
@@ -175,6 +181,30 @@ class MLBBScraper:
         """)
         
         self.logger.info(f'抽出対象のヒーローデータ件数: {len(hero_meta_data)}')
+        
+        # データベースに接続してキャラクターの存在確認と画像保存
+        data_dir = os.path.join(os.path.dirname(__file__), 'data')
+        os.makedirs(data_dir, exist_ok=True)
+        db_path = os.path.join(data_dir, 'moba_log.db')
+        
+        async with aiosqlite.connect(db_path) as db:
+            await db.execute('PRAGMA foreign_keys = ON;')
+            
+            # MLBBのゲームIDを取得
+            game_id = await self.get_mlbb_game_id(db)
+            
+            for hero in hero_meta_data:
+                # キャラクターが存在するかチェック
+                async with db.execute(
+                    'SELECT id FROM characters WHERE english_name = ? AND game_id = ?',
+                    (hero['hero'], game_id)
+                ) as cursor:
+                    character_result = await cursor.fetchone()
+                
+                if not character_result and hero['icon_src']:
+                    # キャラクターが存在しない場合、アイコン画像を保存
+                    await self.save_hero_icon(hero['hero'], hero['icon_src'])
+        
         return hero_meta_data
         
     async def extract_reference_date(self):
@@ -202,6 +232,7 @@ class MLBBScraper:
     async def get_mlbb_game_id(self, db):
         """MLBBのゲームIDを取得"""
         async with db.execute('SELECT id FROM games WHERE game_code = ?', ('mlbb',)) as cursor:
+
             game_result = await cursor.fetchone()
             if not game_result:
                 raise Exception('MLBBのゲーム情報が見つかりません')
@@ -250,10 +281,57 @@ class MLBBScraper:
             except Exception as db_insert_error:
                 await db.rollback()
                 raise db_insert_error
+
+    async def update_japanese_names(self, hero_meta_data):
+        """ブラウザが開いている間に日本語名を取得・更新"""
+        data_dir = os.path.join(os.path.dirname(__file__), 'data')
+        os.makedirs(data_dir, exist_ok=True)
+        
+        db_path = os.path.join(data_dir, 'moba_log.db')
+        async with aiosqlite.connect(db_path) as db:
+            await db.execute('PRAGMA foreign_keys = ON;')
+            
+            game_id = await self.get_mlbb_game_id(db)
+            
+            # 日本語名が未設定のキャラクターを特定し、日本語名を取得
+            for hero in hero_meta_data:
+                async with db.execute(
+                    'SELECT id, japanese_name FROM characters WHERE english_name = ? AND game_id = ?',
+                    (hero['hero'], game_id)
+                ) as cursor:
+                    character_result = await cursor.fetchone()
+                
+                if not character_result:
+                    # 新規キャラクターを挿入
+                    await db.execute(
+                        'INSERT INTO characters (game_id, english_name) VALUES (?, ?)',
+                        (game_id, hero['hero'])
+                    )
+                    # 挿入されたキャラクターのIDを取得
+                    async with db.execute(
+                        'SELECT id, japanese_name FROM characters WHERE english_name = ? AND game_id = ?',
+                        (hero['hero'], game_id)
+                    ) as cursor:
+                        character_result = await cursor.fetchone()
+                    self.logger.info(f"新規キャラクター '{hero['hero']}' を characters テーブルに挿入")
+                
+                character_id = character_result[0]
+                japanese_name = character_result[1]
+                
+                # japanese_nameがNULLの場合、MLJPwikiから取得
+                if japanese_name is None:
+                    japanese_name = await self.get_japanese_name_from_wiki(hero['hero'])
+                    if japanese_name:
+                        await db.execute(
+                            'UPDATE characters SET japanese_name = ? WHERE id = ?',
+                            (japanese_name, character_id)
+                        )
+                        await db.commit()
+                        self.logger.info(f"キャラクター '{hero['hero']}' の日本語名を更新: {japanese_name}")
                 
     async def process_single_hero(self, db, hero, reference_date, game_id, latest_patch_id):
-        """単一のヒーローデータを処理"""
-        # キャラクターが存在するかチェック
+        """単一のヒーローデータを処理（統計データのみ）"""
+        # キャラクターIDを取得（この時点で既に存在することが保証されている）
         async with db.execute(
             'SELECT id FROM characters WHERE english_name = ? AND game_id = ?',
             (hero['hero'], game_id)
@@ -261,19 +339,9 @@ class MLBBScraper:
             character_result = await cursor.fetchone()
         
         if not character_result:
-            # 新規キャラクターを挿入
-            await db.execute(
-                'INSERT INTO characters (game_id, english_name) VALUES (?, ?)',
-                (game_id, hero['hero'])
-            )
-            # 挿入されたキャラクターのIDを取得
-            async with db.execute(
-                'SELECT id FROM characters WHERE english_name = ? AND game_id = ?',
-                (hero['hero'], game_id)
-            ) as cursor:
-                character_result = await cursor.fetchone()
-            self.logger.info(f"新規キャラクター '{hero['hero']}' を characters テーブルに挿入")
-        
+            self.logger.error(f"キャラクター '{hero['hero']}' が見つかりません")
+            return
+            
         character_id = character_result[0]
         
         # 統計データが既に存在するかチェック
@@ -302,6 +370,45 @@ class MLBBScraper:
             latest_patch_id
         ))
         self.logger.info(f"mlbb_stats テーブルに '{hero['hero']}' のデータを挿入")
+        
+    async def get_japanese_name_from_wiki(self, english_name):
+        """MLJPwikiから日本語名を取得"""
+        try:
+            # 新しいページを作成してwikiにアクセス
+            wiki_page = await self.browser.new_page()
+            await wiki_page.goto('https://mljpwiki.com/heros', wait_until='networkidle')
+            
+            # alt属性がenglish_nameと一致するimg要素を探す
+            japanese_name = await wiki_page.evaluate("""
+                (englishName) => {
+                    const imgElements = document.querySelectorAll('#DataTables_Table_0 img');
+                    for (const img of imgElements) {
+                        if (img.alt === englishName) {
+                            // 親要素のテキストを取得
+                            const parentText = img.closest('a').textContent.trim();
+                            // "{japanese_name} (english_name)" 形式から日本語名を抽出
+                            const match = parentText.match(/^(.+?)\\s*\\(/);
+                            if (match) {
+                                return match[1].trim();
+                            }
+                        }
+                    }
+                    return null;
+                }
+            """, english_name)
+            
+            await wiki_page.close()
+            
+            if japanese_name:
+                self.logger.info(f"MLJPwikiから日本語名を取得: {english_name} -> {japanese_name}")
+            else:
+                self.logger.warning(f"MLJPwikiで日本語名が見つかりません: {english_name}")
+            
+            return japanese_name
+            
+        except Exception as e:
+            self.logger.error(f"MLJPwikiからの日本語名取得に失敗: {english_name} - エラー: {e}")
+            return None
         
     async def record_scraping_status(self, scraping_failed, scraping_error_msg):
         """スクレイピング結果をステータステーブルに記録"""
@@ -343,7 +450,7 @@ class MLBBScraper:
             # 最新パッチ情報を取得
             self.logger.info('最新パッチ情報を取得中...')
             patch_scraper = MLBBPatchScraper()
-            patch_success = patch_scraper.run()
+            patch_success = await patch_scraper.run()
             
             if not patch_success:
                 self.logger.warning('最新パッチ情報の取得に失敗しましたが、処理を続行します')
@@ -359,6 +466,11 @@ class MLBBScraper:
             hero_meta_data = await self.extract_hero_data()
             reference_date = await self.extract_reference_date()
             
+            # ブラウザが開いている間に日本語名を取得・更新
+            self.logger.info('日本語名の取得・更新を開始')
+            await self.update_japanese_names(hero_meta_data)
+            self.logger.info('日本語名の取得・更新が完了')
+            
             await self.close_browser()
             
             await self.save_hero_data(hero_meta_data, reference_date)
@@ -372,6 +484,30 @@ class MLBBScraper:
             await self.close_browser()
         
         await self.record_scraping_status(scraping_failed, scraping_error_msg)
+
+    async def save_hero_icon(self, hero_name, icon_src):
+        """ヒーローのアイコン画像を保存"""
+        try:
+            # hero_imagesディレクトリを作成
+            hero_images_dir = os.path.join(os.path.dirname(__file__), 'hero_images')
+            os.makedirs(hero_images_dir, exist_ok=True)
+            
+            # 画像をダウンロード
+            async with aiohttp.ClientSession() as session:
+                async with session.get(icon_src) as response:
+                    if response.status == 200:
+                        image_data = await response.read()
+                        
+                        # ファイル名をhero_nameにして.webp形式で保存
+                        file_path = os.path.join(hero_images_dir, f'{hero_name}.webp')
+                        with open(file_path, 'wb') as f:
+                            f.write(image_data)
+                        
+                        self.logger.info(f"ヒーローアイコンを保存: {file_path}")
+                    else:
+                        self.logger.warning(f"画像のダウンロードに失敗: {hero_name} - ステータス: {response.status}")
+        except Exception as e:
+            self.logger.error(f"ヒーローアイコンの保存に失敗: {hero_name} - エラー: {e}")
 
 async def main():
     """メイン関数"""
