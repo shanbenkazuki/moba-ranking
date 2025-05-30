@@ -4,6 +4,8 @@ import os
 import logging
 from datetime import datetime
 from playwright.async_api import async_playwright
+# 最新パッチ情報取得のためのインポート
+from scrape_mlbb_latest_patch import MLBBPatchScraper
 
 # --- ログ設定 ---
 def setup_logging():
@@ -337,6 +339,16 @@ class MLBBScraper:
         
         try:
             self.logger.info('Mobile Legends ランクスクレイピング処理を開始')
+            
+            # 最新パッチ情報を取得
+            self.logger.info('最新パッチ情報を取得中...')
+            patch_scraper = MLBBPatchScraper()
+            patch_success = patch_scraper.run()
+            
+            if not patch_success:
+                self.logger.warning('最新パッチ情報の取得に失敗しましたが、処理を続行します')
+            else:
+                self.logger.info('最新パッチ情報の取得が完了しました')
             
             await self.launch_browser()
             await self.navigate_to_ranking_page()

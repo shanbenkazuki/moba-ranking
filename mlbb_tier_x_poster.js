@@ -552,7 +552,7 @@ function runQuery(db, sql, params = []) {
     //   logError("x_post_logs への保存中にエラーが発生しました: " + error);
     // }
 
-    mobaDb.close();
+    // mobaDb.close();
   } catch (err) {
     logError("エラー: " + err);
   }
