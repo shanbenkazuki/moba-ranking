@@ -1,0 +1,1 @@
+launchctl kickstart -k gui/$(id -u)/com.moba_ranking.scrape_mlbb_stats

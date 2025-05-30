@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <!-- ジョブの識別子 -->
+    <key>Label</key>
+    <string>com.moba_ranking.scrape_mlbb_stats</string>
+    
+    <!-- 実行するコマンドと引数 -->
+    <key>ProgramArguments</key>
+    <array>
+      <!-- 仮想環境のPythonのパス -->
+      <string>/Users/yamamotokazuki/develop/moba-ranking/moba-ranking-venv/bin/python3</string>
+      <!-- Pythonスクリプトの絶対パス -->
+      <string>/Users/yamamotokazuki/develop/moba-ranking/scrape_mlbb_stats.py</string>
+    </array>
+    
+    <!-- 毎日1時に実行 -->
+    <key>StartCalendarInterval</key>
+    <dict>
+        <key>Hour</key>
+        <integer>1</integer>
+        <key>Minute</key>
+        <integer>5</integer>
+    </dict>
+    
+    <!-- 標準出力とエラー出力のログ先 -->
+    <key>StandardOutPath</key>
+    <string>/Users/yamamotokazuki/develop/moba-ranking/logs/scrape_mlbb_stats.log</string>
+    <key>StandardErrorPath</key>
+    <string>/Users/yamamotokazuki/develop/moba-ranking/logs/scrape_mlbb_stats.log</string>
+</dict>
+</plist>

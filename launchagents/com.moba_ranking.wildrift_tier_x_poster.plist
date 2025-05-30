@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+  <dict>
+    <!-- 一意な識別子 -->
+    <key>Label</key>
+    <string>com.moba_ranking.wildrift_tier_x_poster</string>
+    
+    <!-- 実行するプログラムと引数 -->
+    <key>ProgramArguments</key>
+    <array>
+      <!-- nodeのパス -->
+      <string>/Users/yamamotokazuki/.nodebrew/current/bin/node</string>
+      <!-- スクリプトの絶対パス -->
+      <string>/Users/yamamotokazuki/develop/moba-ranking/wildrift_tier_x_poster.js</string>
+    </array>
+    
+    <!-- 作業ディレクトリの設定 -->
+    <key>WorkingDirectory</key>
+    <string>/Users/yamamotokazuki/develop/moba-ranking</string>
+    
+    <!-- 標準出力と標準エラーのログ出力先 -->
+    <key>StandardOutPath</key>
+    <string>/Users/yamamotokazuki/develop/moba-ranking/logs/com.moba_ranking.wildrift_tier_x_poster.log</string>
+    <key>StandardErrorPath</key>
+    <string>/Users/yamamotokazuki/develop/moba-ranking/logs/com.moba_ranking.wildrift_tier_x_poster.log</string>
+    
+    <!-- 毎週水曜日の18時00分に実行 -->
+    <key>StartCalendarInterval</key>
+    <dict>
+      <key>Weekday</key>
+      <integer>3</integer>
+      <key>Hour</key>
+      <integer>18</integer>
+      <key>Minute</key>
+      <integer>00</integer>
+    </dict>
+  </dict>
+</plist>

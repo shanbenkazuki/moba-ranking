@@ -71,3 +71,6 @@ launchctl list | grep com.moba_ranking
 ## 自動コミット
 データベースの変更を自動的にGitリポジトリへコミットするスクリプト `commit_db.sh` を用意しています。
 
+## データベース構成（ER図）
+
+- [moba_log](docs/er_moba_log.md)

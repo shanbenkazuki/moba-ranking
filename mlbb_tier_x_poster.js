@@ -77,28 +77,45 @@ function runQuery(db, sql, params = []) {
     // ----------------------------
     // 2. SQLiteからデータ取得
     // ----------------------------
-    const dbPath = path.join(baseDir, "mlbb.db");
+    const dbPath = path.join(baseDir, "data", "moba_log.db");
     const db = new sqlite3.Database(dbPath, sqlite3.OPEN_READONLY, (err) => {
       if (err) logError("DBオープンエラー: " + err);
     });
 
     // 最新の reference_date を取得
-    const latestDateRows = await runQuery(db, "SELECT MAX(reference_date) as latest_date FROM hero_stats");
+    const latestDateRows = await runQuery(db, "SELECT MAX(reference_date) as latest_date FROM mlbb_stats");
     const latestDate = latestDateRows[0].latest_date;
 
-    // 最新日付の hero_stats を取得
-    const heroStats = await runQuery(db, "SELECT * FROM hero_stats WHERE reference_date = ?", [latestDate]);
+    // 最新日付の mlbb_stats を取得（charactersテーブルとJOINしてキャラクター名も取得）
+    const heroStats = await runQuery(db, `
+      SELECT ms.*, c.english_name as hero_name 
+      FROM mlbb_stats ms
+      JOIN characters c ON ms.character_id = c.id
+      WHERE ms.reference_date = ?
+    `, [latestDate]);
     logMessage(`最新の reference_date (${latestDate}) のデータ件数: ${heroStats.length}`);
 
-    // 英名→日本語名のマッピング取得
-    const heroMapRows = await runQuery(db, "SELECT english_name, japanese_name FROM heroes");
+    // 英名→日本語名のマッピング取得（MLBBのキャラクターのみ）
+    const heroMapRows = await runQuery(db, `
+      SELECT c.english_name, c.japanese_name 
+      FROM characters c
+      JOIN games g ON c.game_id = g.id
+      WHERE g.game_code = 'mlbb'
+    `);
     const heroNameMap = {};
     heroMapRows.forEach(row => {
       heroNameMap[row.english_name] = row.japanese_name;
     });
 
-    // 最新パッチ情報の取得
-    const patchRows = await runQuery(db, "SELECT patch_number FROM patches ORDER BY release_date DESC LIMIT 1");
+    // 最新パッチ情報の取得（MLBBのパッチのみ）
+    const patchRows = await runQuery(db, `
+      SELECT p.patch_number 
+      FROM patches p
+      JOIN games g ON p.game_id = g.id
+      WHERE g.game_code = 'mlbb'
+      ORDER BY p.release_date DESC 
+      LIMIT 1
+    `);
     const patchNumber = (patchRows.length > 0) ? patchRows[0].patch_number : "N/A";
 
     db.close();
@@ -479,44 +496,61 @@ function runQuery(db, sql, params = []) {
     let tweetPostStatus = 0; // 0: 成功, 1: 失敗
     let tweetErrorMessage = null;
 
-    try {
-      // メディアをアップロード（v1.1のエンドポイントを使用）
-      const mediaId = await rwClient.v1.uploadMedia(screenshotPath);
-      // ツイートを投稿（v2のエンドポイントを使用）
-      await rwClient.v2.tweet(tweetText, {
-        media: { media_ids: [mediaId] },
-      });
-      logMessage("ツイートが投稿されました。");
-    } catch (error) {
-      tweetPostStatus = 1;
-      tweetErrorMessage = error.toString();
-      logError("ツイート投稿中にエラーが発生しました: " + tweetErrorMessage);
-    }
+    // try {
+    //   // メディアをアップロード（v1.1のエンドポイントを使用）
+    //   const mediaId = await rwClient.v1.uploadMedia(screenshotPath);
+    //   // ツイートを投稿（v2のエンドポイントを使用）
+    //   await rwClient.v2.tweet(tweetText, {
+    //     media: { media_ids: [mediaId] },
+    //   });
+    //   logMessage("ツイートが投稿されました。");
+    // } catch (error) {
+    //   tweetPostStatus = 1;
+    //   tweetErrorMessage = error.toString();
+    //   logError("ツイート投稿中にエラーが発生しました: " + tweetErrorMessage);
+    // }
 
-    // 日本時間の日付（YYYY-MM-DD形式）の取得
-    const postDate = new Date()
-      .toLocaleDateString('ja-JP', { timeZone: 'Asia/Tokyo', year: 'numeric', month: '2-digit', day: '2-digit' })
-      .replace(/\//g, '-');
+    // // 日本時間の日付（YYYY-MM-DD形式）の取得
+    // const postDate = new Date()
+    //   .toLocaleDateString('ja-JP', { timeZone: 'Asia/Tokyo', year: 'numeric', month: '2-digit', day: '2-digit' })
+    //   .replace(/\//g, '-');
 
-    // moba.db に x_post_status テーブルへ投稿結果を保存する
-    const mobaDbPath = path.join(baseDir, "moba.db");
-    const mobaDb = new sqlite3.Database(mobaDbPath, sqlite3.OPEN_READWRITE, (err) => {
-      if (err) {
-        logError("moba.db オープンエラー: " + err);
-      }
-    });
+    // // data/moba_log.db に x_post_logs テーブルへ投稿結果を保存する
+    // const mobaDbPath = path.join(baseDir, "data", "moba_log.db");
+    // const mobaDb = new sqlite3.Database(mobaDbPath, sqlite3.OPEN_READWRITE, (err) => {
+    //   if (err) {
+    //     logError("moba_log.db オープンエラー: " + err);
+    //   }
+    // });
 
-    mobaDb.run(
-      "INSERT INTO x_post_status (post_status, game_title, error_message, post_date) VALUES (?, ?, ?, ?)",
-      [tweetPostStatus, "mlbb", tweetErrorMessage, postDate],
-      function(err) {
-        if (err) {
-          logError("x_post_status テーブルへの保存エラー: " + err);
-        } else {
-          logMessage("ツイート投稿の結果が x_post_status に保存されました。");
-        }
-      }
-    );
+    // try {
+    //   // MLBBのgame_idを取得
+    //   const gameIdRows = await runQuery(mobaDb, "SELECT id FROM games WHERE game_code = 'mlbb'");
+    //   const gameId = gameIdRows.length > 0 ? gameIdRows[0].id : null;
+
+    //   if (gameId) {
+    //     // 投稿結果を保存（Promiseでラップ）
+    //     await new Promise((resolve, reject) => {
+    //       mobaDb.run(
+    //         "INSERT INTO x_post_logs (game_id, post_status, error_message, post_date) VALUES (?, ?, ?, ?)",
+    //         [gameId, tweetPostStatus === 0, tweetErrorMessage, postDate],
+    //         function(err) {
+    //           if (err) {
+    //             logError("x_post_logs テーブルへの保存エラー: " + err);
+    //             reject(err);
+    //           } else {
+    //             logMessage("ツイート投稿の結果が x_post_logs に保存されました。");
+    //             resolve();
+    //           }
+    //         }
+    //       );
+    //     });
+    //   } else {
+    //     logError("MLBBのgame_idが見つかりませんでした。");
+    //   }
+    // } catch (error) {
+    //   logError("x_post_logs への保存中にエラーが発生しました: " + error);
+    // }
 
     mobaDb.close();
   } catch (err) {

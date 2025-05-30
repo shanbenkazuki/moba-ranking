@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <!-- ジョブの識別子 -->
+    <key>Label</key>
+    <string>com.moba_ranking.wildrift_champion_stats_scraper</string>
+    
+    <!-- 実行するコマンドと引数 -->
+    <key>ProgramArguments</key>
+    <array>
+      <!-- nodeのパス -->
+      <string>/Users/yamamotokazuki/.nodebrew/current/bin/node</string>
+      <!-- スクリプトの絶対パス -->
+      <string>/Users/yamamotokazuki/develop/moba-ranking/wildrift_champion_stats_scraper.js</string>
+    </array>
+    
+    <!-- 毎日1時50分に実行 -->
+    <key>StartCalendarInterval</key>
+    <dict>
+        <key>Hour</key>
+        <integer>1</integer>
+        <key>Minute</key>
+        <integer>20</integer>
+    </dict>
+    
+    <!-- 標準出力とエラー出力のログ先 -->
+    <key>StandardOutPath</key>
+    <string>/Users/yamamotokazuki/develop/moba-ranking/logs/wildrift_champion_stats_scraper.log</string>
+    <key>StandardErrorPath</key>
+    <string>/Users/yamamotokazuki/develop/moba-ranking/logs/wildrift_champion_stats_scraper.log</string>
+</dict>
+</plist>
