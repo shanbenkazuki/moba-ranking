@@ -4,15 +4,15 @@
   <dict>
     <!-- 一意な識別子 -->
     <key>Label</key>
-    <string>com.moba_ranking.mlbb_tier_x_poster</string>
+    <string>com.moba_ranking.post_to_x_mlbb_tier</string>
     
     <!-- 実行するプログラムと引数 -->
     <key>ProgramArguments</key>
     <array>
-      <!-- nodeのパス -->
-      <string>/Users/yamamotokazuki/.nodebrew/current/bin/node</string>
+      <!-- pythonのパス（仮想環境） -->
+      <string>/Users/yamamotokazuki/develop/moba-ranking/moba-ranking-venv/bin/python</string>
       <!-- スクリプトの絶対パス -->
-      <string>/Users/yamamotokazuki/develop/moba-ranking/mlbb_tier_x_poster.js</string>
+      <string>/Users/yamamotokazuki/develop/moba-ranking/post_to_x_mlbb_tier.py</string>
     </array>
     
     <!-- 作業ディレクトリの設定 -->
@@ -21,9 +21,9 @@
     
     <!-- 標準出力と標準エラーのログ出力先 -->
     <key>StandardOutPath</key>
-    <string>/Users/yamamotokazuki/develop/moba-ranking/logs/com.moba_ranking.mlbb_tier_x_poster.log</string>
+    <string>/Users/yamamotokazuki/develop/moba-ranking/logs/com.moba_ranking.post_to_x_mlbb_tier.log</string>
     <key>StandardErrorPath</key>
-    <string>/Users/yamamotokazuki/develop/moba-ranking/logs/com.moba_ranking.mlbb_tier_x_poster.log</string>
+    <string>/Users/yamamotokazuki/develop/moba-ranking/logs/com.moba_ranking.post_to_x_mlbb_tier.log</string>
     
     <!-- 毎週金曜日の18時00分に実行 -->
     <key>StartCalendarInterval</key>
