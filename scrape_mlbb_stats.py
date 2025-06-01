@@ -5,8 +5,8 @@ import logging
 import aiohttp
 from datetime import datetime
 from playwright.async_api import async_playwright
-# 最新パッチ情報取得のためのインポート
 from scrape_mlbb_latest_patch import MLBBPatchScraper
+from src.slack_webhook import send_slack_notification
 
 # --- ログ設定 ---
 def setup_logging():
@@ -37,6 +37,8 @@ class MLBBScraper:
         self.logger = setup_logging()
         self.browser = None
         self.page = None
+        self.new_characters = []  # 新規登録されたキャラクターのリスト
+        self.webhook_url = "https://hooks.slack.com/services/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"
         
     async def launch_browser(self):
         """ブラウザを起動"""
@@ -313,6 +315,9 @@ class MLBBScraper:
                         (hero['hero'], game_id)
                     ) as cursor:
                         character_result = await cursor.fetchone()
+                    
+                    # 新規キャラクターリストに追加
+                    self.new_characters.append(hero['hero'])
                     self.logger.info(f"新規キャラクター '{hero['hero']}' を characters テーブルに挿入")
                 
                 character_id = character_result[0]
@@ -410,7 +415,7 @@ class MLBBScraper:
             self.logger.error(f"MLJPwikiからの日本語名取得に失敗: {english_name} - エラー: {e}")
             return None
         
-    async def record_scraping_status(self, scraping_failed, scraping_error_msg):
+    async def record_scraping_status(self, scraping_failed, scraping_error_msg, scraped_data_count=0):
         """スクレイピング結果をステータステーブルに記録"""
         try:
             # データディレクトリを作成
@@ -436,13 +441,45 @@ class MLBBScraper:
                 )
                 await status_db.commit()
             self.logger.info('scraper_logs テーブルへの記録に成功')
+            
+            # Slack通知を送信
+            await self.send_slack_notification(scraping_failed, scraping_error_msg, scraped_data_count)
+            
         except Exception as status_error:
             self.logger.error(f'scraper_logs テーブルへの記録に失敗: {status_error}')
+
+    async def send_slack_notification(self, scraping_failed, scraping_error_msg, scraped_data_count):
+        """Slack通知を送信"""
+        try:
+            if scraping_failed:
+                # エラー通知
+                message = f"""🔴 MLBB スクレイピング失敗
+日時: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
+エラー内容: {scraping_error_msg}"""
+            else:
+                # 成功通知
+                new_chars_text = ""
+                if self.new_characters:
+                    new_chars_text = f"\n🆕 新規キャラクター: {', '.join(self.new_characters)}"
+                
+                message = f"""✅ MLBB スクレイピング完了
+日時: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
+取得データ件数: {scraped_data_count}件{new_chars_text}"""
+            
+            success = send_slack_notification(self.webhook_url, message)
+            if success:
+                self.logger.info('Slack通知の送信に成功')
+            else:
+                self.logger.error('Slack通知の送信に失敗')
+                
+        except Exception as e:
+            self.logger.error(f'Slack通知送信中にエラー: {e}')
             
     async def run_scraping(self):
         """スクレイピング処理を実行"""
         scraping_failed = False
         scraping_error_msg = ''
+        scraped_data_count = 0
         
         try:
             self.logger.info('Mobile Legends ランクスクレイピング処理を開始')
@@ -465,6 +502,7 @@ class MLBBScraper:
             
             hero_meta_data = await self.extract_hero_data()
             reference_date = await self.extract_reference_date()
+            scraped_data_count = len(hero_meta_data)
             
             # ブラウザが開いている間に日本語名を取得・更新
             self.logger.info('日本語名の取得・更新を開始')
@@ -483,7 +521,7 @@ class MLBBScraper:
             self.logger.error(f'処理中にエラーが発生: {error}')
             await self.close_browser()
         
-        await self.record_scraping_status(scraping_failed, scraping_error_msg)
+        await self.record_scraping_status(scraping_failed, scraping_error_msg, scraped_data_count)
 
     async def save_hero_icon(self, hero_name, icon_src):
         """ヒーローのアイコン画像を保存"""
