@@ -5,6 +5,9 @@ import re
 from datetime import datetime, timedelta
 from bs4 import BeautifulSoup
 
+# バージョンチェック機能をインポート
+from check_unite_version import extract_latest_update_info, save_patch_to_database
+
 def extract_pokemon_stats(content):
     """HTMLコンテンツからポケモンの統計データを抽出"""
     # BeautifulSoupでHTMLを解析
@@ -243,6 +246,48 @@ def extract_pokemon_stats(content):
     return result_with_meta
 
 async def main():
+    # スクレイピング前にバージョンチェックを実行
+    print("=" * 60)
+    print("🔍 Pokémon UNITE バージョンチェックを開始します...")
+    print("=" * 60)
+    
+    try:
+        update_info = extract_latest_update_info()
+        
+        if update_info:
+            print(f"✅ 最新のアップデート情報を取得しました")
+            print("-" * 40)
+            
+            if "date" in update_info:
+                print(f"📅 日付: {update_info['date']}")
+            
+            if "update_datetime" in update_info:
+                print(f"🕐 アップデート日時: {update_info['update_datetime']}")
+            
+            if "version" in update_info:
+                print(f"🏷️  バージョン: {update_info['version']}")
+            
+            if "content" in update_info:
+                print(f"📝 内容: {update_info['content'][:100]}..." if len(update_info['content']) > 100 else f"📝 内容: {update_info['content']}")
+                
+            print("-" * 40)
+            
+            # データベースに保存
+            print("💾 データベースに保存中...")
+            if save_patch_to_database(update_info):
+                print("✅ データベースへの保存が完了しました")
+            else:
+                print("❌ データベースへの保存に失敗しました")
+        else:
+            print("⚠️  アップデート情報を取得できませんでしたが、スクレイピングを継続します")
+            
+    except Exception as e:
+        print(f"⚠️  バージョンチェック中にエラーが発生しましたが、スクレイピングを継続します: {e}")
+    
+    print("=" * 60)
+    print("📊 統計データのスクレイピングを開始します...")
+    print("=" * 60)
+    
     # ブラウザを開始（ヘッドレスではない設定で、より人間らしく）
     browser = await uc.start()
     
