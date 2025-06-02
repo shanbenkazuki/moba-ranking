@@ -28,7 +28,7 @@ def get_timestamp():
 LOG_FILE_PATH = LOG_DIR / f"mlbb_tier_x_poster_{get_timestamp()}.log"
 
 # Slack Webhook URL
-SLACK_WEBHOOK_URL = "https://hooks.slack.com/services/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"
+SLACK_WEBHOOK_URL = "https://hooks.slack.com/services/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"
 
 def log_message(message):
     """ログメッセージを出力・保存"""
@@ -236,10 +236,10 @@ async def main():
 #モバイル・レジェンド #モバレ #モバレジェ #MLBB"""
             
             # メディアアップロード
-            # media = api.media_upload(str(screenshot_path))
+            media = api.media_upload(str(screenshot_path))
             
-            # # ツイート投稿
-            # client.create_tweet(text=tweet_text, media_ids=[media.media_id])
+            # ツイート投稿
+            client.create_tweet(text=tweet_text, media_ids=[media.media_id])
             
             log_message("ツイートが投稿されました。")
             
