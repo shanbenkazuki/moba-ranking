@@ -28,7 +28,10 @@ def get_timestamp():
 LOG_FILE_PATH = LOG_DIR / f"mlbb_tier_x_poster_{get_timestamp()}.log"
 
 # Slack Webhook URL
-SLACK_WEBHOOK_URL = "https://hooks.slack.com/services/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"
+SLACK_WEBHOOK_URL = os.environ.get('SLACK_WEBHOOK_URL')
+
+if not SLACK_WEBHOOK_URL:
+    raise ValueError('SLACK_WEBHOOK_URL環境変数が設定されていません')
 
 def log_message(message):
     """ログメッセージを出力・保存"""

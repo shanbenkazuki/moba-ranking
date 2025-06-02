@@ -5,8 +5,12 @@ import logging
 import aiohttp
 from datetime import datetime
 from playwright.async_api import async_playwright
+from dotenv import load_dotenv
 from scrape_mlbb_latest_patch import MLBBPatchScraper
 from src.slack_webhook import send_slack_notification
+
+# .envファイルを読み込み
+load_dotenv()
 
 # --- ログ設定 ---
 def setup_logging():
@@ -38,7 +42,11 @@ class MLBBScraper:
         self.browser = None
         self.page = None
         self.new_characters = []  # 新規登録されたキャラクターのリスト
-        self.webhook_url = "https://hooks.slack.com/services/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"
+        self.webhook_url = os.environ.get('SLACK_WEBHOOK_URL')
+        
+        if not self.webhook_url:
+            self.logger.error('SLACK_WEBHOOK_URL環境変数が設定されていません')
+            raise ValueError('SLACK_WEBHOOK_URL環境変数が設定されていません')
         
     async def launch_browser(self):
         """ブラウザを起動"""
