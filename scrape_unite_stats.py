@@ -2,11 +2,254 @@ import nodriver as uc
 import asyncio
 import json
 import re
+import sqlite3
 from datetime import datetime, timedelta
 from bs4 import BeautifulSoup
+from pathlib import Path
+import httpx
 
 # バージョンチェック機能をインポート
 from check_unite_version import extract_latest_update_info, save_patch_to_database
+
+# データベースファイルパス
+DB_PATH = 'data/moba_log.db'
+
+def connect_db():
+    """データベースに接続する"""
+    try:
+        conn = sqlite3.connect(DB_PATH)
+        conn.row_factory = sqlite3.Row  # 辞書形式でアクセス可能にする
+        return conn
+    except sqlite3.Error as e:
+        print(f"データベース接続エラー: {e}")
+        return None
+
+def check_character_exists(pokemon_name):
+    """charactersテーブルでポケモンの存在をチェック"""
+    conn = connect_db()
+    if not conn:
+        return False
+    
+    try:
+        cursor = conn.cursor()
+        cursor.execute("""
+            SELECT id FROM characters 
+            WHERE game_id = 2 AND english_name = ?
+        """, (pokemon_name,))
+        result = cursor.fetchone()
+        return result is not None
+    except sqlite3.Error as e:
+        print(f"キャラクター存在チェックエラー: {e}")
+        return False
+    finally:
+        conn.close()
+
+def get_character_id(pokemon_name):
+    """ポケモン名からcharacter_idを取得"""
+    conn = connect_db()
+    if not conn:
+        return None
+    
+    try:
+        cursor = conn.cursor()
+        cursor.execute("""
+            SELECT id FROM characters 
+            WHERE game_id = 2 AND english_name = ?
+        """, (pokemon_name,))
+        result = cursor.fetchone()
+        return result['id'] if result else None
+    except sqlite3.Error as e:
+        print(f"キャラクターID取得エラー: {e}")
+        return None
+    finally:
+        conn.close()
+
+def register_new_character(pokemon_name):
+    """新規キャラクターをcharactersテーブルに登録"""
+    conn = connect_db()
+    if not conn:
+        return None
+    
+    try:
+        cursor = conn.cursor()
+        cursor.execute("""
+            INSERT INTO characters (game_id, english_name, created_at, updated_at)
+            VALUES (2, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+        """, (pokemon_name,))
+        conn.commit()
+        character_id = cursor.lastrowid
+        print(f"新規キャラクター登録完了: {pokemon_name} (ID: {character_id})")
+        return character_id
+    except sqlite3.Error as e:
+        print(f"キャラクター登録エラー: {e}")
+        conn.rollback()
+        return None
+    finally:
+        conn.close()
+
+async def download_pokemon_image(pokemon_name, img_url):
+    """ポケモンの画像をダウンロードして保存"""
+    # pokemon_images/ディレクトリの作成確認
+    output_dir = Path("pokemon_images")
+    output_dir.mkdir(exist_ok=True)
+    
+    try:
+        # デバッグ用: URLを出力
+        print(f"画像ダウンロード中: {pokemon_name}")
+        print(f"対象URL: {img_url}")
+        
+        # URLの妥当性をチェック
+        if not img_url or not img_url.startswith(('http://', 'https://')):
+            print(f"❌ 無効な画像URL: {img_url}")
+            return False
+        
+        async with httpx.AsyncClient() as client:
+            response = await client.get(img_url)
+            response.raise_for_status()
+            
+            # ファイル拡張子を取得
+            file_extension = img_url.split('.')[-1].split('?')[0]
+            if file_extension not in ['png', 'jpg', 'jpeg', 'webp']:
+                file_extension = 'png'
+            
+            # ファイル名を生成
+            filename = f"{pokemon_name}.{file_extension}"
+            filepath = output_dir / filename
+            
+            # ファイルに保存
+            with open(filepath, 'wb') as f:
+                f.write(response.content)
+            
+            print(f"画像保存完了: {filepath}")
+            return True
+            
+    except Exception as e:
+        print(f"❌ {pokemon_name}の画像ダウンロード中にエラー: {e}")
+        print(f"エラー発生時のURL: {img_url}")
+        return False
+
+async def get_missing_pokemon_images(missing_pokemon_names):
+    """未登録キャラクターの画像URLを取得"""
+    if not missing_pokemon_names:
+        return {}
+    
+    try:
+        # scrape_unite_image.pyと同様の方法でPlaywrightを使用
+        from playwright.async_api import async_playwright
+        
+        async with async_playwright() as p:
+            browser = await p.chromium.launch(headless=True)
+            page = await browser.new_page()
+            
+            target_url = "https://unite.pokemon.com/en-us/pokemon/"
+            print(f"ポケモン画像取得のため{target_url}にアクセス中...")
+            await page.goto(target_url, wait_until="networkidle")
+            await page.wait_for_timeout(3000)
+            
+            # ポケモンリストのコンテナを取得
+            pokemon_list = await page.query_selector("#pokemon-list")
+            if not pokemon_list:
+                print("ポケモンリストが見つかりませんでした")
+                return {}
+            
+            # すべてのポケモンカードを取得
+            pokemon_cards = await pokemon_list.query_selector_all("li")
+            
+            # 画像URLマッピングを作成
+            image_urls = {}
+            print(f"🔍 未登録ポケモンリスト: {missing_pokemon_names}")
+            
+            for card in pokemon_cards:
+                try:
+                    img_element = await card.query_selector("a > div.pokemon-card__image > div.pokemon-card__character > img")
+                    if img_element:
+                        src = await img_element.get_attribute("src")
+                        srcset = await img_element.get_attribute("srcset")
+                        
+                        if src:
+                            # ポケモン名を抽出
+                            pokemon_name = extract_pokemon_name_from_path(src)
+                            print(f"🐾 検出されたポケモン: {pokemon_name}")
+                            
+                            if pokemon_name and pokemon_name in missing_pokemon_names:
+                                print(f"✅ マッチ: {pokemon_name}")
+                                # 高解像度画像を優先
+                                high_res_url = get_high_res_url(src, srcset)
+                                image_urls[pokemon_name] = high_res_url
+                            elif pokemon_name:
+                                print(f"⏭️  スキップ: {pokemon_name} (対象外)")
+                                
+                except Exception as e:
+                    print(f"⚠️  カード処理エラー: {e}")
+                    continue
+            
+            await browser.close()
+            print(f"取得した画像URL数: {len(image_urls)}件")
+            return image_urls
+            
+    except Exception as e:
+        print(f"画像URL取得中にエラー: {e}")
+        return {}
+
+def extract_pokemon_name_from_path(src_path):
+    """画像パスからポケモン名を抽出（scrape_unite_image.pyを参考）"""
+    print(f"   🔍 パス解析: {src_path}")
+    
+    pattern = r'/pokemon/([^/]+)/'
+    match = re.search(pattern, src_path)
+    if match:
+        pokemon_name = match.group(1)
+        # ハイフン区切りの各単語の先頭を大文字にして返す
+        formatted_name = '-'.join(word.capitalize() for word in pokemon_name.split('-'))
+        print(f"   ✅ 抽出されたポケモン名: {formatted_name}")
+        return formatted_name
+    else:
+        print(f"   ❌ ポケモン名抽出失敗")
+        return None
+
+def get_high_res_url(src, srcset):
+    """高解像度画像のURLを取得（scrape_unite_image.pyを参考）"""
+    base_url = "https://unite.pokemon.com"
+    
+    print(f"🔍 URL生成デバッグ:")
+    print(f"   src: {src}")
+    print(f"   srcset: {srcset}")
+    
+    def normalize_path(path):
+        """相対パスを正規化して絶対パスに変換"""
+        # ../ で始まる相対パスを処理
+        if path.startswith('../../'):
+            # ../../ を削除
+            return path[6:]  # '../../' の長さは6文字
+        elif path.startswith('../'):
+            # ../ を削除
+            return path[3:]  # '../' の長さは3文字
+        elif path.startswith('./'):
+            # ./ を削除
+            return path[2:]  # './' の長さは2文字
+        else:
+            # 絶対パスまたは通常のパス
+            return path.lstrip('/')  # 先頭の / を削除
+    
+    if srcset:
+        # srcsetから2x画像を取得
+        srcset_parts = srcset.split(',')
+        for part in srcset_parts:
+            part = part.strip()
+            if '2x' in part:
+                # 2x画像のパスを抽出
+                high_res_path = part.split(' ')[0]
+                # パスを正規化
+                normalized_path = normalize_path(high_res_path)
+                final_url = f"{base_url}/{normalized_path}"
+                print(f"   ✅ 高解像度URL: {final_url}")
+                return final_url
+    
+    # srcsetがない場合はsrcを使用
+    normalized_path = normalize_path(src)
+    final_url = f"{base_url}/{normalized_path}"
+    print(f"   ✅ 標準URL: {final_url}")
+    return final_url
 
 def extract_pokemon_stats(content):
     """HTMLコンテンツからポケモンの統計データを抽出"""
@@ -245,6 +488,104 @@ def extract_pokemon_stats(content):
     
     return result_with_meta
 
+def save_unite_stats(character_id, stats_data, reference_date):
+    """unite_statsテーブルに統計データを保存"""
+    conn = connect_db()
+    if not conn:
+        return False
+    
+    try:
+        cursor = conn.cursor()
+        
+        # 既存データをチェック
+        cursor.execute("""
+            SELECT id FROM unite_stats 
+            WHERE character_id = ? AND reference_date = ?
+        """, (character_id, reference_date))
+        existing = cursor.fetchone()
+        
+        if existing:
+            # 既存データを更新
+            cursor.execute("""
+                UPDATE unite_stats 
+                SET win_rate = ?, pick_rate = ?, ban_rate = ?, updated_at = CURRENT_TIMESTAMP
+                WHERE character_id = ? AND reference_date = ?
+            """, (
+                stats_data.get('win_rate'),
+                stats_data.get('pick_rate'), 
+                stats_data.get('ban_rate'),
+                character_id,
+                reference_date
+            ))
+            print(f"統計データ更新完了: character_id={character_id}")
+        else:
+            # 新規データを挿入
+            cursor.execute("""
+                INSERT INTO unite_stats 
+                (character_id, win_rate, pick_rate, ban_rate, reference_date, created_at, updated_at)
+                VALUES (?, ?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+            """, (
+                character_id,
+                stats_data.get('win_rate'),
+                stats_data.get('pick_rate'),
+                stats_data.get('ban_rate'),
+                reference_date
+            ))
+            print(f"統計データ挿入完了: character_id={character_id}")
+        
+        conn.commit()
+        return True
+        
+    except sqlite3.Error as e:
+        print(f"統計データ保存エラー: {e}")
+        conn.rollback()
+        return False
+    finally:
+        conn.close()
+
+def save_unite_game_summary(total_games, reference_date):
+    """unite_game_summaryテーブルに全体統計を保存"""
+    conn = connect_db()
+    if not conn:
+        return False
+    
+    try:
+        cursor = conn.cursor()
+        
+        # 既存データをチェック
+        cursor.execute("""
+            SELECT id FROM unite_game_summary 
+            WHERE reference_date = ?
+        """, (reference_date,))
+        existing = cursor.fetchone()
+        
+        if existing:
+            # 既存データを更新
+            cursor.execute("""
+                UPDATE unite_game_summary 
+                SET total_game_count = ?, updated_at = CURRENT_TIMESTAMP
+                WHERE reference_date = ?
+            """, (total_games, reference_date))
+            print(f"ゲーム統計更新完了: 総ゲーム数={total_games}")
+        else:
+            # 新規データを挿入
+            cursor.execute("""
+                INSERT INTO unite_game_summary 
+                (reference_date, total_game_count, created_at, updated_at)
+                VALUES (?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+            """, (reference_date, total_games))
+            print(f"ゲーム統計挿入完了: 総ゲーム数={total_games}")
+        
+        conn.commit()
+        return True
+        
+    except sqlite3.Error as e:
+        print(f"ゲーム統計保存エラー: {e}")
+        conn.rollback()
+        return False
+    finally:
+        conn.close()
+
 async def main():
     # スクレイピング前にバージョンチェックを実行
     print("=" * 60)
@@ -252,7 +593,7 @@ async def main():
     print("=" * 60)
     
     try:
-        update_info = extract_latest_update_info()
+        update_info = await extract_latest_update_info()
         
         if update_info:
             print(f"✅ 最新のアップデート情報を取得しました")
@@ -305,20 +646,122 @@ async def main():
         print("HTMLコンテンツを取得中...")
         content = await page.get_content()
         
-        # ファイルにも保存
-        with open('unite_api_content.html', 'w', encoding='utf-8') as f:
-            f.write(content)
-        print("HTMLコンテンツを 'unite_api_content.html' に保存しました。")
-        
         # BeautifulSoupでデータを抽出
         print("\nHTMLコンテンツを解析してポケモン統計データを抽出中...")
         pokemon_stats_with_meta = extract_pokemon_stats(content)
         
-        # JSON形式でコンソールに出力
-        print("\n" + "="*50)
-        print("ポケモン統計データ（JSON形式）:")
-        print("="*50)
-        print(json.dumps(pokemon_stats_with_meta, indent=2, ensure_ascii=False))
+        # データベース保存処理を開始
+        print("\n" + "="*60)
+        print("📁 データベース保存処理を開始します...")
+        print("="*60)
+        
+        # メタ情報から参照日付と総ゲーム数を取得
+        meta = pokemon_stats_with_meta.get('meta', {})
+        reference_date = meta.get('last_updated')
+        total_games = meta.get('total_games_analyzed')
+        pokemon_data = pokemon_stats_with_meta.get('pokemon_data', [])
+        
+        if not reference_date:
+            print("⚠️  参照日付が取得できませんでした。現在の日付を使用します。")
+            reference_date = datetime.now().strftime('%Y-%m-%d')
+        
+        print(f"📅 参照日付: {reference_date}")
+        print(f"🎮 総ゲーム数: {total_games}")
+        print(f"🐾 ポケモンデータ数: {len(pokemon_data)}件")
+        
+        # unite_game_summaryに総ゲーム数を保存
+        if total_games:
+            save_unite_game_summary(total_games, reference_date)
+        
+        # キャラクター処理統計
+        existing_count = 0
+        new_count = 0
+        missing_pokemon = []
+        
+        # 各ポケモンデータを処理
+        print("\n🔍 キャラクター存在チェック中...")
+        for pokemon in pokemon_data:
+            pokemon_name = pokemon.get('pokemon_name')
+            if not pokemon_name:
+                continue
+                
+            # キャラクター存在チェック
+            if check_character_exists(pokemon_name):
+                existing_count += 1
+            else:
+                new_count += 1
+                missing_pokemon.append(pokemon_name)
+                print(f"⚠️  未登録キャラクター発見: {pokemon_name}")
+        
+        print(f"✅ 既存キャラクター: {existing_count}件")
+        print(f"🆕 未登録キャラクター: {new_count}件")
+        
+        # 未登録キャラクターの画像を取得・ダウンロード
+        if missing_pokemon:
+            print(f"\n🖼️  未登録キャラクターの画像を取得中...")
+            image_urls = await get_missing_pokemon_images(missing_pokemon)
+            
+            # 画像をダウンロードしてキャラクターを登録
+            for pokemon_name in missing_pokemon:
+                try:
+                    # 画像ダウンロード
+                    if pokemon_name in image_urls:
+                        await download_pokemon_image(pokemon_name, image_urls[pokemon_name])
+                    else:
+                        print(f"⚠️  {pokemon_name}の画像URLが見つかりませんでした")
+                    
+                    # キャラクター登録
+                    register_new_character(pokemon_name)
+                    
+                except Exception as e:
+                    print(f"❌ {pokemon_name}の処理中にエラー: {e}")
+        
+        # 統計データをデータベースに保存
+        print(f"\n💾 統計データをデータベースに保存中...")
+        saved_count = 0
+        error_count = 0
+        
+        for pokemon in pokemon_data:
+            pokemon_name = pokemon.get('pokemon_name')
+            if not pokemon_name:
+                continue
+                
+            try:
+                # character_idを取得
+                character_id = get_character_id(pokemon_name)
+                if not character_id:
+                    print(f"⚠️  {pokemon_name}のcharacter_idが取得できませんでした")
+                    error_count += 1
+                    continue
+                
+                # 統計データを保存
+                stats_data = {
+                    'win_rate': pokemon.get('win_rate'),
+                    'pick_rate': pokemon.get('pick_rate'),
+                    'ban_rate': pokemon.get('ban_rate')
+                }
+                
+                if save_unite_stats(character_id, stats_data, reference_date):
+                    saved_count += 1
+                else:
+                    error_count += 1
+                    
+            except Exception as e:
+                print(f"❌ {pokemon_name}の統計データ保存中にエラー: {e}")
+                error_count += 1
+        
+        # 最終結果を表示
+        print("\n" + "="*60)
+        print("🎉 処理完了! 結果サマリー:")
+        print("="*60)
+        print(f"📅 参照日付: {reference_date}")
+        print(f"🎮 総ゲーム数: {total_games}")
+        print(f"🐾 処理対象ポケモン: {len(pokemon_data)}件")
+        print(f"✅ 既存キャラクター: {existing_count}件")
+        print(f"🆕 新規登録キャラクター: {new_count}件")
+        print(f"💾 統計データ保存成功: {saved_count}件")
+        print(f"❌ 統計データ保存失敗: {error_count}件")
+        print("="*60)
         
     except Exception as e:
         print(f"エラーが発生しました: {e}")
