@@ -28,7 +28,7 @@ def get_timestamp():
 LOG_FILE_PATH = LOG_DIR / f"mlbb_tier_x_poster_{get_timestamp()}.log"
 
 # Slack Webhook URL
-SLACK_WEBHOOK_URL = "https://hooks.slack.com/services/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"
+SLACK_WEBHOOK_URL = "https://hooks.slack.com/services/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"
 
 def log_message(message):
     """ログメッセージを出力・保存"""

@@ -38,7 +38,7 @@ class MLBBScraper:
         self.browser = None
         self.page = None
         self.new_characters = []  # 新規登録されたキャラクターのリスト
-        self.webhook_url = "https://hooks.slack.com/services/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"
+        self.webhook_url = "https://hooks.slack.com/services/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"
         
     async def launch_browser(self):
         """ブラウザを起動"""
