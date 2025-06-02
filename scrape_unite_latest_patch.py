@@ -1,29 +1,116 @@
 #!/usr/bin/env python3
 """
-Pokémon UNITE ニュースページから最新のアップデート記事の日付を取得するスクリプト
+Pokémon UNITE ニュースページから最新のアップデート記事の詳細情報を取得してデータベースに保存するスクリプト
 """
 
 from playwright.sync_api import sync_playwright
 import re
 import time
-from typing import Optional
+import sqlite3
+import os
+from typing import Optional, Dict
 
 
-def extract_date_from_first_update() -> Optional[str]:
+def save_patch_to_database(update_info: Dict[str, str], db_path: str = "data/moba_log.db") -> bool:
     """
-    Pokémon UNITEのニュースページから最新のアップデート記事の日付を取得する
+    取得したアップデート情報をデータベースのpatchesテーブルに保存する
+    
+    Args:
+        update_info: アップデート情報の辞書
+        db_path: データベースファイルのパス
+        
+    Returns:
+        bool: 保存成功時True、失敗時False
+    """
+    try:
+        # データベースファイルの存在確認
+        if not os.path.exists(db_path):
+            print(f"❌ データベースファイルが見つかりません: {db_path}")
+            return False
+        
+        # バージョン情報からVer.プレフィックスを除去
+        version = update_info.get('version', '')
+        if version.startswith('Ver.'):
+            patch_number = version[4:]  # 'Ver.'を除去
+        else:
+            patch_number = version
+        
+        # 日付情報を取得
+        release_date = update_info.get('date')
+        
+        if not patch_number or not release_date:
+            print(f"❌ 必須情報が不足しています: patch_number='{patch_number}', release_date='{release_date}'")
+            return False
+        
+        print(f"データベースに保存します: パッチ={patch_number}, 日付={release_date}")
+        
+        # データベースに接続
+        conn = sqlite3.connect(db_path)
+        cursor = conn.cursor()
+        
+        # Pokémon UNITEのgame_id（2）を使用
+        game_id = 2
+        
+        # 既存のパッチがあるかチェック
+        cursor.execute(
+            "SELECT id FROM patches WHERE game_id = ? AND patch_number = ?",
+            (game_id, patch_number)
+        )
+        existing_patch = cursor.fetchone()
+        
+        if existing_patch:
+            print(f"⚠️  パッチ {patch_number} は既に存在します（ID: {existing_patch[0]}）")
+            
+            # 既存パッチの情報を更新
+            cursor.execute("""
+                UPDATE patches 
+                SET release_date = ?, japanese_note = ?, updated_at = CURRENT_TIMESTAMP
+                WHERE game_id = ? AND patch_number = ?
+            """, (release_date, update_info.get('content', ''), game_id, patch_number))
+            
+            print(f"✅ パッチ {patch_number} の情報を更新しました")
+        else:
+            # 新しいパッチを挿入
+            cursor.execute("""
+                INSERT INTO patches (game_id, patch_number, release_date, japanese_note)
+                VALUES (?, ?, ?, ?)
+            """, (game_id, patch_number, release_date, update_info.get('content', '')))
+            
+            print(f"✅ 新しいパッチ {patch_number} を追加しました")
+        
+        # コミットして接続を閉じる
+        conn.commit()
+        conn.close()
+        
+        return True
+        
+    except sqlite3.Error as e:
+        print(f"❌ データベースエラー: {e}")
+        return False
+    except Exception as e:
+        print(f"❌ 予期しないエラー: {e}")
+        return False
+
+
+def extract_latest_update_info() -> Optional[Dict[str, str]]:
+    """
+    Pokémon UNITEのニュースページから最新のアップデート記事の詳細情報を取得する
     
     Returns:
-        str: YYYY-MM-DD形式の日付、取得できない場合はNone
+        Dict[str, str]: アップデート情報の辞書、取得できない場合はNone
+        - date: YYYY-MM-DD形式の日付
+        - update_datetime: アップデート日時
+        - version: バージョン情報
+        - content: アップデート内容
     """
     
     with sync_playwright() as p:
         # ブラウザを起動（タイムアウトを延長）
-        browser = p.chromium.launch(headless=True, timeout=60000)  # headlessモードに変更、タイムアウト60秒
+        browser = p.chromium.launch(headless=True, timeout=60000)
         page = browser.new_page()
         
         # ページタイムアウトを延長
-        page.set_default_timeout(60000)  # 60秒
+        page.set_default_timeout(60000)
         
         try:
             print("Pokémon UNITEニュースページにアクセス中...")
@@ -52,15 +139,44 @@ def extract_date_from_first_update() -> Optional[str]:
                 print(f"アップデートタブのクリックでエラー: {e}")
                 print("そのまま継続します...")
             
-            print("最新記事の日付を取得中...")
-            # 複数の戦略で日付を取得
-            date_result = _extract_date_with_multiple_strategies(page)
+            print("最新のアップデート記事のURLを取得中...")
+            # 最新のアップデート記事のリンクを取得
+            first_update_link = page.locator('a[href*="/ja/news/"]:has(h3:text("アップデート"))').first
             
-            if date_result:
-                print(f"取得した日付: {date_result}")
-                return date_result
+            if first_update_link.count() > 0:
+                # 記事の基本情報を取得
+                link_text = first_update_link.text_content()
+                article_url = first_update_link.get_attribute('href')
+                
+                if article_url:
+                    # 相対URLを絶対URLに変換
+                    if article_url.startswith('/'):
+                        article_url = f"https://www.pokemonunite.jp{article_url}"
+                    
+                    print(f"アップデート記事にアクセス中: {article_url}")
+                    # アップデート記事ページに移動
+                    page.goto(article_url, timeout=60000)
+                    page.wait_for_load_state("domcontentloaded", timeout=30000)
+                    time.sleep(2)
+                    
+                    # 記事ページから詳細情報を取得
+                    update_info = _extract_update_details_from_article(page, link_text)
+                    
+                    if update_info:
+                        print(f"取得した情報: {update_info}")
+                        return update_info
+                    else:
+                        print("記事ページから詳細情報を取得できませんでした")
+                        return None
+                else:
+                    print("アップデート記事のURLが取得できませんでした")
+                    return None
             else:
-                print("日付の取得に失敗しました")
+                print("アップデート記事が見つかりませんでした")
+                # フォールバック: 日付のみ取得
+                date_result = _extract_date_with_multiple_strategies(page)
+                if date_result:
+                    return {"date": date_result}
                 return None
                 
         except Exception as e:
@@ -74,6 +190,153 @@ def extract_date_from_first_update() -> Optional[str]:
             return None
         finally:
             browser.close()
+
+
+def _extract_update_details_from_article(page, link_text: str) -> Optional[Dict[str, str]]:
+    """
+    アップデート記事ページから詳細情報を取得する
+    
+    Args:
+        page: Playwrightのページオブジェクト
+        link_text: リンクテキスト
+        
+    Returns:
+        Dict[str, str]: アップデート情報、取得できない場合はNone
+    """
+    try:
+        print("記事ページから詳細情報を抽出中...")
+        
+        result = {}
+        
+        # 1. リンクテキストから日付を抽出
+        date_patterns = [
+            r'(\d{4})\s+(\d{2})\s*/\s*(\d{2})',  # 2025 05 / 23
+            r'(\d{4})\s+(\d{1,2})\s*/\s*(\d{1,2})',  # より柔軟なパターン
+        ]
+        
+        for pattern in date_patterns:
+            match = re.search(pattern, link_text)
+            if match:
+                year, month, day = match.groups()
+                result["date"] = f"{year}-{month.zfill(2)}-{day.zfill(2)}"
+                break
+        
+        # 1.5. リンクテキストから取得できない場合、ページ見出しから取得
+        if "date" not in result:
+            print("リンクテキストから日付が取得できないため、ページ見出しから抽出を試行...")
+            # ページ見出しから日付を取得
+            page_title = page.title()
+            article_heading = page.locator('h1').first
+            
+            texts_to_check = [page_title]
+            if article_heading.count() > 0:
+                texts_to_check.append(article_heading.text_content())
+            
+            # ページの日付表示部分も確認
+            date_display = page.locator('generic:has-text("2025")').first
+            if date_display.count() > 0:
+                texts_to_check.append(date_display.text_content())
+            
+            for text in texts_to_check:
+                if text:
+                    for pattern in date_patterns:
+                        match = re.search(pattern, text)
+                        if match:
+                            year, month, day = match.groups()
+                            result["date"] = f"{year}-{month.zfill(2)}-{day.zfill(2)}"
+                            print(f"ページから日付を抽出: {result['date']}")
+                            break
+                    if "date" in result:
+                        break
+            
+            # まだ見つからない場合、より柔軟なパターンで検索
+            if "date" not in result:
+                page_text = page.locator('body').text_content()
+                flexible_patterns = [
+                    r'(\d{1,2})月(\d{1,2})日',  # MM月DD日
+                    r'2025[年\s]*(\d{1,2})[月\s]*(\d{1,2})[日\s]',  # 2025年MM月DD日
+                ]
+                
+                for pattern in flexible_patterns:
+                    matches = re.findall(pattern, page_text)
+                    if matches:
+                        if pattern == flexible_patterns[0]:  # MM月DD日の場合
+                            month, day = matches[0]
+                            result["date"] = f"2025-{month.zfill(2)}-{day.zfill(2)}"
+                        else:  # 2025年MM月DD日の場合
+                            month, day = matches[0]
+                            result["date"] = f"2025-{month.zfill(2)}-{day.zfill(2)}"
+                        print(f"柔軟なパターンで日付を抽出: {result['date']}")
+                        break
+        
+        # 2. テーブルから詳細情報を取得
+        table = page.locator('table').first
+        if table.count() > 0:
+            print("アップデート情報テーブルを発見")
+            
+            # テーブルの各行を処理
+            rows = table.locator('tr')
+            for i in range(rows.count()):
+                row = rows.nth(i)
+                cells = row.locator('td')
+                
+                if cells.count() >= 2:
+                    header = cells.nth(0).text_content().strip()
+                    value = cells.nth(1).text_content().strip()
+                    
+                    print(f"テーブル行: {header} = {value}")
+                    
+                    if "アップデート日時" in header:
+                        result["update_datetime"] = value
+                    elif "バージョン" in header or "アップデート後のバージョン" in header:
+                        result["version"] = value
+                    elif "アップデート内容" in header:
+                        result["content"] = value
+        
+        # 3. テーブルが見つからない場合、ページテキストから抽出
+        if "update_datetime" not in result or "version" not in result:
+            print("テーブルから情報が取得できないため、ページテキストから抽出を試行...")
+            page_text = page.locator('body').text_content()
+            
+            # アップデート日時のパターン
+            datetime_patterns = [
+                r'(\d{4}年\d{1,2}月\d{1,2}日（[月火水木金土日]）\d{1,2}時)',
+                r'(\d{4}年\d{1,2}月\d{1,2}日（[月火水木金土日]）)',
+                r'(\d{1,2}月\d{1,2}日（[月火水木金土日]）\d{1,2}時)',
+            ]
+            
+            for pattern in datetime_patterns:
+                match = re.search(pattern, page_text)
+                if match and "update_datetime" not in result:
+                    result["update_datetime"] = match.group(1)
+                    print(f"日時を抽出: {result['update_datetime']}")
+                    break
+            
+            # バージョンのパターン
+            version_patterns = [
+                r'Ver\.[\d.]+',
+                r'バージョン[\s:：]*(Ver\.[\d.]+)',
+                r'Ver[\s.:：]*([\d.]+)',
+            ]
+            
+            for pattern in version_patterns:
+                match = re.search(pattern, page_text)
+                if match and "version" not in result:
+                    result["version"] = match.group(0) if 'Ver.' in match.group(0) else f"Ver.{match.group(1)}"
+                    print(f"バージョンを抽出: {result['version']}")
+                    break
+        
+        # 結果の検証
+        if result:
+            print(f"抽出した情報: {result}")
+            return result
+        else:
+            print("記事から有効な情報を取得できませんでした")
+            return None
+            
+    except Exception as e:
+        print(f"記事詳細抽出でエラー: {e}")
+        return None
 
 
 def _extract_date_with_multiple_strategies(page) -> Optional[str]:
@@ -290,16 +553,51 @@ def _format_date_from_texts(texts: list) -> Optional[str]:
     return None
 
 
+def extract_date_from_first_update() -> Optional[str]:
+    """
+    Pokémon UNITEのニュースページから最新のアップデート記事の日付を取得する（下位互換性のため残存）
+    
+    Returns:
+        str: YYYY-MM-DD形式の日付、取得できない場合はNone
+    """
+    update_info = extract_latest_update_info()
+    if update_info and "date" in update_info:
+        return update_info["date"]
+    return None
+
+
 def main():
     """メイン関数"""
-    print("Pokémon UNITE アップデート記事の最新日付を取得します...")
+    print("Pokémon UNITE 最新アップデート記事の詳細情報を取得します...")
     
-    date = extract_date_from_first_update()
+    update_info = extract_latest_update_info()
     
-    if date:
-        print(f"\n✅ 成功: 最新のアップデート記事の日付は {date} です")
+    if update_info:
+        print(f"\n✅ 成功: 最新のアップデート記事の情報を取得しました")
+        print("=" * 50)
+        
+        if "date" in update_info:
+            print(f"📅 日付: {update_info['date']}")
+        
+        if "update_datetime" in update_info:
+            print(f"🕐 アップデート日時: {update_info['update_datetime']}")
+        
+        if "version" in update_info:
+            print(f"🏷️  バージョン: {update_info['version']}")
+        
+        if "content" in update_info:
+            print(f"📝 内容: {update_info['content']}")
+            
+        print("=" * 50)
+        
+        # データベースに保存
+        print("\n💾 データベースに保存中...")
+        if save_patch_to_database(update_info):
+            print("✅ データベースへの保存が完了しました")
+        else:
+            print("❌ データベースへの保存に失敗しました")
     else:
-        print("\n❌ 失敗: 日付を取得できませんでした")
+        print("\n❌ 失敗: アップデート情報を取得できませんでした")
 
 
 if __name__ == "__main__":
