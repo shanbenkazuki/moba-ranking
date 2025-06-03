@@ -7,9 +7,17 @@ from datetime import datetime, timedelta
 from bs4 import BeautifulSoup
 from pathlib import Path
 import httpx
+import os
+from dotenv import load_dotenv
 
 # バージョンチェック機能をインポート
 from check_unite_version import extract_latest_update_info, save_patch_to_database
+
+# Slack通知機能をインポート  
+from src.slack_webhook import send_slack_notification
+
+# 環境変数を読み込み
+load_dotenv()
 
 # データベースファイルパス
 DB_PATH = 'data/moba_log.db'
@@ -587,191 +595,245 @@ def save_unite_game_summary(total_games, reference_date):
         conn.close()
 
 async def main():
-    # スクレイピング前にバージョンチェックを実行
-    print("=" * 60)
-    print("🔍 Pokémon UNITE バージョンチェックを開始します...")
-    print("=" * 60)
+    # 統計変数を初期化
+    existing_count = 0
+    new_count = 0
+    saved_count = 0
+    error_count = 0
+    reference_date = None
+    total_games = None
+    pokemon_data_count = 0
+    browser = None
     
     try:
-        update_info = await extract_latest_update_info()
+        # スクレイピング前にバージョンチェックを実行
+        print("=" * 60)
+        print("🔍 Pokémon UNITE バージョンチェックを開始します...")
+        print("=" * 60)
         
-        if update_info:
-            print(f"✅ 最新のアップデート情報を取得しました")
-            print("-" * 40)
+        try:
+            update_info = await extract_latest_update_info()
             
-            if "date" in update_info:
-                print(f"📅 日付: {update_info['date']}")
-            
-            if "update_datetime" in update_info:
-                print(f"🕐 アップデート日時: {update_info['update_datetime']}")
-            
-            if "version" in update_info:
-                print(f"🏷️  バージョン: {update_info['version']}")
-            
-            if "content" in update_info:
-                print(f"📝 内容: {update_info['content'][:100]}..." if len(update_info['content']) > 100 else f"📝 内容: {update_info['content']}")
+            if update_info:
+                print(f"✅ 最新のアップデート情報を取得しました")
+                print("-" * 40)
                 
-            print("-" * 40)
-            
-            # データベースに保存
-            print("💾 データベースに保存中...")
-            if save_patch_to_database(update_info):
-                print("✅ データベースへの保存が完了しました")
-            else:
-                print("❌ データベースへの保存に失敗しました")
-        else:
-            print("⚠️  アップデート情報を取得できませんでしたが、スクレイピングを継続します")
-            
-    except Exception as e:
-        print(f"⚠️  バージョンチェック中にエラーが発生しましたが、スクレイピングを継続します: {e}")
-    
-    print("=" * 60)
-    print("📊 統計データのスクレイピングを開始します...")
-    print("=" * 60)
-    
-    # ブラウザを開始（ヘッドレスではない設定で、より人間らしく）
-    browser = await uc.start()
-    
-    try:
-        # https://uniteapi.dev/meta にアクセス
-        print("https://uniteapi.dev/meta にアクセス中...")
-        page = await browser.get('https://uniteapi.dev/meta')
-        
-        # "Pokémon Unite Meta Tierlist"のテキストが見えるまで待機（サイトに到達したことを確認）
-        print("サイトの読み込み確認中...")
-        await page.find("Pokémon Unite Meta Tierlist")
-        print("サイトに正常にアクセスできました。")
-        
-        # HTMLコンテンツを取得
-        print("HTMLコンテンツを取得中...")
-        content = await page.get_content()
-        
-        # BeautifulSoupでデータを抽出
-        print("\nHTMLコンテンツを解析してポケモン統計データを抽出中...")
-        pokemon_stats_with_meta = extract_pokemon_stats(content)
-        
-        # データベース保存処理を開始
-        print("\n" + "="*60)
-        print("📁 データベース保存処理を開始します...")
-        print("="*60)
-        
-        # メタ情報から参照日付と総ゲーム数を取得
-        meta = pokemon_stats_with_meta.get('meta', {})
-        reference_date = meta.get('last_updated')
-        total_games = meta.get('total_games_analyzed')
-        pokemon_data = pokemon_stats_with_meta.get('pokemon_data', [])
-        
-        if not reference_date:
-            print("⚠️  参照日付が取得できませんでした。現在の日付を使用します。")
-            reference_date = datetime.now().strftime('%Y-%m-%d')
-        
-        print(f"📅 参照日付: {reference_date}")
-        print(f"🎮 総ゲーム数: {total_games}")
-        print(f"🐾 ポケモンデータ数: {len(pokemon_data)}件")
-        
-        # unite_game_summaryに総ゲーム数を保存
-        if total_games:
-            save_unite_game_summary(total_games, reference_date)
-        
-        # キャラクター処理統計
-        existing_count = 0
-        new_count = 0
-        missing_pokemon = []
-        
-        # 各ポケモンデータを処理
-        print("\n🔍 キャラクター存在チェック中...")
-        for pokemon in pokemon_data:
-            pokemon_name = pokemon.get('pokemon_name')
-            if not pokemon_name:
-                continue
+                if "date" in update_info:
+                    print(f"📅 日付: {update_info['date']}")
                 
-            # キャラクター存在チェック
-            if check_character_exists(pokemon_name):
-                existing_count += 1
-            else:
-                new_count += 1
-                missing_pokemon.append(pokemon_name)
-                print(f"⚠️  未登録キャラクター発見: {pokemon_name}")
-        
-        print(f"✅ 既存キャラクター: {existing_count}件")
-        print(f"🆕 未登録キャラクター: {new_count}件")
-        
-        # 未登録キャラクターの画像を取得・ダウンロード
-        if missing_pokemon:
-            print(f"\n🖼️  未登録キャラクターの画像を取得中...")
-            image_urls = await get_missing_pokemon_images(missing_pokemon)
-            
-            # 画像をダウンロードしてキャラクターを登録
-            for pokemon_name in missing_pokemon:
-                try:
-                    # 画像ダウンロード
-                    if pokemon_name in image_urls:
-                        await download_pokemon_image(pokemon_name, image_urls[pokemon_name])
-                    else:
-                        print(f"⚠️  {pokemon_name}の画像URLが見つかりませんでした")
+                if "update_datetime" in update_info:
+                    print(f"🕐 アップデート日時: {update_info['update_datetime']}")
+                
+                if "version" in update_info:
+                    print(f"🏷️  バージョン: {update_info['version']}")
+                
+                if "content" in update_info:
+                    print(f"📝 内容: {update_info['content'][:100]}..." if len(update_info['content']) > 100 else f"📝 内容: {update_info['content']}")
                     
-                    # キャラクター登録
-                    register_new_character(pokemon_name)
-                    
-                except Exception as e:
-                    print(f"❌ {pokemon_name}の処理中にエラー: {e}")
-        
-        # 統計データをデータベースに保存
-        print(f"\n💾 統計データをデータベースに保存中...")
-        saved_count = 0
-        error_count = 0
-        
-        for pokemon in pokemon_data:
-            pokemon_name = pokemon.get('pokemon_name')
-            if not pokemon_name:
-                continue
+                print("-" * 40)
                 
-            try:
-                # character_idを取得
-                character_id = get_character_id(pokemon_name)
-                if not character_id:
-                    print(f"⚠️  {pokemon_name}のcharacter_idが取得できませんでした")
-                    error_count += 1
-                    continue
-                
-                # 統計データを保存
-                stats_data = {
-                    'win_rate': pokemon.get('win_rate'),
-                    'pick_rate': pokemon.get('pick_rate'),
-                    'ban_rate': pokemon.get('ban_rate')
-                }
-                
-                if save_unite_stats(character_id, stats_data, reference_date):
-                    saved_count += 1
+                # データベースに保存
+                print("💾 データベースに保存中...")
+                if save_patch_to_database(update_info):
+                    print("✅ データベースへの保存が完了しました")
                 else:
-                    error_count += 1
-                    
-            except Exception as e:
-                print(f"❌ {pokemon_name}の統計データ保存中にエラー: {e}")
-                error_count += 1
+                    print("❌ データベースへの保存に失敗しました")
+            else:
+                print("⚠️  アップデート情報を取得できませんでしたが、スクレイピングを継続します")
+            
+        except Exception as e:
+            print(f"⚠️  バージョンチェック中にエラーが発生しましたが、スクレイピングを継続します: {e}")
         
-        # 最終結果を表示
-        print("\n" + "="*60)
-        print("🎉 処理完了! 結果サマリー:")
-        print("="*60)
-        print(f"📅 参照日付: {reference_date}")
-        print(f"🎮 総ゲーム数: {total_games}")
-        print(f"🐾 処理対象ポケモン: {len(pokemon_data)}件")
-        print(f"✅ 既存キャラクター: {existing_count}件")
-        print(f"🆕 新規登録キャラクター: {new_count}件")
-        print(f"💾 統計データ保存成功: {saved_count}件")
-        print(f"❌ 統計データ保存失敗: {error_count}件")
-        print("="*60)
+        print("=" * 60)
+        print("📊 統計データのスクレイピングを開始します...")
+        print("=" * 60)
+        
+        # ブラウザを開始（ヘッドレスではない設定で、より人間らしく）
+        browser = await uc.start()
+        
+        try:
+            # https://uniteapi.dev/meta にアクセス
+            print("https://uniteapi.dev/meta にアクセス中...")
+            page = await browser.get('https://uniteapi.dev/meta')
+            
+            # "Pokémon Unite Meta Tierlist"のテキストが見えるまで待機（サイトに到達したことを確認）
+            print("サイトの読み込み確認中...")
+            await page.find("Pokémon Unite Meta Tierlist")
+            print("サイトに正常にアクセスできました。")
+            
+            # HTMLコンテンツを取得
+            print("HTMLコンテンツを取得中...")
+            content = await page.get_content()
+            
+            # BeautifulSoupでデータを抽出
+            print("\nHTMLコンテンツを解析してポケモン統計データを抽出中...")
+            pokemon_stats_with_meta = extract_pokemon_stats(content)
+            
+            # データベース保存処理を開始
+            print("\n" + "="*60)
+            print("📁 データベース保存処理を開始します...")
+            print("="*60)
+            
+            # メタ情報から参照日付と総ゲーム数を取得
+            meta = pokemon_stats_with_meta.get('meta', {})
+            reference_date = meta.get('last_updated')
+            total_games = meta.get('total_games_analyzed')
+            pokemon_data = pokemon_stats_with_meta.get('pokemon_data', [])
+            
+            if not reference_date:
+                print("⚠️  参照日付が取得できませんでした。現在の日付を使用します。")
+                reference_date = datetime.now().strftime('%Y-%m-%d')
+            
+            print(f"📅 参照日付: {reference_date}")
+            print(f"🎮 総ゲーム数: {total_games}")
+            print(f"🐾 ポケモンデータ数: {len(pokemon_data)}件")
+            
+            # unite_game_summaryに総ゲーム数を保存
+            if total_games:
+                save_unite_game_summary(total_games, reference_date)
+            
+            # キャラクター処理統計
+            existing_count = 0
+            new_count = 0
+            missing_pokemon = []
+            
+            # 各ポケモンデータを処理
+            print("\n🔍 キャラクター存在チェック中...")
+            for pokemon in pokemon_data:
+                pokemon_name = pokemon.get('pokemon_name')
+                if not pokemon_name:
+                    continue
+                    
+                # キャラクター存在チェック
+                if check_character_exists(pokemon_name):
+                    existing_count += 1
+                else:
+                    new_count += 1
+                    missing_pokemon.append(pokemon_name)
+                    print(f"⚠️  未登録キャラクター発見: {pokemon_name}")
+            
+            print(f"✅ 既存キャラクター: {existing_count}件")
+            print(f"🆕 未登録キャラクター: {new_count}件")
+            
+            # 未登録キャラクターの画像を取得・ダウンロード
+            if missing_pokemon:
+                print(f"\n🖼️  未登録キャラクターの画像を取得中...")
+                image_urls = await get_missing_pokemon_images(missing_pokemon)
+                
+                # 画像をダウンロードしてキャラクターを登録
+                for pokemon_name in missing_pokemon:
+                    try:
+                        # 画像ダウンロード
+                        if pokemon_name in image_urls:
+                            await download_pokemon_image(pokemon_name, image_urls[pokemon_name])
+                        else:
+                            print(f"⚠️  {pokemon_name}の画像URLが見つかりませんでした")
+                        
+                        # キャラクター登録
+                        register_new_character(pokemon_name)
+                        
+                    except Exception as e:
+                        print(f"❌ {pokemon_name}の処理中にエラー: {e}")
+            
+            # 統計データをデータベースに保存
+            print(f"\n💾 統計データをデータベースに保存中...")
+            saved_count = 0
+            error_count = 0
+            
+            for pokemon in pokemon_data:
+                pokemon_name = pokemon.get('pokemon_name')
+                if not pokemon_name:
+                    continue
+                    
+                try:
+                    # character_idを取得
+                    character_id = get_character_id(pokemon_name)
+                    if not character_id:
+                        print(f"⚠️  {pokemon_name}のcharacter_idが取得できませんでした")
+                        error_count += 1
+                        continue
+                    
+                    # 統計データを保存
+                    stats_data = {
+                        'win_rate': pokemon.get('win_rate'),
+                        'pick_rate': pokemon.get('pick_rate'),
+                        'ban_rate': pokemon.get('ban_rate')
+                    }
+                    
+                    if save_unite_stats(character_id, stats_data, reference_date):
+                        saved_count += 1
+                    else:
+                        error_count += 1
+                        
+                except Exception as e:
+                    print(f"❌ {pokemon_name}の統計データ保存中にエラー: {e}")
+                    error_count += 1
+            
+            # 最終結果を表示
+            print("\n" + "="*60)
+            print("🎉 処理完了! 結果サマリー:")
+            print("="*60)
+            print(f"📅 参照日付: {reference_date}")
+            print(f"🎮 総ゲーム数: {total_games}")
+            print(f"🐾 処理対象ポケモン: {len(pokemon_data)}件")
+            print(f"✅ 既存キャラクター: {existing_count}件")
+            print(f"🆕 新規登録キャラクター: {new_count}件")
+            print(f"💾 統計データ保存成功: {saved_count}件")
+            print(f"❌ 統計データ保存失敗: {error_count}件")
+            print("="*60)
+            
+            # Slack通知を送信（成功時）
+            slack_webhook_url = os.getenv("SLACK_WEBHOOK_URL")
+            if slack_webhook_url:
+                message = f"""✅ ポケモンユナイト データスクレイピングが完了しました
+
+📅 参照日付: {reference_date}
+🎮 総ゲーム数: {total_games:,}件
+🐾 処理対象ポケモン: {len(pokemon_data)}件
+✅ 既存キャラクター: {existing_count}件
+🆕 新規登録キャラクター: {new_count}件
+💾 統計データ保存成功: {saved_count}件
+❌ 統計データ保存失敗: {error_count}件"""
+                
+                if send_slack_notification(slack_webhook_url, message):
+                    print("Slack通知を送信しました。")
+                else:
+                    print("Slack通知の送信に失敗しました。")
+            else:
+                print("SLACK_WEBHOOK_URLが設定されていません。")
+            
+        except Exception as e:
+            print(f"エラーが発生しました: {e}")
+            
+            # エラー時のSlack通知
+            slack_webhook_url = os.getenv("SLACK_WEBHOOK_URL")
+            if slack_webhook_url:
+                error_message = f"""❌ ポケモンユナイト データスクレイピングでエラーが発生しました
+
+⚠️ エラー内容: {str(e)}
+📅 発生日時: {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}
+📊 処理状況:
+  - 参照日付: {reference_date if reference_date else "未取得"}
+  - 既存キャラクター: {existing_count}件
+  - 新規キャラクター: {new_count}件
+  - 保存成功: {saved_count}件
+  - 保存失敗: {error_count}件"""
+                
+                if send_slack_notification(slack_webhook_url, error_message):
+                    print("エラー通知をSlackに送信しました。")
+                else:
+                    print("Slackエラー通知の送信に失敗しました。")
         
     except Exception as e:
         print(f"エラーが発生しました: {e}")
     
     finally:
         # ブラウザを終了
-        try:
-            browser.stop()
-        except:
-            print("ブラウザの停止中にエラーが発生しましたが、処理は完了しました。")
+        if browser:
+            try:
+                browser.stop()
+            except:
+                print("ブラウザの停止中にエラーが発生しましたが、処理は完了しました。")
 
 if __name__ == '__main__':
     # asyncioのイベントループを実行

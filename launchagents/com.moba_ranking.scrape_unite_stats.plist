@@ -4,18 +4,18 @@
 <dict>
     <!-- ジョブの識別子 -->
     <key>Label</key>
-    <string>com.moba_ranking.unite_pokemon_stats_scraper</string>
+    <string>com.moba_ranking.scrape_unite_stats</string>
     
     <!-- 実行するコマンドと引数 -->
     <key>ProgramArguments</key>
     <array>
-      <!-- nodeのパス -->
-      <string>/Users/yamamotokazuki/.nodebrew/current/bin/node</string>
-      <!-- スクリプトの絶対パス -->
-      <string>/Users/yamamotokazuki/develop/moba-ranking/unite_pokemon_stats_scraper.js</string>
+      <!-- 仮想環境のPythonのパス -->
+      <string>/Users/yamamotokazuki/develop/moba-ranking/moba-ranking-venv/bin/python3</string>
+      <!-- Pythonスクリプトの絶対パス -->
+      <string>/Users/yamamotokazuki/develop/moba-ranking/scrape_unite_stats.py</string>
     </array>
     
-    <!-- 毎日1時30分に実行 -->
+    <!-- 毎日1時に実行 -->
     <key>StartCalendarInterval</key>
     <dict>
         <key>Hour</key>
@@ -26,8 +26,8 @@
     
     <!-- 標準出力とエラー出力のログ先 -->
     <key>StandardOutPath</key>
-    <string>/Users/yamamotokazuki/develop/moba-ranking/logs/unite_pokemon_stats_scraper.log</string>
+    <string>/Users/yamamotokazuki/develop/moba-ranking/logs/scrape_unite_stats.log</string>
     <key>StandardErrorPath</key>
-    <string>/Users/yamamotokazuki/develop/moba-ranking/logs/unite_pokemon_stats_scraper.log</string>
+    <string>/Users/yamamotokazuki/develop/moba-ranking/logs/scrape_unite_stats.log</string>
 </dict>
 </plist>

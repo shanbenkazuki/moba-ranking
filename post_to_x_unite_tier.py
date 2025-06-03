@@ -9,6 +9,9 @@ from playwright.async_api import async_playwright
 from dotenv import load_dotenv
 from jinja2 import Environment, FileSystemLoader
 
+# Slack通知機能をインポート
+from src.slack_webhook import send_slack_notification
+
 # 環境変数を読み込み
 load_dotenv()
 
@@ -310,8 +313,47 @@ async def main():
                    [unite_game_id, 1 if tweet_success else 0, "" if tweet_success else tweet_error, post_date])
         log_db.close()
 
+        # Slack通知を送信
+        slack_webhook_url = os.getenv("SLACK_WEBHOOK_URL")
+        if slack_webhook_url:
+            if tweet_success:
+                message = f"""✅ ポケモンユナイト Tier表の投稿が完了しました
+
+📊 バージョン: {patch_number}
+📅 データ日付: {latest_date}
+🐾 処理ポケモン数: {len(pokemon_stats_dict)}件
+🎯 ツイート投稿: 成功"""
+            else:
+                message = f"""❌ ポケモンユナイト Tier表の投稿でエラーが発生しました
+
+📊 バージョン: {patch_number}
+📅 データ日付: {latest_date}
+🐾 処理ポケモン数: {len(pokemon_stats_dict)}件
+🎯 ツイート投稿: 失敗
+⚠️ エラー内容: {tweet_error}"""
+            
+            if send_slack_notification(slack_webhook_url, message):
+                print("Slack通知を送信しました。")
+            else:
+                print("Slack通知の送信に失敗しました。")
+        else:
+            print("SLACK_WEBHOOK_URLが設定されていません。")
+
     except Exception as err:
         print(f"エラー: {err}")
+        
+        # エラー時のSlack通知
+        slack_webhook_url = os.getenv("SLACK_WEBHOOK_URL")
+        if slack_webhook_url:
+            error_message = f"""❌ ポケモンユナイト Tier表処理でエラーが発生しました
+
+⚠️ エラー内容: {str(err)}
+📅 発生日時: {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}"""
+            
+            if send_slack_notification(slack_webhook_url, error_message):
+                print("エラー通知をSlackに送信しました。")
+            else:
+                print("Slackエラー通知の送信に失敗しました。")
 
 if __name__ == "__main__":
     asyncio.run(main())
