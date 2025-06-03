@@ -7,6 +7,7 @@ from datetime import datetime
 import tweepy
 from playwright.async_api import async_playwright
 from dotenv import load_dotenv
+from jinja2 import Environment, FileSystemLoader
 
 # 環境変数を読み込み
 load_dotenv()
@@ -177,304 +178,21 @@ async def main():
             exists = image_file_path.exists()
             print(f"  {i+1}: english_name='{english_name}' -> '{english_name}.png' (存在: {exists}) -> 表示名: '{japanese_name}'")
 
-        # HTML出力用文字列生成
-        tier_descriptions = {
-            'S': 'チャンピオンクラス',
-            'A': 'エースクラス',
-            'B': 'バランスクラス',
-            'C': '状況限定クラス',
-            'D': '強化必要クラス'
-        }
+        # Jinja2テンプレートの設定
+        template_dir = Path(base_dir) / "templates"
+        env = Environment(loader=FileSystemLoader(template_dir))
+        template = env.get_template('unite_tier_list.html')
 
-        html_head = f"""<!DOCTYPE html>
-<html lang="ja">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ポケモンユナイト ティアリスト</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
-  <style>
-    /* アニメーション削除 */
-    
-    :root {{
-      /* カラフルでポップなカラーパレット */
-      --primary-color: #FF5F6D;
-      --secondary-color: #3e4edd;
-      --bg-color: #FAFAFA;
-      --accent-color: #FFD700;
-      --text-color: #333;
-      --text-light: #666;
-      --s-tier: linear-gradient(135deg, #FF9100, #F9455D);
-      --a-tier: linear-gradient(135deg, #FDA7DF, #9C27B0);
-      --b-tier: linear-gradient(135deg, #5EFCE8, #736EFE);
-      --c-tier: linear-gradient(135deg, #A8FF78, #78FFD6);
-      --d-tier: linear-gradient(135deg, #BDBBBE, #9D9EA3);
-    }}
-    
-    * {{
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: 'Noto Sans JP', sans-serif;
-    }}
-    
-    body {{
-      background-color: var(--bg-color);
-      color: var(--text-color);
-      background-image: 
-        radial-gradient(circle at 10% 20%, rgba(255, 200, 200, 0.2) 0%, transparent 20%),
-        radial-gradient(circle at 90% 30%, rgba(200, 200, 255, 0.2) 0%, transparent 25%),
-        radial-gradient(circle at 50% 60%, rgba(255, 255, 200, 0.2) 0%, transparent 30%);
-      background-attachment: fixed;
-    }}
-    
-    .container {{
-      max-width: 1920px;
-      margin: 0 auto;
-      padding: 20px;
-    }}
-    
-    .header {{
-      text-align: center;
-      padding: 40px 20px;
-      margin-bottom: 30px;
-      position: relative;
-      overflow: hidden;
-      border-radius: 20px;
-      background: white;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-    }}
-    
-    .header::before {{
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 10px;
-      background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
-    }}
-    
-    .header h1 {{
-      font-size: 3.8em;
-      font-weight: 900;
-      margin-bottom: 15px;
-      color: var(--text-color);
-      letter-spacing: 2px;
-      position: relative;
-      display: inline-block;
-    }}
-    
-    .header h1::after {{
-      content: '';
-      position: absolute;
-      bottom: -5px;
-      left: 0;
-      width: 100%;
-      height: 5px;
-      background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
-      border-radius: 5px;
-    }}
-    
-    .header h1 span {{
-      color: var(--primary-color);
-      position: relative;
-    }}
-    
-    .header h1 span::before {{
-      content: '★';
-      position: absolute;
-      top: -20px;
-      right: -15px;
-      font-size: 0.5em;
-      color: var(--accent-color);
-    }}
-    
-    .version-info {{
-      font-size: 1.2em;
-      font-weight: 600;
-      color: var(--text-color);
-      margin-top: 15px;
-      display: flex;
-      justify-content: center;
-      gap: 30px;
-      flex-wrap: wrap;
-    }}
-    
-    .version-info span {{
-      display: inline-block;
-      background: linear-gradient(90deg, var(--secondary-color), var(--primary-color));
-      color: white;
-      padding: 8px 20px;
-      border-radius: 25px;
-      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
-    }}
-    
-    .tier-section {{
-      margin-bottom: 40px;
-      padding: 30px;
-      border-radius: 20px;
-      background-color: white;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-      position: relative;
-      overflow: hidden;
-    }}
-    
-    /* 装飾要素削除 */
-    
-    .tier-section.s-tier {{ border-top: 10px solid transparent; border-image: var(--s-tier) 1; }}
-    .tier-section.a-tier {{ border-top: 10px solid transparent; border-image: var(--a-tier) 1; }}
-    .tier-section.b-tier {{ border-top: 10px solid transparent; border-image: var(--b-tier) 1; }}
-    .tier-section.c-tier {{ border-top: 10px solid transparent; border-image: var(--c-tier) 1; }}
-    .tier-section.d-tier {{ border-top: 10px solid transparent; border-image: var(--d-tier) 1; }}
-    
-    .tier-badge {{
-      position: absolute;
-      top: 20px;
-      right: 20px;
-      width: 60px;
-      height: 60px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 2.2em;
-      font-weight: 900;
-      color: white;
-      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-      z-index: 2;
-    }}
-    
-    .tier-badge::after {{
-      content: '';
-      position: absolute;
-      top: -3px;
-      left: -3px;
-      right: -3px;
-      bottom: -3px;
-      border-radius: 50%;
-      background: white;
-      z-index: -1;
-    }}
-    
-    .s-tier .tier-badge {{ background: var(--s-tier); }}
-    .a-tier .tier-badge {{ background: var(--a-tier); }}
-    .b-tier .tier-badge {{ background: var(--b-tier); }}
-    .c-tier .tier-badge {{ background: var(--c-tier); }}
-    .d-tier .tier-badge {{ background: var(--d-tier); }}
-    
-    .tier-title {{
-      font-size: 2.2em;
-      margin-bottom: 25px;
-      color: var(--text-color);
-      font-weight: 900;
-      display: flex;
-      align-items: center;
-      position: relative;
-      padding-left: 20px;
-      padding-bottom: 10px;
-    }}
-    
-    .tier-title::before {{
-      content: '';
-      position: absolute;
-      left: 0;
-      bottom: 0;
-      width: 100%;
-      height: 2px;
-      background: rgba(0, 0, 0, 0.1);
-    }}
-    
-    .s-tier .tier-title::before {{ background: var(--s-tier); opacity: 0.3; }}
-    .a-tier .tier-title::before {{ background: var(--a-tier); opacity: 0.3; }}
-    .b-tier .tier-title::before {{ background: var(--b-tier); opacity: 0.3; }}
-    .c-tier .tier-title::before {{ background: var(--c-tier); opacity: 0.3; }}
-    .d-tier .tier-title::before {{ background: var(--d-tier); opacity: 0.3; }}
-    
-    .hero-list {{
-      display: flex;
-      flex-wrap: wrap;
-      gap: 25px;
-      justify-content: flex-start;
-    }}
-    
-    .hero {{
-      width: 120px;
-      text-align: center;
-      position: relative;
-    }}
-    
-    .hero-card {{
-      background: white;
-      border-radius: 18px;
-      padding: 10px;
-      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
-    }}
-    
-    .hero-img-container {{
-      position: relative;
-      width: 90px;
-      height: 90px;
-      margin: 0 auto;
-      border-radius: 50%;
-      overflow: hidden;
-      border: 4px solid rgba(255, 255, 255, 0.7);
-      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-      background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
-    }}
-    
-    .s-tier .hero-img-container {{ border-color: rgba(255, 145, 0, 0.7); box-shadow: 0 5px 15px rgba(255, 145, 0, 0.3); }}
-    .a-tier .hero-img-container {{ border-color: rgba(253, 167, 223, 0.7); box-shadow: 0 5px 15px rgba(253, 167, 223, 0.3); }}
-    .b-tier .hero-img-container {{ border-color: rgba(94, 252, 232, 0.7); box-shadow: 0 5px 15px rgba(94, 252, 232, 0.3); }}
-    .c-tier .hero-img-container {{ border-color: rgba(168, 255, 120, 0.7); box-shadow: 0 5px 15px rgba(168, 255, 120, 0.3); }}
-    .d-tier .hero-img-container {{ border-color: rgba(189, 187, 190, 0.7); box-shadow: 0 5px 15px rgba(189, 187, 190, 0.3); }}
-    
-    .hero img {{
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }}
-    
-    @media (max-width: 768px) {{
-      .header h1 {{ font-size: 2.5em; }}
-      .hero-list {{ justify-content: center; }}
-      .tier-section {{ padding: 20px 15px; }}
-      .tier-badge {{ width: 50px; height: 50px; font-size: 1.8em; }}
-      .tier-title {{ font-size: 1.8em; }}
-      .version-info {{ flex-direction: column; gap: 10px; }}
-    }}
-  </style>
-</head>
-<body>
-  <div class="container">
-    <div class="header">
-      <h1>ポケモンユナイト <span>ティアリスト</span></h1>
-      <div class="version-info">
-        <span>バージョン {patch_number}</span>
-        <span>更新日 {latest_date}</span>
-      </div>
-    </div>
-"""
-
-        html_tail = f"""  </div>
-</body>
-</html>
-"""
-
-        html_body = ""
+        # テンプレート用のデータ準備
         grades = ['S', 'A', 'B', 'C', 'D']
+        tiers = []
+        
         for grade in grades:
             filtered = [row for row in pokemon_stats_dict if row['grade'] == grade]
             if not filtered:
                 continue
-            description = tier_descriptions.get(grade, "")
-            html_body += f"    <!-- {grade} Tier -->\n"
-            html_body += f"    <div class=\"tier-section {grade.lower()}-tier\">\n"
-            html_body += f"      <div class=\"tier-badge\">{grade}</div>\n"
-            html_body += f"      <div class=\"tier-title\">{grade} Tier</div>\n"
-            html_body += f"      <div class=\"hero-list\">\n"
+            
+            pokemon_list = []
             for row in filtered:
                 english_name = row['pokemon_name']
                 japanese_name = row['japanese_name'] if row['japanese_name'] else english_name
@@ -489,21 +207,29 @@ async def main():
                 if not image_file_path.exists():
                     print(f"警告: 画像ファイルが見つかりません: {image_file_path}")
                 
-                html_body += f"        <div class=\"hero\">\n"
-                html_body += f"          <div class=\"hero-card\">\n"
-                html_body += f"            <div class=\"hero-img-container\">\n"
-                html_body += f"              <img src=\"{pokemon_img_path}\" alt=\"{japanese_name}\">\n"
-                html_body += f"              <div class=\"stats-overlay\">勝率: {win_rate:.1f}%</div>\n"
-                html_body += f"            </div>\n"
-                html_body += f"          </div>\n"
-                html_body += f"        </div>\n"
-            html_body += f"      </div>\n"
-            html_body += f"    </div>\n"
+                pokemon_list.append({
+                    'english_name': english_name,
+                    'japanese_name': japanese_name,
+                    'win_rate': win_rate,
+                    'image_path': pokemon_img_path
+                })
+            
+            tiers.append({
+                'grade': grade,
+                'pokemon_list': pokemon_list
+            })
 
-        final_html = html_head + html_body + html_tail
+        # テンプレートレンダリング
+        html_content = template.render(
+            patch_number=patch_number,
+            latest_date=latest_date,
+            tiers=tiers
+        )
+
+        # HTMLファイル出力
         html_file_path = output_dir / "pokemon_tier_list.html"
         with open(html_file_path, "w", encoding="utf-8") as f:
-            f.write(final_html)
+            f.write(html_content)
         print(f"HTMLファイルが {html_file_path} に出力されました。")
 
         # Playwrightでスクリーンショット撮影
@@ -564,7 +290,7 @@ async def main():
             media_id = media.media_id
 
             # ツイートを投稿
-            # client.create_tweet(text=tweet_text, media_ids=[media_id])
+            client.create_tweet(text=tweet_text, media_ids=[media_id])
             print("ツイートが投稿されました。")
             tweet_success = True
         except Exception as error:

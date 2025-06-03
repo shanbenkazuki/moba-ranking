@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ポケモンユナイト ティアリスト</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      /* シンプルでポップなカラーパレット */
+      --primary-color: #FF4081;
+      --bg-color: #F8F9FA;
+      --text-color: #2C3E50;
+      --text-light: #6C757D;
+      --white: #FFFFFF;
+      
+      /* ランク別カラー（明確な色分け） */
+      --s-tier: linear-gradient(135deg, #FFD700, #FFA000);  /* 金色系 */
+      --a-tier: linear-gradient(135deg, #FF5722, #E91E63);  /* 赤色系 */
+      --b-tier: linear-gradient(135deg, #2196F3, #3F51B5);  /* 青色系 */
+      --c-tier: linear-gradient(135deg, #4CAF50, #8BC34A);  /* 緑色系 */
+      --d-tier: linear-gradient(135deg, #9E9E9E, #607D8B);  /* グレー系 */
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Noto Sans JP', sans-serif;
+    }
+    
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      line-height: 1.6;
+    }
+    
+    .container {
+      max-width: 1500px;
+      margin: 0 auto;
+      padding: 30px 20px;
+    }
+    
+    .header {
+      text-align: center;
+      padding: 40px 20px;
+      margin-bottom: 40px;
+      background: var(--white);
+      border-radius: 16px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+    }
+    
+    .header h1 {
+      font-size: 3.2em;
+      font-weight: 900;
+      margin-bottom: 20px;
+      color: var(--text-color);
+      letter-spacing: 1px;
+    }
+    
+    .header h1 span {
+      background: linear-gradient(135deg, var(--primary-color), #FF6B9D);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    .version-info {
+      font-size: 1.1em;
+      font-weight: 600;
+      color: var(--text-light);
+      margin-top: 15px;
+      display: flex;
+      justify-content: center;
+      gap: 30px;
+      flex-wrap: wrap;
+    }
+    
+    .version-info span {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+      padding: 10px 24px;
+      border-radius: 20px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+    
+    .tier-section {
+      margin-bottom: 35px;
+      padding: 25px;
+      border-radius: 16px;
+      background: var(--white);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+      position: relative;
+    }
+    
+    .tier-section::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 6px;
+      border-radius: 16px 16px 0 0;
+    }
+    
+    .tier-section.s-tier::before { background: var(--s-tier); }
+    .tier-section.a-tier::before { background: var(--a-tier); }
+    .tier-section.b-tier::before { background: var(--b-tier); }
+    .tier-section.c-tier::before { background: var(--c-tier); }
+    .tier-section.d-tier::before { background: var(--d-tier); }
+    
+    .tier-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 25px;
+      gap: 15px;
+    }
+    
+    .tier-badge {
+      width: 50px;
+      height: 50px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.8em;
+      font-weight: 900;
+      color: white;
+      box-shadow: 0 3px 12px rgba(0, 0, 0, 0.15);
+    }
+    
+    .s-tier .tier-badge { background: var(--s-tier); }
+    .a-tier .tier-badge { background: var(--a-tier); }
+    .b-tier .tier-badge { background: var(--b-tier); }
+    .c-tier .tier-badge { background: var(--c-tier); }
+    .d-tier .tier-badge { background: var(--d-tier); }
+    
+    .tier-title {
+      font-size: 2em;
+      color: var(--text-color);
+      font-weight: 700;
+    }
+    
+    .hero-list {
+      display: grid;
+      grid-template-columns: repeat(10, 1fr);
+      gap: 15px;
+      justify-items: center;
+    }
+    
+    .hero {
+      width: 100%;
+      max-width: 120px;
+      text-align: center;
+    }
+    
+    .hero-card {
+      background: var(--white);
+      border-radius: 12px;
+      padding: 8px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+      border: 2px solid transparent;
+    }
+    
+    .s-tier .hero-card { border-color: rgba(255, 215, 0, 0.3); }
+    .a-tier .hero-card { border-color: rgba(255, 87, 34, 0.3); }
+    .b-tier .hero-card { border-color: rgba(33, 150, 243, 0.3); }
+    .c-tier .hero-card { border-color: rgba(76, 175, 80, 0.3); }
+    .d-tier .hero-card { border-color: rgba(158, 158, 158, 0.3); }
+    
+    .hero-img-container {
+      width: 90px;
+      height: 90px;
+      margin: 0 auto;
+      border-radius: 50%;
+      overflow: hidden;
+      border: 3px solid rgba(255, 255, 255, 0.8);
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+      background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+    }
+    
+    .s-tier .hero-img-container { border-color: rgba(255, 215, 0, 0.6); }
+    .a-tier .hero-img-container { border-color: rgba(255, 87, 34, 0.6); }
+    .b-tier .hero-img-container { border-color: rgba(33, 150, 243, 0.6); }
+    .c-tier .hero-img-container { border-color: rgba(76, 175, 80, 0.6); }
+    .d-tier .hero-img-container { border-color: rgba(158, 158, 158, 0.6); }
+    
+    .hero img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    
+    /* レスポンシブ対応 */
+    @media (max-width: 1400px) {
+      .hero-list { grid-template-columns: repeat(8, 1fr); }
+    }
+    
+    @media (max-width: 1100px) {
+      .hero-list { grid-template-columns: repeat(6, 1fr); }
+    }
+    
+    @media (max-width: 768px) {
+      .header h1 { font-size: 2.4em; }
+      .hero-list { grid-template-columns: repeat(4, 1fr); }
+      .tier-section { padding: 20px 15px; }
+      .tier-title { font-size: 1.6em; }
+      .version-info { flex-direction: column; gap: 10px; }
+      .container { padding: 20px 15px; }
+    }
+    
+    @media (max-width: 480px) {
+      .hero-list { grid-template-columns: repeat(3, 1fr); }
+      .header h1 { font-size: 2em; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>ポケモンユナイト <span>ティアリスト</span></h1>
+      <div class="version-info">
+        <span>バージョン {{ patch_number }}</span>
+        <span>更新日 {{ latest_date }}</span>
+      </div>
+    </div>
+    
+    {% for tier in tiers %}
+    <div class="tier-section {{ tier.grade.lower() }}-tier">
+      <div class="tier-header">
+        <div class="tier-badge">{{ tier.grade }}</div>
+        <div class="tier-title">{{ tier.grade }} Tier</div>
+      </div>
+      <div class="hero-list">
+        {% for pokemon in tier.pokemon_list %}
+        <div class="hero">
+          <div class="hero-card">
+            <div class="hero-img-container">
+              <img src="{{ pokemon.image_path }}" alt="{{ pokemon.japanese_name }}">
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    {% endfor %}
+    
+  </div>
+</body>
+</html> 
