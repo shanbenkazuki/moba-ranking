@@ -293,30 +293,23 @@ async def main():
     }}
     
     .version-info {{
-      display: inline-block;
-      font-size: 1.3em;
-      font-weight: 700;
-      color: white;
-      background: linear-gradient(90deg, var(--secondary-color), var(--primary-color));
-      padding: 10px 30px;
-      border-radius: 50px;
+      font-size: 1.2em;
+      font-weight: 600;
+      color: var(--text-color);
       margin-top: 15px;
-      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-      position: relative;
-      z-index: 1;
-      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      gap: 30px;
+      flex-wrap: wrap;
     }}
     
-    .version-info::before {{
-      content: '';
-      position: absolute;
-      top: -50%;
-      left: -50%;
-      width: 200%;
-      height: 200%;
-      background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, transparent 60%);
-      z-index: -1;
-      transform: rotate(30deg);
+    .version-info span {{
+      display: inline-block;
+      background: linear-gradient(90deg, var(--secondary-color), var(--primary-color));
+      color: white;
+      padding: 8px 20px;
+      border-radius: 25px;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
     }}
     
     .tier-section {{
@@ -444,45 +437,13 @@ async def main():
       object-fit: cover;
     }}
     
-    .hero-name {{
-      margin-top: 12px;
-      font-size: 0.9em;
-      color: var(--text-color);
-      font-weight: 700;
-      padding: 0 5px;
-      line-height: 1.3;
-      min-height: 2.6em;
-    }}
-    
-    .footer {{
-      text-align: center;
-      margin-top: 50px;
-      padding: 30px;
-      color: var(--text-light);
-      font-size: 1em;
-      background: white;
-      border-radius: 20px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-      position: relative;
-      overflow: hidden;
-    }}
-    
-    .footer::before {{
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 5px;
-      background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
-    }}
-    
     @media (max-width: 768px) {{
       .header h1 {{ font-size: 2.5em; }}
       .hero-list {{ justify-content: center; }}
       .tier-section {{ padding: 20px 15px; }}
       .tier-badge {{ width: 50px; height: 50px; font-size: 1.8em; }}
       .tier-title {{ font-size: 1.8em; }}
+      .version-info {{ flex-direction: column; gap: 10px; }}
     }}
   </style>
 </head>
@@ -490,18 +451,14 @@ async def main():
   <div class="container">
     <div class="header">
       <h1>ポケモンユナイト <span>ティアリスト</span></h1>
-      <div class="version-info">バージョン {patch_number}</div>
+      <div class="version-info">
+        <span>バージョン {patch_number}</span>
+        <span>更新日 {latest_date}</span>
+      </div>
     </div>
 """
 
-        html_tail = f"""
-    <div class="footer">
-      <p>ポケモンユナイト ティアリスト {latest_date} • バージョン {patch_number}</p>
-      <p style="margin-top: 10px; font-size: 0.9em;">※勝率・ピック率・BAN率から算出</p>
-    </div>
-  </div>
-  
-  <!-- スクリプト削除 -->
+        html_tail = f"""  </div>
 </body>
 </html>
 """
@@ -538,7 +495,6 @@ async def main():
                 html_body += f"              <img src=\"{pokemon_img_path}\" alt=\"{japanese_name}\">\n"
                 html_body += f"              <div class=\"stats-overlay\">勝率: {win_rate:.1f}%</div>\n"
                 html_body += f"            </div>\n"
-                html_body += f"            <div class=\"hero-name\">{japanese_name}</div>\n"
                 html_body += f"          </div>\n"
                 html_body += f"        </div>\n"
             html_body += f"      </div>\n"
