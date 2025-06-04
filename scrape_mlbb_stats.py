@@ -6,7 +6,7 @@ import aiohttp
 from datetime import datetime
 from playwright.async_api import async_playwright
 from dotenv import load_dotenv
-from scrape_mlbb_latest_patch import MLBBPatchScraper
+from check_mlbb_version import MLBBPatchScraper
 from src.slack_webhook import send_slack_notification
 
 # .envファイルを読み込み
