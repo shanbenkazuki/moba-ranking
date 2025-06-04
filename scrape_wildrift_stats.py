@@ -2,8 +2,12 @@ import asyncio
 import json
 import sqlite3
 import os
+import re
+import aiohttp
+import aiofiles
 from datetime import datetime
 from playwright.async_api import async_playwright
+from urllib.parse import urlparse
 import logging
 
 # 定数
@@ -27,6 +31,78 @@ def setup_logging():
         ]
     )
     return logging.getLogger(__name__)
+
+# 画像ダウンロード関数
+def get_file_extension_from_content_type(content_type):
+    """Content-Typeから拡張子を取得"""
+    content_type_to_ext = {
+        'image/png': '.png',
+        'image/jpeg': '.jpg',
+        'image/jpg': '.jpg',
+        'image/webp': '.webp',
+        'image/gif': '.gif',
+        'image/bmp': '.bmp',
+        'image/svg+xml': '.svg'
+    }
+    return content_type_to_ext.get(content_type.lower(), '.png')
+
+def get_file_extension_from_url(url):
+    """URLから拡張子を抽出（フォールバック用）"""
+    try:
+        parsed_url = urlparse(url)
+        path = parsed_url.path
+        _, ext = os.path.splitext(path)
+        return ext if ext else '.png'  # デフォルトは.png
+    except Exception:
+        return '.png'  # エラー時はデフォルト
+
+async def download_champion_image(image_url, chinese_name, logger):
+    """チャンピオン画像をダウンロードして保存"""
+    try:
+        # champion_imagesディレクトリを作成
+        image_dir = "champion_images"
+        os.makedirs(image_dir, exist_ok=True)
+        
+        # タイムアウト設定とコネクター設定でSSL接続エラーを抑制
+        timeout = aiohttp.ClientTimeout(total=30, connect=10)
+        connector = aiohttp.TCPConnector(limit=10, force_close=True, enable_cleanup_closed=True)
+        
+        # 画像をダウンロードしてContent-Typeから拡張子を判定
+        async with aiohttp.ClientSession(timeout=timeout, connector=connector) as session:
+            async with session.get(image_url) as response:
+                if response.status == 200:
+                    # Content-Typeヘッダーから実際の拡張子を取得
+                    content_type = response.headers.get('content-type', '')
+                    file_extension = get_file_extension_from_content_type(content_type)
+                    
+                    # Content-Typeが取得できない場合はURLから判定（フォールバック）
+                    if not content_type:
+                        file_extension = get_file_extension_from_url(image_url)
+                        logger.warning(f"Content-Typeが取得できません。URLから拡張子を推定: {file_extension}")
+                    else:
+                        logger.info(f"Content-Type: {content_type} -> 拡張子: {file_extension}")
+                    
+                    # ファイル名を中国語名に設定（実際の拡張子を使用）
+                    file_name = f"{chinese_name}{file_extension}"
+                    file_path = os.path.join(image_dir, file_name)
+                    
+                    # 既にファイルが存在する場合はスキップ
+                    if os.path.exists(file_path):
+                        logger.info(f"画像が既に存在します: {file_path}")
+                        return True
+                    
+                    # ファイルに保存
+                    async with aiofiles.open(file_path, 'wb') as f:
+                        async for chunk in response.content.iter_chunked(8192):
+                            await f.write(chunk)
+                    logger.info(f"画像ダウンロード完了: {file_path}")
+                    return True
+                else:
+                    logger.error(f"画像ダウンロード失敗 (HTTP {response.status}): {image_url}")
+                    return False
+    except Exception as e:
+        logger.error(f"画像ダウンロード中にエラー発生: {e}")
+        return False
 
 # データベース関連の関数
 def get_latest_patch_id():
@@ -55,8 +131,8 @@ def get_character_id(chinese_name):
         result = cursor.fetchone()
         return result[0] if result else None
 
-def insert_character_if_not_exists(chinese_name):
-    """キャラクターが存在しない場合は挿入"""
+async def insert_character_if_not_exists(chinese_name, image_url, logger):
+    """キャラクターが存在しない場合は挿入（画像ダウンロード付き）"""
     db_path = "data/moba_log.db"
     with sqlite3.connect(db_path) as conn:
         cursor = conn.cursor()
@@ -65,6 +141,10 @@ def insert_character_if_not_exists(chinese_name):
         if character_id:
             return character_id
             
+        # 新規挿入の場合、画像をダウンロード
+        logger.info(f"新規キャラクター '{chinese_name}' の画像をダウンロード中...")
+        await download_champion_image(image_url, chinese_name, logger)
+        
         # 新規挿入
         cursor.execute("""
             INSERT INTO characters (game_id, chinese_name, english_name, created_at, updated_at)
@@ -73,35 +153,108 @@ def insert_character_if_not_exists(chinese_name):
         conn.commit()
         return cursor.lastrowid
 
-def insert_wildrift_stats(champion_stats, patch_id, logger):
+def extract_patch_number(patch_text):
+    """パッチテキストからパッチ番号を抽出"""
+    try:
+        # "ワイルドリフト パッチノート 6.1c" -> "6.1c"
+        match = re.search(r'パッチノート\s+([0-9]+\.[0-9]+[a-z]?)', patch_text)
+        if match:
+            patch_number = match.group(1)
+            return patch_number
+        else:
+            return None
+    except Exception:
+        return None
+
+def parse_release_date(date_text):
+    """リリース日をパース"""
+    try:
+        # 日付形式を正規化（例: "2025/5/28" -> "2025-05-28"）
+        if '/' in date_text:
+            parts = date_text.split('/')
+            if len(parts) == 3:
+                year, month, day = parts
+                formatted_date = f"{year}-{month.zfill(2)}-{day.zfill(2)}"
+                return formatted_date
+        return None
+    except Exception:
+        return None
+
+def check_existing_patch(patch_number):
+    """既存のパッチデータをチェック"""
+    db_path = "data/moba_log.db"
+    try:
+        with sqlite3.connect(db_path) as conn:
+            cursor = conn.cursor()
+            cursor.execute(
+                "SELECT COUNT(*) FROM patches WHERE game_id = ? AND patch_number = ?",
+                (WILDRIFT_GAME_ID, patch_number)
+            )
+            count = cursor.fetchone()[0]
+            return count > 0
+    except Exception:
+        return False
+
+def insert_patch_data(patch_number, release_date):
+    """パッチデータをデータベースに挿入"""
+    db_path = "data/moba_log.db"
+    try:
+        with sqlite3.connect(db_path) as conn:
+            cursor = conn.cursor()
+            cursor.execute(
+                """INSERT INTO patches (game_id, patch_number, release_date, created_at, updated_at)
+                   VALUES (?, ?, ?, ?, ?)""",
+                (WILDRIFT_GAME_ID, patch_number, release_date, datetime.now(), datetime.now())
+            )
+            conn.commit()
+            return True
+    except Exception:
+        return False
+
+async def insert_wildrift_stats(champion_stats, patch_id, logger):
     """wildrift_statsテーブルへデータを挿入"""
     db_path = "data/moba_log.db"
     
+    # フェーズ1: 全チャンピオンのcharacter_idを事前に取得・作成
+    logger.info("チャンピオンのcharacter_id取得フェーズを開始")
+    champion_id_map = {}  # {(name, image_url): character_id} のマップ
+    
+    for chinese_lane, champions in champion_stats.items():
+        if chinese_lane == "参照日":
+            continue
+            
+        if not isinstance(champions, list):
+            continue
+            
+        for champion in champions:
+            champion_key = (champion["name"], champion["image_url"])
+            if champion_key not in champion_id_map:
+                # キャラクターIDを取得（存在しない場合は作成）
+                character_id = await insert_character_if_not_exists(champion["name"], champion["image_url"], logger)
+                champion_id_map[champion_key] = character_id
+    
+    logger.info(f"character_id取得完了: {len(champion_id_map)}件")
+    
+    # フェーズ2: 統計データの一括insert
+    logger.info("統計データinsertフェーズを開始")
     with sqlite3.connect(db_path) as conn:
         cursor = conn.cursor()
-        
         reference_date = champion_stats["参照日"]
-        # 中国語のレーン名を英語に変換
-        lane_mapping = {
-            "上单": "Top",
-            "打野": "Jungle", 
-            "中路": "Mid",
-            "下路": "ADC",
-            "辅助": "Support"
-        }
         
         for chinese_lane, champions in champion_stats.items():
             if chinese_lane == "参照日":
                 continue
                 
-            lane = lane_mapping.get(chinese_lane, chinese_lane)
+            # 中国語のレーン名をそのまま使用
+            lane = chinese_lane
             
             if not isinstance(champions, list):
                 continue
                 
             for champion in champions:
-                # キャラクターIDを取得（存在しない場合は作成）
-                character_id = insert_character_if_not_exists(champion["name"])
+                # 事前に取得したcharacter_idを使用
+                champion_key = (champion["name"], champion["image_url"])
+                character_id = champion_id_map[champion_key]
                 
                 try:
                     # INSERT OR IGNORE を使用してユニーク制約違反を回避
@@ -123,6 +276,7 @@ def insert_wildrift_stats(champion_stats, patch_id, logger):
                     logger.error(f"Insert error for lane {lane}, champion {champion['name']}: {e}")
         
         conn.commit()
+        logger.info("統計データinsert完了")
 
 def insert_scraper_log(status, error_message):
     """scraper_logsテーブルへスクレイピング結果を保存"""
@@ -138,6 +292,77 @@ def insert_scraper_log(status, error_message):
             VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
         """, (WILDRIFT_GAME_ID, status, error_message, jst_date))
         conn.commit()
+
+# パッチチェック関数
+async def check_wildrift_patch(logger):
+    """Wild Riftのパッチ情報をチェック"""
+    url = "https://wildrift.leagueoflegends.com/ja-jp/news/tags/patch-notes/"
+    
+    logger.info("Wild Riftパッチ情報チェックを開始します")
+    
+    async with async_playwright() as p:
+        try:
+            logger.info("ブラウザを起動中...")
+            browser = await p.chromium.launch(headless=True)
+            page = await browser.new_page()
+            
+            logger.info(f"ページにアクセス中: {url}")
+            await page.goto(url, wait_until="networkidle")
+            logger.info("ページの読み込みが完了しました")
+            
+            # リリース日を取得
+            release_date_xpath = '//*[@id="news"]/div/div[2]/a[1]/span/div/div[2]/div[1]/div[3]/time'
+            logger.info("リリース日要素を検索中...")
+            
+            release_date_element = page.locator(f"xpath={release_date_xpath}")
+            if await release_date_element.count() == 0:
+                raise Exception("リリース日要素が見つかりません")
+            
+            release_date_text = await release_date_element.text_content()
+            logger.info(f"リリース日テキストを取得: {release_date_text}")
+            
+            # パッチ番号を取得
+            patch_number_xpath = '//*[@id="news"]/div/div[2]/a[1]/span/div/div[2]/div[2]'
+            logger.info("パッチ番号要素を検索中...")
+            
+            patch_element = page.locator(f"xpath={patch_number_xpath}")
+            if await patch_element.count() == 0:
+                raise Exception("パッチ番号要素が見つかりません")
+            
+            patch_text = await patch_element.text_content()
+            logger.info(f"パッチテキストを取得: {patch_text}")
+            
+            await browser.close()
+            logger.info("ブラウザを閉じました")
+            
+        except Exception as e:
+            logger.error(f"パッチチェックでエラー発生: {e}")
+            if 'browser' in locals():
+                await browser.close()
+            raise
+    
+    # データ処理
+    patch_number = extract_patch_number(patch_text)
+    if not patch_number:
+        raise Exception("パッチ番号の抽出に失敗しました")
+    
+    release_date = parse_release_date(release_date_text)
+    if not release_date:
+        raise Exception("リリース日の解析に失敗しました")
+    
+    # 既存データチェック
+    if check_existing_patch(patch_number):
+        logger.info(f"パッチ {patch_number} は既に存在します")
+    else:
+        # データベースに保存
+        success = insert_patch_data(patch_number, release_date)
+        if success:
+            logger.info(f"新しいパッチデータを保存しました: {patch_number} (リリース日: {release_date})")
+        else:
+            raise Exception("パッチデータの保存に失敗しました")
+    
+    logger.info("パッチチェック完了")
+    return True
 
 # スクレイピング関数
 async def extract_champion_data(page, logger):
@@ -161,13 +386,109 @@ async def extract_champion_data(page, logger):
                 let banRate = banRateEl ? banRateEl.innerText.trim() : '';
                 banRate = banRate.replace('%', '');
 
-                return { name, 胜率: winRate, 登场率: pickRate, BAN率: banRate };
+                // 画像URLを取得
+                const imgEl = li.querySelector('div.li-div.hero-msg > div > img');
+                const imageUrl = imgEl ? imgEl.src : '';
+
+                return { 
+                    name, 
+                    胜率: winRate, 
+                    登场率: pickRate, 
+                    BAN率: banRate,
+                    image_url: imageUrl
+                };
             }).filter(item => item.name !== '');
         }
     """)
     
     logger.info(f"データ抽出完了: {len(data)}件")
     return data
+
+async def scrape_wildrift_stats(logger):
+    """Wild Riftの統計データをスクレイピング"""
+    # パッチIDを取得
+    patch_id = get_latest_patch_id()
+    
+    if not patch_id:
+        raise Exception("最新のパッチIDが見つかりません")
+        
+    logger.info(f"ゲームID: {WILDRIFT_GAME_ID}, パッチID: {patch_id}")
+    
+    async with async_playwright() as p:
+        # ブラウザ起動
+        browser = await p.chromium.launch(headless=True)
+        page = await browser.new_page()
+        
+        url = "https://lolm.qq.com/act/a20220818raider/index.html"
+        await page.goto(url, wait_until='networkidle')
+        logger.info(f"ページをオープン: {url}")
+        
+        # 参照日を取得
+        await page.wait_for_selector("#data-time")
+        reference_date = await page.text_content("#data-time")
+        reference_date = reference_date.strip()
+        logger.info(f"参照日を取得: {reference_date}")
+        
+        # JSON出力用のオブジェクト
+        champion_stats = {"参照日": reference_date}
+        
+        # ----- 上单（デフォルトタブ） -----
+        await page.wait_for_selector("#data-list > li")
+        logger.info("上单タブのセレクタ待機完了")
+        top_data = await extract_champion_data(page, logger)
+        champion_stats["上单"] = top_data
+        logger.info("上单データを取得完了")
+        
+        # ----- 打野 -----
+        await page.wait_for_selector("a.btn-place-jungle")
+        await page.click("a.btn-place-jungle")
+        logger.info("打野ボタンをクリック")
+        await page.wait_for_selector("#data-list > li")
+        jungle_data = await extract_champion_data(page, logger)
+        champion_stats["打野"] = jungle_data
+        logger.info("打野データを取得完了")
+        
+        # ----- 中路 -----
+        await page.wait_for_selector("a.btn-place-mid")
+        await page.click("a.btn-place-mid")
+        logger.info("中路ボタンをクリック")
+        await page.wait_for_selector("#data-list > li")
+        mid_data = await extract_champion_data(page, logger)
+        champion_stats["中路"] = mid_data
+        logger.info("中路データを取得完了")
+        
+        # ----- 下路 -----
+        await page.wait_for_selector("a.btn-place-bot")
+        await page.click("a.btn-place-bot")
+        logger.info("下路ボタンをクリック")
+        await page.wait_for_selector("#data-list > li")
+        bot_data = await extract_champion_data(page, logger)
+        champion_stats["下路"] = bot_data
+        logger.info("下路データを取得完了")
+        
+        # ----- 辅助 -----
+        await page.wait_for_selector("a.btn-place-sup")
+        await page.click("a.btn-place-sup")
+        logger.info("辅助ボタンをクリック")
+        await page.wait_for_selector("#data-list > li")
+        sup_data = await extract_champion_data(page, logger)
+        champion_stats["辅助"] = sup_data
+        logger.info("辅助データを取得完了")
+        
+        # ログファイルへスクレイピング結果を出力
+        json_output = json.dumps(champion_stats, ensure_ascii=False, indent=2)
+        log_file_path = "logs/wildrift_champion_stats_scraper.log"
+        with open(log_file_path, "a", encoding="utf-8") as f:
+            f.write(f"取得データ:\n{json_output}\n")
+        logger.info("全データをログファイルに出力完了")
+        
+        await browser.close()
+        logger.info("ブラウザを閉じました。スクレイピング終了")
+        
+        # --- SQLiteへの保存処理 ---
+        logger.info("wildrift_statsテーブルへデータを保存中")
+        await insert_wildrift_stats(champion_stats, patch_id, logger)
+        logger.info("wildrift_statsテーブルへデータ保存完了")
 
 async def main():
     """メイン処理"""
@@ -176,95 +497,17 @@ async def main():
     try:
         logger.info("スクリプト開始")
         
-        # パッチIDを取得
-        patch_id = get_latest_patch_id()
+        # --- パッチチェック処理 ---
+        await check_wildrift_patch(logger)
         
-        if not patch_id:
-            raise Exception("最新のパッチIDが見つかりません")
-            
-        logger.info(f"ゲームID: {WILDRIFT_GAME_ID}, パッチID: {patch_id}")
+        # --- 統計スクレイピング処理 ---
+        await scrape_wildrift_stats(logger)
         
-        async with async_playwright() as p:
-            # ブラウザ起動
-            browser = await p.chromium.launch(headless=True)
-            page = await browser.new_page()
-            
-            url = "https://lolm.qq.com/act/a20220818raider/index.html"
-            await page.goto(url, wait_until='networkidle')
-            logger.info(f"ページをオープン: {url}")
-            
-            # 参照日を取得
-            await page.wait_for_selector("#data-time")
-            reference_date = await page.text_content("#data-time")
-            reference_date = reference_date.strip()
-            logger.info(f"参照日を取得: {reference_date}")
-            
-            # JSON出力用のオブジェクト
-            champion_stats = {"参照日": reference_date}
-            
-            # ----- 上单（デフォルトタブ） -----
-            await page.wait_for_selector("#data-list > li")
-            logger.info("上单タブのセレクタ待機完了")
-            top_data = await extract_champion_data(page, logger)
-            champion_stats["上单"] = top_data
-            logger.info("上单データを取得完了")
-            
-            # ----- 打野 -----
-            await page.wait_for_selector("a.btn-place-jungle")
-            await page.click("a.btn-place-jungle")
-            logger.info("打野ボタンをクリック")
-            await page.wait_for_selector("#data-list > li")
-            jungle_data = await extract_champion_data(page, logger)
-            champion_stats["打野"] = jungle_data
-            logger.info("打野データを取得完了")
-            
-            # ----- 中路 -----
-            await page.wait_for_selector("a.btn-place-mid")
-            await page.click("a.btn-place-mid")
-            logger.info("中路ボタンをクリック")
-            await page.wait_for_selector("#data-list > li")
-            mid_data = await extract_champion_data(page, logger)
-            champion_stats["中路"] = mid_data
-            logger.info("中路データを取得完了")
-            
-            # ----- 下路 -----
-            await page.wait_for_selector("a.btn-place-bot")
-            await page.click("a.btn-place-bot")
-            logger.info("下路ボタンをクリック")
-            await page.wait_for_selector("#data-list > li")
-            bot_data = await extract_champion_data(page, logger)
-            champion_stats["下路"] = bot_data
-            logger.info("下路データを取得完了")
-            
-            # ----- 辅助 -----
-            await page.wait_for_selector("a.btn-place-sup")
-            await page.click("a.btn-place-sup")
-            logger.info("辅助ボタンをクリック")
-            await page.wait_for_selector("#data-list > li")
-            sup_data = await extract_champion_data(page, logger)
-            champion_stats["辅助"] = sup_data
-            logger.info("辅助データを取得完了")
-            
-            # ログファイルへスクレイピング結果を出力
-            json_output = json.dumps(champion_stats, ensure_ascii=False, indent=2)
-            log_file_path = "logs/wildrift_champion_stats_scraper.log"
-            with open(log_file_path, "a", encoding="utf-8") as f:
-                f.write(f"取得データ:\n{json_output}\n")
-            logger.info("全データをログファイルに出力完了")
-            
-            await browser.close()
-            logger.info("ブラウザを閉じました。スクレイピング終了")
-            
-            # --- SQLiteへの保存処理 ---
-            logger.info("wildrift_statsテーブルへデータを保存中")
-            insert_wildrift_stats(champion_stats, patch_id, logger)
-            logger.info("wildrift_statsテーブルへデータ保存完了")
-            
-            # --- スクレイピング結果をscraper_logsテーブルへ保存（成功の場合） ---
-            logger.info("scraper_logsテーブルへ成功ステータスを保存中")
-            insert_scraper_log(True, None)
-            logger.info("scraper_logsテーブルへデータ保存完了")
-            
+        # --- スクレイピング結果をscraper_logsテーブルへ保存（成功の場合） ---
+        logger.info("scraper_logsテーブルへ成功ステータスを保存中")
+        insert_scraper_log(True, None)
+        logger.info("scraper_logsテーブルへデータ保存完了")
+        
     except Exception as error:
         logger.error(f"エラー発生: {error}")
         # --- エラー発生時、scraper_logsテーブルへ失敗情報を保存 ---
