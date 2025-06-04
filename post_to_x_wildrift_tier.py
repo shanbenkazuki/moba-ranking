@@ -8,6 +8,7 @@ from playwright.async_api import async_playwright
 import tweepy
 from dotenv import load_dotenv
 from jinja2 import Environment, FileSystemLoader
+from src.slack_webhook import send_slack_notification
 
 # 環境変数の読み込み
 load_dotenv()
@@ -101,8 +102,6 @@ async def main():
                           [game_id, latest_date] + lanes)
             champion_stats = [dict(row) for row in cursor.fetchall()]
             
-            print(f"最新の reference_date ({latest_date}) のデータ件数: {len(champion_stats)}")
-            
             # 最新パッチ情報の取得
             cursor.execute("""SELECT patch_number FROM patches 
                              WHERE game_id = ? ORDER BY release_date DESC LIMIT 1""", [game_id])
@@ -132,11 +131,6 @@ async def main():
 
         # strength_score の降順にソート
         champion_stats.sort(key=lambda x: x['strength_score'], reverse=True)
-
-        # 各championのscoreをログ出力
-        for row in champion_stats:
-            english_name = row['english_name'] or row['chinese_name']
-            print(f"{english_name} の score: {row['strength_score']:.3f}")
 
         # 中国語レーン名を日本語に変換する辞書
         lane_translation = {
@@ -173,7 +167,6 @@ async def main():
                     })
                 
                 champions_by_grade_lane[grade][lane] = champion_list
-                print(f"デバッグ: {grade}グレード {lane}レーン に {len(champion_list)} 体のチャンピオンを追加")
 
         # Jinja2テンプレートの設定
         template_dir = Path(base_dir) / "templates"
@@ -250,10 +243,10 @@ async def main():
             api = tweepy.API(auth)
             
             # 画像アップロード
-            # media = api.media_upload(str(screenshot_path))
+            media = api.media_upload(str(screenshot_path))
             
-            # # ツイート投稿
-            # client.create_tweet(text=tweet_text, media_ids=[media.media_id])
+            # ツイート投稿
+            client.create_tweet(text=tweet_text, media_ids=[media.media_id])
             print("ツイートが投稿されました。")
             
         except Exception as error:
@@ -272,8 +265,35 @@ async def main():
             conn.commit()
             print("x_post_logsにツイートの結果が保存されました。")
 
+        # --- Slack通知（成功） ---
+        webhook_url = os.getenv('WILDRIFT_SLACK_WEBHOOK_URL')
+        if webhook_url:
+            tweet_status_text = "✅ ツイート投稿成功" if post_status == 0 else f"⚠️ ツイート投稿失敗: {error_message}"
+            success_message = f"""✅ Wild Rift Tier表生成・投稿処理が完了しました。
+
+📊 処理内容:
+- Tier表生成完了
+- スクリーンショット撮影完了
+- {tweet_status_text}
+
+📈 パッチ情報: {patch_number}
+📅 データ参照日: {latest_date}"""
+            send_slack_notification(webhook_url, success_message)
+            print("Slack通知（成功）を送信しました")
+        else:
+            print("WILDRIFT_SLACK_WEBHOOK_URLが設定されていません")
+
     except Exception as err:
         print(f"エラー: {err}")
+        
+        # --- Slack通知（エラー） ---
+        webhook_url = os.getenv('WILDRIFT_SLACK_WEBHOOK_URL')
+        if webhook_url:
+            error_message = f"❌ Wild Rift Tier表生成・投稿処理でエラーが発生しました。\nエラー内容: {err}"
+            send_slack_notification(webhook_url, error_message)
+            print("Slack通知（エラー）を送信しました")
+        else:
+            print("WILDRIFT_SLACK_WEBHOOK_URLが設定されていません")
 
 if __name__ == "__main__":
     asyncio.run(main())

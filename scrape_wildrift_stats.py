@@ -9,6 +9,11 @@ from datetime import datetime
 from playwright.async_api import async_playwright
 from urllib.parse import urlparse
 import logging
+from dotenv import load_dotenv
+from src.slack_webhook import send_slack_notification
+
+# 環境変数の読み込み
+load_dotenv()
 
 # 定数
 WILDRIFT_GAME_ID = 3
@@ -508,6 +513,15 @@ async def main():
         insert_scraper_log(True, None)
         logger.info("scraper_logsテーブルへデータ保存完了")
         
+        # --- Slack通知（成功） ---
+        webhook_url = os.getenv('WILDRIFT_SLACK_WEBHOOK_URL')
+        if webhook_url:
+            success_message = "✅ Wild Riftスクレイピング処理が正常に完了しました。\n- パッチ情報チェック完了\n- 統計データ取得完了\n- データベース保存完了"
+            send_slack_notification(webhook_url, success_message)
+            logger.info("Slack通知（成功）を送信しました")
+        else:
+            logger.warning("WILDRIFT_SLACK_WEBHOOK_URLが設定されていません")
+        
     except Exception as error:
         logger.error(f"エラー発生: {error}")
         # --- エラー発生時、scraper_logsテーブルへ失敗情報を保存 ---
@@ -516,6 +530,16 @@ async def main():
             logger.info("scraper_logsテーブルへエラーステータスを保存完了")
         except Exception as err:
             logger.error(f"scraper_logs保存中に更にエラー発生: {err}")
+        
+        # --- Slack通知（エラー） ---
+        webhook_url = os.getenv('WILDRIFT_SLACK_WEBHOOK_URL')
+        if webhook_url:
+            error_message = f"❌ Wild Riftスクレイピング処理でエラーが発生しました。\nエラー内容: {error}"
+            send_slack_notification(webhook_url, error_message)
+            logger.info("Slack通知（エラー）を送信しました")
+        else:
+            logger.warning("WILDRIFT_SLACK_WEBHOOK_URLが設定されていません")
+        
         raise
 
 if __name__ == "__main__":
