@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ワイルドリフト ティアリスト</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+  <style>
+    body {
+      background-color: #0A1019;
+      font-family: 'Noto Sans JP', sans-serif;
+      padding: 30px;
+      color: #B5A081;
+      background-image: url('{{ background_image_path }}');
+      background-size: cover;
+      background-position: center;
+      background-blend-mode: multiply;
+      margin: 0;
+    }
+    .title-container {
+      text-align: center;
+      margin-bottom: 25px;
+    }
+    .main-title {
+      font-size: 2.8em;
+      font-weight: 900;
+      color: #E8E2D5;
+      margin-bottom: 20px;
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
+    }
+    .composite-grid {
+      display: grid;
+      grid-template-columns: 90px repeat(5, 1fr);
+      gap: 15px;
+      margin: 0 auto;
+      max-width: 1400px;
+    }
+    .grid-header {
+      background: linear-gradient(to bottom, #1A2635, #0F1A26);
+      text-align: center;
+      padding: 18px 8px;
+      font-weight: 700;
+      border-radius: 6px;
+      font-size: 16px;
+      color: #E8E2D5;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid #2A3A4A;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .grid-grade-label {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+      font-weight: 900;
+      font-size: 36px;
+      border-radius: 6px;
+      border: 3px solid;
+      letter-spacing: 2px;
+    }
+    .grade-S { 
+      background: linear-gradient(135deg, #B8941F, #8A6E1A); 
+      color: #FFF;
+      border-color: #D4A825; 
+    }
+    .grade-A { 
+      background: linear-gradient(135deg, #A8A8A8, #707070); 
+      color: #FFF; 
+      border-color: #C0C0C0;
+    }
+    .grade-B { 
+      background: linear-gradient(135deg, #8B6B3A, #5A452A); 
+      color: #FFF; 
+      border-color: #A67E47;
+    }
+    .grade-C { 
+      background: linear-gradient(135deg, #2A4A65, #1E3447); 
+      color: #FFF; 
+      border-color: #3A6B85;
+    }
+    .grade-D { 
+      background: linear-gradient(135deg, #3A3A3A, #1A1A1A); 
+      color: #B0B0B0; 
+      border-color: #505050;
+    }
+    .grid-cell {
+      background-color: rgba(15, 25, 35, 0.9);
+      border-radius: 6px;
+      padding: 12px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      justify-items: center;
+      align-content: start;
+      min-height: 120px;
+      border: 2px solid rgba(42, 58, 74, 0.6);
+    }
+    .hero {
+      text-align: center;
+      margin-bottom: 8px;
+    }
+    .hero-img-container {
+      width: 65px;
+      height: 65px;
+      overflow: hidden;
+      border-radius: 50%;
+      border: 3px solid #5A4A3A;
+      margin: 0 auto;
+    }
+    .hero-img-container img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .hero-name {
+      margin-top: 8px;
+      font-size: 12px;
+      font-weight: 700;
+      color: #B5A081;
+      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.9);
+    }
+    .version-info {
+      text-align: center;
+      margin-bottom: 30px;
+      font-size: 1.3em;
+      font-weight: 700;
+      color: #E8E2D5;
+      background: linear-gradient(135deg, rgba(26, 38, 53, 0.8), rgba(15, 26, 38, 0.8));
+      padding: 15px 30px;
+      border-radius: 8px;
+      border: 2px solid #2A3A4A;
+      letter-spacing: 1px;
+      max-width: 600px;
+      margin: 0 auto 30px auto;
+    }
+    .version-info::before {
+      content: "更新日 ";
+      color: #E8E2D5;
+      font-weight: 500;
+    }
+  </style>
+</head>
+<body>
+  <div class="title-container">
+    <div class="main-title">WILD RIFT TIER LIST</div>
+  </div>
+  <div class="version-info">{{ latest_date }} | Patch {{ patch_number }}</div>
+  <div class="composite-grid">
+    <!-- ヘッダー行：1列目は空、以降が lane ラベル -->
+    <div class="grid-header"></div>
+    {% for lane_name in lanes_translated %}
+    <div class="grid-header">{{ lane_name }}</div>
+    {% endfor %}
+    
+    {% for grade in grades %}
+    <!-- grade ラベル -->
+    <div class="grid-grade-label grade-{{ grade }}">{{ grade }}</div>
+    {% for lane_key in lanes_keys %}
+    <div class="grid-cell">
+      {% for champion in champions_by_grade_lane[grade][lane_key] %}
+      <div class="hero">
+        <div class="hero-img-container">
+          <img src="{{ champion.image_path }}" alt="{{ champion.japanese_name }}">
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% endfor %}
+    {% endfor %}
+  </div>
+</body>
+</html> 
