@@ -314,7 +314,7 @@ async def main():
         log_db.close()
 
         # Slack通知を送信
-        slack_webhook_url = os.getenv("SLACK_WEBHOOK_URL")
+        slack_webhook_url = os.getenv("UNITE_SLACK_WEBHOOK_URL")
         if slack_webhook_url:
             if tweet_success:
                 message = f"""✅ ポケモンユナイト Tier表の投稿が完了しました
@@ -337,13 +337,13 @@ async def main():
             else:
                 print("Slack通知の送信に失敗しました。")
         else:
-            print("SLACK_WEBHOOK_URLが設定されていません。")
+            print("UNITE_SLACK_WEBHOOK_URLが設定されていません。")
 
     except Exception as err:
         print(f"エラー: {err}")
         
         # エラー時のSlack通知
-        slack_webhook_url = os.getenv("SLACK_WEBHOOK_URL")
+        slack_webhook_url = os.getenv("UNITE_SLACK_WEBHOOK_URL")
         if slack_webhook_url:
             error_message = f"""❌ ポケモンユナイト Tier表処理でエラーが発生しました
 

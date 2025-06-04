@@ -11,9 +11,13 @@
     <array>
       <!-- 仮想環境のPythonのパス -->
       <string>/Users/yamamotokazuki/develop/moba-ranking/moba-ranking-venv/bin/python3</string>
-      <!-- Pythonスクリプトの絶対パス -->
-      <string>/Users/yamamotokazuki/develop/moba-ranking/scrape_unite_stats.py</string>
+      <!-- Pythonスクリプトの相対パス -->
+      <string>scrape_unite_stats.py</string>
     </array>
+    
+    <!-- ワーキングディレクトリを設定 -->
+    <key>WorkingDirectory</key>
+    <string>/Users/yamamotokazuki/develop/moba-ranking</string>
     
     <!-- 毎日1時に実行 -->
     <key>StartCalendarInterval</key>

@@ -42,11 +42,11 @@ class MLBBScraper:
         self.browser = None
         self.page = None
         self.new_characters = []  # 新規登録されたキャラクターのリスト
-        self.webhook_url = os.environ.get('SLACK_WEBHOOK_URL')
+        self.webhook_url = os.environ.get('MLBB_SLACK_WEBHOOK_URL')
         
         if not self.webhook_url:
-            self.logger.error('SLACK_WEBHOOK_URL環境変数が設定されていません')
-            raise ValueError('SLACK_WEBHOOK_URL環境変数が設定されていません')
+            self.logger.error('MLBB_SLACK_WEBHOOK_URL環境変数が設定されていません')
+            raise ValueError('MLBB_SLACK_WEBHOOK_URL環境変数が設定されていません')
         
     async def launch_browser(self):
         """ブラウザを起動"""

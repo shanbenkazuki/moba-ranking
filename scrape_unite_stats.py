@@ -783,7 +783,7 @@ async def main():
             print("="*60)
             
             # Slack通知を送信（成功時）
-            slack_webhook_url = os.getenv("SLACK_WEBHOOK_URL")
+            slack_webhook_url = os.getenv("UNITE_SLACK_WEBHOOK_URL")
             if slack_webhook_url:
                 message = f"""✅ ポケモンユナイト データスクレイピングが完了しました
 
@@ -800,13 +800,13 @@ async def main():
                 else:
                     print("Slack通知の送信に失敗しました。")
             else:
-                print("SLACK_WEBHOOK_URLが設定されていません。")
+                print("UNITE_SLACK_WEBHOOK_URLが設定されていません。")
             
         except Exception as e:
             print(f"エラーが発生しました: {e}")
             
             # エラー時のSlack通知
-            slack_webhook_url = os.getenv("SLACK_WEBHOOK_URL")
+            slack_webhook_url = os.getenv("UNITE_SLACK_WEBHOOK_URL")
             if slack_webhook_url:
                 error_message = f"""❌ ポケモンユナイト データスクレイピングでエラーが発生しました
 

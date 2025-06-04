@@ -11,8 +11,8 @@
     <array>
       <!-- pythonのパス（仮想環境） -->
       <string>/Users/yamamotokazuki/develop/moba-ranking/moba-ranking-venv/bin/python</string>
-      <!-- スクリプトの絶対パス -->
-      <string>/Users/yamamotokazuki/develop/moba-ranking/post_to_x_mlbb_tier.py</string>
+      <!-- スクリプトの相対パス -->
+      <string>post_to_x_mlbb_tier.py</string>
     </array>
     
     <!-- 作業ディレクトリの設定 -->
