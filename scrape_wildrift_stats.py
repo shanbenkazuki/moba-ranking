@@ -185,36 +185,7 @@ def parse_release_date(date_text):
     except Exception:
         return None
 
-def check_existing_patch(patch_number):
-    """既存のパッチデータをチェック"""
-    db_path = "data/moba_log.db"
-    try:
-        with sqlite3.connect(db_path) as conn:
-            cursor = conn.cursor()
-            cursor.execute(
-                "SELECT COUNT(*) FROM patches WHERE game_id = ? AND patch_number = ?",
-                (WILDRIFT_GAME_ID, patch_number)
-            )
-            count = cursor.fetchone()[0]
-            return count > 0
-    except Exception:
-        return False
 
-def insert_patch_data(patch_number, release_date):
-    """パッチデータをデータベースに挿入"""
-    db_path = "data/moba_log.db"
-    try:
-        with sqlite3.connect(db_path) as conn:
-            cursor = conn.cursor()
-            cursor.execute(
-                """INSERT INTO patches (game_id, patch_number, release_date, created_at, updated_at)
-                   VALUES (?, ?, ?, ?, ?)""",
-                (WILDRIFT_GAME_ID, patch_number, release_date, datetime.now(), datetime.now())
-            )
-            conn.commit()
-            return True
-    except Exception:
-        return False
 
 async def insert_wildrift_stats(champion_stats, patch_id, logger):
     """wildrift_statsテーブルへデータを挿入"""
@@ -298,76 +269,7 @@ def insert_scraper_log(status, error_message):
         """, (WILDRIFT_GAME_ID, status, error_message, jst_date))
         conn.commit()
 
-# パッチチェック関数
-async def check_wildrift_patch(logger):
-    """Wild Riftのパッチ情報をチェック"""
-    url = "https://wildrift.leagueoflegends.com/ja-jp/news/tags/patch-notes/"
-    
-    logger.info("Wild Riftパッチ情報チェックを開始します")
-    
-    async with async_playwright() as p:
-        try:
-            logger.info("ブラウザを起動中...")
-            browser = await p.chromium.launch(headless=True)
-            page = await browser.new_page()
-            
-            logger.info(f"ページにアクセス中: {url}")
-            await page.goto(url, wait_until="networkidle")
-            logger.info("ページの読み込みが完了しました")
-            
-            # リリース日を取得
-            release_date_xpath = '//*[@id="news"]/div/div[2]/a[1]/span/div/div[2]/div[1]/div[3]/time'
-            logger.info("リリース日要素を検索中...")
-            
-            release_date_element = page.locator(f"xpath={release_date_xpath}")
-            if await release_date_element.count() == 0:
-                raise Exception("リリース日要素が見つかりません")
-            
-            release_date_text = await release_date_element.text_content()
-            logger.info(f"リリース日テキストを取得: {release_date_text}")
-            
-            # パッチ番号を取得
-            patch_number_xpath = '//*[@id="news"]/div/div[2]/a[1]/span/div/div[2]/div[2]'
-            logger.info("パッチ番号要素を検索中...")
-            
-            patch_element = page.locator(f"xpath={patch_number_xpath}")
-            if await patch_element.count() == 0:
-                raise Exception("パッチ番号要素が見つかりません")
-            
-            patch_text = await patch_element.text_content()
-            logger.info(f"パッチテキストを取得: {patch_text}")
-            
-            await browser.close()
-            logger.info("ブラウザを閉じました")
-            
-        except Exception as e:
-            logger.error(f"パッチチェックでエラー発生: {e}")
-            if 'browser' in locals():
-                await browser.close()
-            raise
-    
-    # データ処理
-    patch_number = extract_patch_number(patch_text)
-    if not patch_number:
-        raise Exception("パッチ番号の抽出に失敗しました")
-    
-    release_date = parse_release_date(release_date_text)
-    if not release_date:
-        raise Exception("リリース日の解析に失敗しました")
-    
-    # 既存データチェック
-    if check_existing_patch(patch_number):
-        logger.info(f"パッチ {patch_number} は既に存在します")
-    else:
-        # データベースに保存
-        success = insert_patch_data(patch_number, release_date)
-        if success:
-            logger.info(f"新しいパッチデータを保存しました: {patch_number} (リリース日: {release_date})")
-        else:
-            raise Exception("パッチデータの保存に失敗しました")
-    
-    logger.info("パッチチェック完了")
-    return True
+
 
 # スクレイピング関数
 async def extract_champion_data(page, logger):
@@ -502,9 +404,6 @@ async def main():
     try:
         logger.info("スクリプト開始")
         
-        # --- パッチチェック処理 ---
-        await check_wildrift_patch(logger)
-        
         # --- 統計スクレイピング処理 ---
         await scrape_wildrift_stats(logger)
         
@@ -516,7 +415,7 @@ async def main():
         # --- Slack通知（成功） ---
         webhook_url = os.getenv('WILDRIFT_SLACK_WEBHOOK_URL')
         if webhook_url:
-            success_message = "✅ Wild Riftスクレイピング処理が正常に完了しました。\n- パッチ情報チェック完了\n- 統計データ取得完了\n- データベース保存完了"
+            success_message = "✅ Wild Riftスクレイピング処理が正常に完了しました。\n- 統計データ取得完了\n- データベース保存完了"
             send_slack_notification(webhook_url, success_message)
             logger.info("Slack通知（成功）を送信しました")
         else:

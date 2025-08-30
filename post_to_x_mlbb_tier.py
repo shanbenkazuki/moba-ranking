@@ -239,10 +239,10 @@ async def main():
 #モバイル・レジェンド #モバレ #モバレジェ #MLBB"""
             
             # メディアアップロード
-            # media = api.media_upload(str(screenshot_path))
+            media = api.media_upload(str(screenshot_path))
             
-            # # ツイート投稿
-            # client.create_tweet(text=tweet_text, media_ids=[media.media_id])
+            # ツイート投稿
+            client.create_tweet(text=tweet_text, media_ids=[media.media_id])
             
             log_message("ツイートが投稿されました。")
             

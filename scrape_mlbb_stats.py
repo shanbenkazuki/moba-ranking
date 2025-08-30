@@ -6,7 +6,7 @@ import aiohttp
 from datetime import datetime
 from playwright.async_api import async_playwright
 from dotenv import load_dotenv
-from check_mlbb_version import MLBBPatchScraper
+# from check_mlbb_version import MLBBPatchScraper
 from src.slack_webhook import send_slack_notification
 
 # .envファイルを読み込み
@@ -75,7 +75,7 @@ class MLBBScraper:
     async def select_rank(self):
         """ランクを選択（Mythic）"""
         # 指定されたXPathの要素をクリック
-        xpath_selector = '//*[@id="root"]/div[1]/div[5]/div/div[1]/div[1]/div[2]/div[2]'
+        xpath_selector = '//*[@id="root"]/div[1]/div[3]/div/div[1]/div[1]/div[2]/div[2]'
         await self.page.wait_for_selector(f'xpath={xpath_selector}', timeout=10000)
         self.logger.info('指定されたXPathの要素を確認')
         
@@ -83,7 +83,7 @@ class MLBBScraper:
         self.logger.info('指定されたXPathの要素をクリック')
         
         # Mythic選択
-        mythic_xpath = '//*[@id="root"]/div[1]/div[5]/div/div[1]/div[1]/div[2]/div[1]/div/div[4]'
+        mythic_xpath = '//*[@id="root"]/div[1]/div[3]/div/div[1]/div[1]/div[2]/div[1]/div/div[4]'
         await self.page.wait_for_selector(f'xpath={mythic_xpath}')
         await self.page.click(f'xpath={mythic_xpath}')
         self.logger.info('『Mythic』ランクを選択')
@@ -91,7 +91,7 @@ class MLBBScraper:
     async def scroll_to_load_all_data(self):
         """スクロールして全データを読み込み"""
         # Seleniumのロジックに合わせてXPathを変更
-        scroll_target_xpath = '//*[@id="root"]/div[1]/div[5]/div/div[2]/div/div[2]/div'
+        scroll_target_xpath = '//*[@id="root"]/div[1]/div[3]/div/div[2]/div/div[2]/div'
         
         try:
             await self.page.wait_for_selector(f'xpath={scroll_target_xpath}')
@@ -131,7 +131,7 @@ class MLBBScraper:
         hero_meta_data = await self.page.evaluate("""
             () => {
                 // 親要素のXPath
-                const parentXpath = '//*[@id="root"]/div[1]/div[5]/div/div[2]/div/div[2]/div';
+                const parentXpath = '//*[@id="root"]/div[1]/div[3]/div/div[2]/div/div[2]/div';
                 const parentElement = document.evaluate(parentXpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
                 
                 if (!parentElement) {
@@ -150,11 +150,11 @@ class MLBBScraper:
                     const index = i + 1; // XPathは1ベースのインデックス
                     
                     // 各要素のXPath（絶対パス）
-                    const heroNameXpath = `//*[@id="root"]/div[1]/div[5]/div/div[2]/div/div[2]/div/div[${index}]/div[2]/div[2]/span`;
-                    const pickRateXpath = `//*[@id="root"]/div[1]/div[5]/div/div[2]/div/div[2]/div/div[${index}]/div[3]/span`;
-                    const winRateXpath = `//*[@id="root"]/div[1]/div[5]/div/div[2]/div/div[2]/div/div[${index}]/div[4]/span`;
-                    const banRateXpath = `//*[@id="root"]/div[1]/div[5]/div/div[2]/div/div[2]/div/div[${index}]/div[5]/span`;
-                    const iconImageXpath = `//*[@id="root"]/div[1]/div[5]/div/div[2]/div/div[2]/div/div[${index}]/div[2]/div[1]/img`;
+                    const heroNameXpath = `//*[@id="root"]/div[1]/div[3]/div/div[2]/div/div[2]/div/div[${index}]/div[2]/div[2]/span`;
+                    const pickRateXpath = `//*[@id="root"]/div[1]/div[3]/div/div[2]/div/div[2]/div/div[${index}]/div[3]/span`;
+                    const winRateXpath = `//*[@id="root"]/div[1]/div[3]/div/div[2]/div/div[2]/div/div[${index}]/div[4]/span`;
+                    const banRateXpath = `//*[@id="root"]/div[1]/div[3]/div/div[2]/div/div[2]/div/div[${index}]/div[5]/span`;
+                    const iconImageXpath = `//*[@id="root"]/div[1]/div[3]/div/div[2]/div/div[2]/div/div[${index}]/div[2]/div[1]/img`;
                                                     
                     
                     const heroNameElement = document.evaluate(heroNameXpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
@@ -221,7 +221,7 @@ class MLBBScraper:
         """参照日時を抽出"""
         reference_date_str = await self.page.evaluate("""
             () => {
-                const xpath = '//*[@id="root"]/div[1]/div[5]/div/div[1]/div[2]/div[2]/span';
+                const xpath = '//*[@id="root"]/div[1]/div[3]/div/div[1]/div[2]/div[2]/span';
                 const element = document.evaluate(xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
                 return element ? element.textContent : null;
             }
@@ -461,16 +461,18 @@ class MLBBScraper:
         try:
             if scraping_failed:
                 # エラー通知
-                message = f"""🔴 MLBB スクレイピング失敗
+                message = f"""❌ 失敗
+MLBB スクレイピング失敗しました。
 日時: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
 エラー内容: {scraping_error_msg}"""
             else:
                 # 成功通知
                 new_chars_text = ""
                 if self.new_characters:
-                    new_chars_text = f"\n🆕 新規キャラクター: {', '.join(self.new_characters)}"
+                    new_chars_text = f"\n新規キャラクター: {', '.join(self.new_characters)}"
                 
-                message = f"""✅ MLBB スクレイピング完了
+                message = f"""✅ 成功
+MLBB スクレイピング完了しました。
 日時: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
 取得データ件数: {scraped_data_count}件{new_chars_text}"""
             
@@ -492,15 +494,8 @@ class MLBBScraper:
         try:
             self.logger.info('Mobile Legends ランクスクレイピング処理を開始')
             
-            # 最新パッチ情報を取得
-            self.logger.info('最新パッチ情報を取得中...')
-            patch_scraper = MLBBPatchScraper()
-            patch_success = await patch_scraper.run()
-            
-            if not patch_success:
-                self.logger.warning('最新パッチ情報の取得に失敗しましたが、処理を続行します')
-            else:
-                self.logger.info('最新パッチ情報の取得が完了しました')
+            # 最新パッチ情報を取得（Reddit調査不要）
+            self.logger.info('Redditでのバージョン調査をスキップします')
             
             await self.launch_browser()
             await self.navigate_to_ranking_page()
