@@ -10,8 +10,7 @@ import httpx
 import os
 from dotenv import load_dotenv
 
-# バージョンチェック機能をインポート
-from check_unite_version import extract_latest_update_info, save_patch_to_database
+
 
 # Slack通知機能をインポート  
 from src.slack_webhook import send_slack_notification
@@ -606,44 +605,6 @@ async def main():
     browser = None
     
     try:
-        # スクレイピング前にバージョンチェックを実行
-        print("=" * 60)
-        print("🔍 Pokémon UNITE バージョンチェックを開始します...")
-        print("=" * 60)
-        
-        try:
-            update_info = await extract_latest_update_info()
-            
-            if update_info:
-                print(f"✅ 最新のアップデート情報を取得しました")
-                print("-" * 40)
-                
-                if "date" in update_info:
-                    print(f"📅 日付: {update_info['date']}")
-                
-                if "update_datetime" in update_info:
-                    print(f"🕐 アップデート日時: {update_info['update_datetime']}")
-                
-                if "version" in update_info:
-                    print(f"🏷️  バージョン: {update_info['version']}")
-                
-                if "content" in update_info:
-                    print(f"📝 内容: {update_info['content'][:100]}..." if len(update_info['content']) > 100 else f"📝 内容: {update_info['content']}")
-                    
-                print("-" * 40)
-                
-                # データベースに保存
-                print("💾 データベースに保存中...")
-                if save_patch_to_database(update_info):
-                    print("✅ データベースへの保存が完了しました")
-                else:
-                    print("❌ データベースへの保存に失敗しました")
-            else:
-                print("⚠️  アップデート情報を取得できませんでしたが、スクレイピングを継続します")
-            
-        except Exception as e:
-            print(f"⚠️  バージョンチェック中にエラーが発生しましたが、スクレイピングを継続します: {e}")
-        
         print("=" * 60)
         print("📊 統計データのスクレイピングを開始します...")
         print("=" * 60)
@@ -803,7 +764,8 @@ async def main():
                 print("UNITE_SLACK_WEBHOOK_URLが設定されていません。")
             
         except Exception as e:
-            print(f"エラーが発生しました: {e}")
+            print(f"ブラウザ操作中にエラーが発生しました: {e}")
+            print(f"エラーの詳細: {type(e).__name__}: {str(e)}")
             
             # エラー時のSlack通知
             slack_webhook_url = os.getenv("UNITE_SLACK_WEBHOOK_URL")
@@ -825,15 +787,17 @@ async def main():
                     print("Slackエラー通知の送信に失敗しました。")
         
     except Exception as e:
-        print(f"エラーが発生しました: {e}")
+        print(f"メイン処理でエラーが発生しました: {e}")
+        print(f"エラーの詳細: {type(e).__name__}: {str(e)}")
     
     finally:
         # ブラウザを終了
         if browser:
             try:
-                browser.stop()
-            except:
-                print("ブラウザの停止中にエラーが発生しましたが、処理は完了しました。")
+                await browser.stop()
+                print("ブラウザを正常に終了しました。")
+            except Exception as e:
+                print(f"ブラウザの停止中にエラーが発生しましたが、処理は完了しました: {e}")
 
 if __name__ == '__main__':
     # asyncioのイベントループを実行
